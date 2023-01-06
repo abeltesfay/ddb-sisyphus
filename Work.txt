@@ -1,0 +1,5 @@
+2023 January 6
+[x] Install express
+  npm i express
+[ ] Start a simple webserver
+  - http://expressjs.com/en/starter/static-files.html
