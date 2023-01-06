@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DynamoDB Table Designer</title>
+        <style>
+            .facets {
+                border: 1pt solid black;
+                width: 20%;
+                padding: 1em;
+            }
+        </style>
+        <!-- <meta http-equiv="refresh" content="5" > -->
+        <script type="text/javascript">
+            let facets = [
+                { name: "temporary facet" }
+            ];
+
+            function preparePage() {
+                console.debug("PREP: Preparing page and buttons");
+                
+                redrawPage();
+                let button = document.getElementById("addFacet");
+                button.onclick = addFacet;
+                
+                console.debug("PREP: Finished prep");
+            }
+
+            function addFacet() {
+                const name = prompt("Please provide a facet name")?.trim();
+                if (!name) { return; }
+
+                console.debug("New facet added:", name);
+                facets.push({ name });
+                redrawPage();
+            }
+
+            function redrawPage() {
+                redrawFacets();
+            }
+
+            function redrawFacets() {
+                const facetListEle = document.getElementById("facetList");
+                Array.from(facetList.getElementsByTagName("li")).forEach(o => o.remove())
+                
+                let facetNames = facets.map(facet => facet.name);
+                
+                facetNames.forEach(facet => {
+                    let facetEle = document.createElement("li");
+                    facetEle.innerText = facet;
+                    facetListEle.appendChild(facetEle);
+                });
+            }
+        </script>
+    </head>
+    <body onload="preparePage();">
+        <div class="facets">
+            <h2>Facets</h2>
+            <button id="addFacet" value="Add">Add Facet</button>
+            <ol id="facetList">
+                <li>asds</li>
+            </ol>
+        </div>
+    </body>
+</html>
