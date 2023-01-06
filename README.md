@@ -1,0 +1,1 @@
+Simple webapp to design dynamodb tables
