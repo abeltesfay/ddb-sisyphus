@@ -1,3 +1,10 @@
+January 7
+[x] Show all fields when no facet selected
+[ ] Types on fields
+[ ] Add fields easily without clicking "Add" button
+[ ] Add fields from other facets
+[ ] Auto-alphabetize fields
+
 2023 January 6
 [x] Install express
   npm i express

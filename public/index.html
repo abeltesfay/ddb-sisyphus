@@ -104,7 +104,10 @@
                 document.getElementById("editFieldName").disabled = !selectedField;
                 document.getElementById("deleteField").disabled = !selectedField;
 
-                if (!selectedFacet) { return; }
+                if (!selectedFacet) {
+                    redrawAllFields();
+                    return;
+                }
                 
                 let fieldNames = getFacetByName(selectedFacet).fields ?? [];
                 
@@ -119,6 +122,26 @@
                     if (selectedField == field) {
                         fieldEle.classList.add("highlightedfield");
                     }
+                });
+            }
+
+            function redrawAllFields() {
+                const fieldListEle = document.getElementById("fieldList");
+                
+                APP_STATE.facets.forEach(facet => {
+                    facet.fields.forEach(field => {
+                        let fieldEle = document.createElement("li");
+                        fieldText = `${facet.name}.${field}`;
+                        fieldEle.innerText = fieldText;
+                        fieldEle.dataset.name = field;
+                        fieldEle.dataset.facet = facet.name;
+                        fieldEle.onclick = selectField.bind(fieldEle);
+                        fieldListEle.appendChild(fieldEle);
+
+                        if (selectedField == fieldText) {
+                            fieldEle.classList.add("highlightedfield");
+                        }
+                    });
                 });
             }
 
