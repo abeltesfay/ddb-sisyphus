@@ -1,8 +1,21 @@
+January 7
+[ ] Edit Facet Fields
+[ ] Delete Facet Button
+
 2023 January 6
 [x] Install express
   npm i express
 [x] Start a simple webserver
   - http://expressjs.com/en/starter/static-files.html
-[ ] Build a tool
+[x] Build basic layout
   - https://stackoverflow.com/questions/8711888/auto-refresh-code-in-html-using-meta-tags
   - ctrl+shift+z auto activates and refreshes page
+[x] Add Facet
+[x] Save to storage
+[x] Load from storage
+[x] Nuke storage
+[x] Delete Facet
+[x] Add field
+[x] Show facet fields
+[ ] Edit Facet Name
+  - https://stackoverflow.com/questions/31075893/how-to-fix-favicon-ico-error-failed-to-load-resource-neterr-empty-response

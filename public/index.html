@@ -2,27 +2,41 @@
 <html>
     <head>
         <title>DynamoDB Table Designer</title>
+        <link rel="shortcut icon" href="#">
         <style>
-            .facets {
-                border: 1pt solid black;
-                width: 20%;
-                padding: 0 1em;
-                margin: .5em;
+            .hidden { display: none; }
+
+            .action-bar {
+                border: 1pt solid grey;
+                border-radius: 5px;
+                margin: .5em .5em 0;
+                padding: .5em;
             }
 
-            .bottom-bar {
-                border: 1pt solid black;
-                margin: .5em;
-                padding: 1em;
-            }
-
-            button {
+            .action-bar button {
                 cursor: pointer;
                 padding: .5em 1em;
                 min-width: 6em;
             }
 
-            .hidden { display: none; }
+            .tableContent button { 
+                cursor: pointer;
+                padding: .25em .5em;
+                min-width: 3em;
+            }
+
+            .facets, .fields {
+                border: 1pt solid grey;
+                border-radius: 5px;
+                float: left;
+                margin: .5em;
+                padding: 0 1em;
+                width: 20%;
+            }
+
+            .facets li, .fields li { cursor: pointer; }
+            
+            .highlightedfacet, .highlightedfield { font-weight: bold };
         </style>
         <!-- <meta http-equiv="refresh" content="5" > -->
         <script type="text/javascript">
@@ -30,36 +44,32 @@
                 LSKEY: "SISYPHUS_DATA",
             };
 
-            let APP_STATE = {
-                facets: []
-            };
+            let APP_STATE = { facets: [] };
+            
+            let selectedFacet = undefined, selectedField = undefined;
 
             function preparePage() {
                 console.debug("PREP: Preparing page and buttons");
                 
                 loadAppState();
                 redrawPage();
-                setClick("addFacet", addFacet);
                 setClick("saveState", saveAppState);
                 setClick("nukeFromOrbit", nukeFromOrbit);
+                setClick("addFacet", addFacet);
+                setClick("addField", addField);
+                setClick("editFacetName", editFacetName);
+                // setClick("editFieldName", editFieldName);
                 
                 console.debug("PREP: Finished prep");
             }
 
-            function setClick(id, fn) { document.getElementById(id).onclick = fn; }
-
-            function addFacet() {
-                const name = prompt("Please provide a facet name")?.trim();
-                if (!name) { return; }
-
-                console.debug("New facet added:", name);
-                APP_STATE.facets.push({ name });
-                setSavedFlag(false);
-                redrawPage();
+            function setClick(id, fn) {
+                if (document.getElementById(id)) { document.getElementById(id).onclick = fn; }
             }
 
             function redrawPage() {
                 redrawFacets();
+                redrawFields();
             }
 
             function redrawFacets() {
@@ -71,8 +81,114 @@
                 facetNames?.forEach(facet => {
                     let facetEle = document.createElement("li");
                     facetEle.innerText = facet;
+                    facetEle.dataset.name = facet;
+                    facetEle.onclick = selectFacet.bind(facetEle);
                     facetListEle.appendChild(facetEle);
+
+                    if (selectedFacet == facet) {
+                        facetEle.classList.add("highlightedfacet");
+                    }
                 });
+
+                document.getElementById("editFacetName").disabled = !selectedFacet;
+            }
+
+            function redrawFields() {
+                const fieldListEle = document.getElementById("fieldList");
+                Array.from(fieldListEle.getElementsByTagName("li")).forEach(o => o.remove())
+                if (!selectedFacet) { return; }
+                
+                // let fieldNames = APP_STATE?.facets?.fieldsmap(field => facet.name);
+                let fieldNames = getFacetByName(selectedFacet).fields ?? [];
+                
+                fieldNames?.forEach(field => {
+                    let fieldEle = document.createElement("li");
+                    fieldEle.innerText = field;
+                    fieldEle.dataset.name = field;
+                    fieldEle.onclick = selectField.bind(fieldEle);
+                    fieldListEle.appendChild(fieldEle);
+
+                    if (selectedField == field) {
+                        fieldEle.classList.add("highlightedfield");
+                    }
+                });
+
+                document.getElementById("editFieldName").disabled = !selectedField;
+            }
+
+            function getFacetByName(name) {
+                return APP_STATE.facets[APP_STATE.facets.findIndex(facet => facet.name == name)];
+            }
+
+            function addFacet() {
+                const name = prompt("Please provide a new, unique facet name")?.trim();
+                if (!name) { return; }
+
+                if (APP_STATE.facets.map(o => o.name).includes(name)) {
+                    alert("This name already exists, please choose another");
+                    return;
+                }
+                
+                APP_STATE.facets.push({ name });
+                setSavedFlag(false);
+                redrawPage();
+
+                console.debug("ADDFACET: New facet added:", name);
+            }
+
+            function addField() {
+                if (!selectedFacet) { alert("Please select a facet first"); return; }
+
+                const facet = getFacetByName(selectedFacet);
+                const name = prompt("Please provide a new field name")?.trim();
+                if (!name || facet?.fields?.contains?.(name)) { return; }
+                if (!Array.isArray(facet?.fields)) { facet.fields = []; }
+                facet.fields.push(name);
+                
+                setSavedFlag(false);
+                redrawPage();
+            }
+
+            function selectFacet() {
+                selectedFacet = this.innerText;
+                selectedField = undefined;
+                redrawPage();
+            }
+
+            function editFacetName() {
+                if (!selectedFacet) { return; }
+                console.debug(`EDITFACET: Editing facet name from ${selectedFacet}`);
+
+                const name = prompt("Please provide a new, unique facet name")?.trim();
+                if (!name) { return; }
+
+                if (APP_STATE.facets.map(o => o.name).includes(name)) {
+                    alert("This name already exists, please choose another");
+                    return;
+                }
+
+                let facet = getFacetByName(selectFacet);
+                facet.name = name;
+                setSavedFlag(false);
+                redrawPage();
+
+                console.debug(`EDITFACET: Facet name updated from ${selectedFacet} to ${name}`);
+            }
+
+            function selectField() {
+                selectedField = this.innerText;
+                redrawPage();
+            }
+
+            function deleteFacet() {
+                if (!confirm("Are you SURE you want to delete this facet?")) { return; }
+                const name = this.innerText;
+                const oldCount = APP_STATE.facets.length;
+                APP_STATE.facets = APP_STATE.facets.filter(facet => facet.name !== this.innerText);
+                const newCount = APP_STATE.facets.length;
+                setSavedFlag(oldCount === newCount);
+                redrawPage()
+                console.warn(`DELETEFACET: Removed a facet: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
             }
 
             function saveAppState() {
@@ -90,6 +206,7 @@
                 console.warn("NUKEFROMORBIT: Nuking from orbit, hold on to your butts");
                 window.localStorage.removeItem(CONSTS.LSKEY);
                 console.warn("NUKEFROMORBIT: Target is cleared");
+                location.reload();
             }
 
             function loadAppState() {
@@ -118,23 +235,42 @@
                     document.getElementById("unsaved").classList.remove("hidden");
                 }
             }
+
+            function processKeys(event) {
+                // Deselect facet
+                if (event.key === "Escape") {
+                    selectedFacet = null;
+                    selectedField = null;
+                    redrawPage();
+                };
+            }
         </script>
     </head>
-    <body onload="preparePage();">
-        <div class="facets">
-            <h2>Facets</h2>
-            <button id="addFacet" value="Add">Add Facet</button>
-            <ol id="facetList">
-                <li>asds</li>
-            </ol>
-        </div>
-        <div class="bottom-bar">
+    <body onkeydown="processKeys(event);" onload="preparePage();">
+        <div class="action-bar">
             <button id="saveState">Save</button>
             <button id="nukeFromOrbit">Nuke State</button>
             <div class="hidden" id="unsaved">
                 <br>
                 <label>Unsaved data</label>
             </div>
+        </div>
+        <div class="tableContent">
+            <div class="facets">
+                <h2>Facets</h2>
+                <button id="addFacet" value="Add">Add</button>
+                <button disabled id="editFacetName" value="Edit">Edit</button>
+                <ol id="facetList">
+                </ol>
+            </div>
+            <div class="fields">
+                <h2>Fields</h2>
+                <button id="addField" value="Add">Add</button>
+                <button disabled id="editFieldName" value="Edit">Edit</button>
+                <ol id="fieldList">
+                </ol>
+            </div>
+            <div></div>
         </div>
     </body>
 </html>
