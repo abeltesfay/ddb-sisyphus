@@ -61,6 +61,7 @@
             };
 
             let APP_STATE = { facets: [] };
+            let APP_STATE_SAVED = undefined;
             
             let selectedFacet = undefined, selectedField = undefined;
 
@@ -72,6 +73,7 @@
                 setClick("saveState", saveAppState);
                 setClick("loadFromOrbit", loadFromOrbit);
                 setClick("nukeFromOrbit", nukeFromOrbit);
+                setClick("logState", logState);
                 setClick("addFacet", addFacet);
                 setClick("addField", addField);
                 setClick("editFacetName", editFacetName);
@@ -82,13 +84,23 @@
                 console.debug("PREP: Finished prep");
             }
 
+            function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
             function setClick(id, fn) {
                 if (document.getElementById(id)) { document.getElementById(id).onclick = fn; }
             }
 
             function redrawPage() {
+                checkSavedState();
                 redrawFacets();
                 redrawFields();
+            }
+
+            function checkSavedState() {
+                console.log("CHECKSTATE: Checking saved state");
+                const unchanged = JSON.stringify(APP_STATE) === JSON.stringify(APP_STATE_SAVED);
+                setSavedFlag(unchanged);
+                console.log(`CHECKSTATE: Unchanged = ${unchanged}`);
             }
 
             function redrawFacets() {
@@ -121,26 +133,23 @@
                 document.getElementById("editFieldName").disabled = !selectedField;
                 document.getElementById("deleteField").disabled = !selectedField;
 
-                if (!selectedFacet) {
-                    redrawAllFields();
-                    return;
-                }
+                if (!selectedFacet) { redrawAllFields(); return; }
                 
-                let fieldNames = getFacetByName(selectedFacet).fields ?? [];
+                let fields = getFacetByName(selectedFacet).fields ?? [];
                 
-                fieldNames?.forEach(fieldName => {
+                fields?.forEach(field => {
                     let fieldEle = document.createElement("li");
                     let fieldLabelEle = document.createElement("span");
                     // fieldText = `${field}`;
                     // fieldLabelEle.innerText = fieldText;
-                    fieldLabelEle.innerText = fieldName;
-                    fieldLabelEle.dataset.name = fieldName;
+                    fieldLabelEle.innerText = field.name;
+                    fieldLabelEle.dataset.name = field.name;
                     fieldLabelEle.dataset.facet = selectedFacet;
                     fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
                     fieldEle.appendChild(fieldLabelEle);
                     fieldListEle.appendChild(fieldEle);
 
-                    let fieldTypeDropdownEle = getDropdownElement(selectedFacet, fieldName);
+                    let fieldTypeDropdownEle = getDropdownElement(selectedFacet, field.name);
                     let fieldTypeDropdownEleFiller = fieldTypeDropdownEle.cloneNode(true);
                     fieldTypeDropdownEle.classList.add("floater");
                     fieldEle.appendChild(fieldTypeDropdownEle);
@@ -148,7 +157,7 @@
                     fieldTypeDropdownEleFiller.classList.add("spacefiller");
                     fieldEle.appendChild(fieldTypeDropdownEleFiller);
 
-                    if (selectedField == fieldName) {
+                    if (selectedField == field.name) {
                         fieldEle.classList.add("highlightedfield");
                     }
                 });
@@ -161,7 +170,7 @@
                     facet.fields.forEach(field => {
                         let fieldEle = document.createElement("li");
                         let fieldLabelEle = document.createElement("span");
-                        fieldText = `${facet.name}.${field}`;
+                        fieldText = `${facet.name}.${field.name}`;
                         fieldLabelEle.innerText = fieldText;
                         fieldLabelEle.dataset.name = field;
                         fieldLabelEle.dataset.facet = facet.name;
@@ -184,20 +193,40 @@
                 });
             }
 
-            const DROPDOWNOPTIONS = [ "", "String", "Boolean" ];
+            const DROPDOWNOPTIONS = [ "", "S", "B" ];
 
             function getDropdownElement(facet, field) {
                 let dropdown = document.createElement("select");
+                dropdown.dataset.facet = facet.name;
+                dropdown.dataset.field = field.name;
+                dropdown.onchange = selectFieldType;
+
                 DROPDOWNOPTIONS.forEach(value => {
                     let dropdownEle = document.createElement("option");
+                    if (value === field.type) { dropdownEle.selected = true; }
                     dropdownEle.innerText = value;
                     dropdown.appendChild(dropdownEle);
                 });
+
                 return dropdown;
+            }
+
+            function selectFieldType() {
+                const facetName = this.dataset.facet, fieldName = this.dataset.field;
+                const typeValue = this.value;
+
+                let field = getFacetFieldByNames(facetName, fieldName);
+                field.type = typeValue;
             }
 
             function getFacetByName(name) {
                 return APP_STATE.facets[APP_STATE.facets.findIndex(facet => facet.name == name)];
+            }
+
+            function getFacetFieldByNames(facetName, fieldName) {
+                let facet = getFacetByName(facetName);
+                let field = facet.fields[facet.fields.findIndex(field => field.name == fieldName)];
+                return field;
             }
 
             function addFacet() {
@@ -210,7 +239,6 @@
                 }
                 
                 APP_STATE.facets.push({ name });
-                setSavedFlag(false);
                 redrawPage();
 
                 console.debug("ADDFACET: New facet added:", name);
@@ -228,7 +256,6 @@
 
                 // TODO Order fields
                 
-                setSavedFlag(false);
                 redrawPage();
             }
 
@@ -253,7 +280,6 @@
                 const oldFacetName = selectedFacet;
                 let facet = getFacetByName(oldFacetName);
                 facet.name = name;
-                setSavedFlag(false);
                 selectedFacet = name;
                 redrawPage();
 
@@ -275,7 +301,6 @@
 
                 const oldFieldName = selectedField;
                 selectedField = name;
-                setSavedFlag(false);
                 redrawPage();
                 
                 console.debug(`EDITFACET: Field name updated from ${selectedFacet}.${oldFieldName} to ${selectedFacet}.${name}`);
@@ -289,7 +314,6 @@
                 const oldCount = APP_STATE.facets.length;
                 APP_STATE.facets = APP_STATE.facets.filter(facet => facet.name !== selectedFacet);
                 const newCount = APP_STATE.facets.length;
-                setSavedFlag(oldCount === newCount);
                 redrawPage();
 
                 console.warn(`DELETEFACET: Removed a facet: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
@@ -302,9 +326,8 @@
                 let facet = getFacetByName(selectedFacet);
                 let name = selectedField;
                 const oldCount = facet.fields.length;
-                facet.fields = facet.fields.filter(field => field !== selectedField);
+                facet.fields = facet.fields.filter(field => field.name !== selectedField);
                 const newCount = facet.fields.length;
-                setSavedFlag(oldCount === newCount);
                 redrawPage();
 
                 console.warn(`DELETEFIELD: Removed a field: ${selectedField}.${name}. Old count=[${oldCount}], new count=[${newCount}]`);
@@ -317,11 +340,32 @@
 
             function saveAppState() {
                 console.debug("SAVEAPP: Saving application state");
-                // const validatedState = getValidatedState(APP_STATE);
-                const dataAsString = JSON.stringify(APP_STATE);
+                const validatedState = getValidatedState(APP_STATE);
+                const dataAsString = JSON.stringify(validatedState);
                 window.localStorage.setItem(CONSTS.LSKEY, dataAsString);
-                setSavedFlag(true);
+                APP_STATE_SAVED = clone(validatedState);
+                redrawPage();
                 console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
+            }
+
+            // Do some data shuffling/validating on object structure
+            function getValidatedState(state) {
+                let newState = clone(state);
+                newState.facets.forEach(facet => {
+                    facet.fields = facet.fields.map(field => {
+                        if (typeof field === "object") { return field; }
+                        if (typeof field === "string") {
+                            return {
+                                name: field,
+                                type: "",
+                            };
+                        }
+                        
+                        return field;
+                    })
+                })
+
+                return newState;
             }
             
             function loadFromOrbit() {
@@ -346,11 +390,16 @@
                 location.reload();
             }
 
+            function logState() {
+                console.log("Saved state:", JSON.stringify(APP_STATE_SAVED));
+                console.log("Current state:", JSON.stringify(APP_STATE));
+            }
+
             function loadAppState() {
                 console.debug("LOADAPP: Loading application from local storage")
                 const data = window.localStorage.getItem(CONSTS.LSKEY);
                 APP_STATE = JSON.parse(data) ?? getDefaultAppState();
-                console.log(`LOADAPP: ${data}`);
+                APP_STATE_SAVED = clone(APP_STATE);
                 console.debug(`LOADAPP: Application loaded from state, facets loaded: ${APP_STATE?.facets?.length ?? 0}`)
             }
 
@@ -389,6 +438,7 @@
             <button id="saveState">Save</button>
             <button id="loadFromOrbit">Load</button>
             <button id="nukeFromOrbit">Nuke State</button>
+            <button id="logState">Log State</button>
             <div class="hidden" id="unsaved">
                 <br>
                 <label>Unsaved data</label>
