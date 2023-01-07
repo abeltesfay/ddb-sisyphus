@@ -6,13 +6,14 @@ January 7
 [x] Load app_state from input
   [x] Button to prompt
   [x] Code
-[ ] Types on fields
+[x] Types on fields
   [x] Update type in state
   [x] Create state checker for unsaved flag
-  [ ] Save dropdown value to field
+  [x] Save dropdown value to field
+[x] Validate previous functionality for changes
+[x] Auto-alphabetize fields
 [ ] Add fields easily without clicking "Add" button
 [ ] Add fields from other facets
-[ ] Auto-alphabetize fields
 
 2023 January 6
 [x] Install express

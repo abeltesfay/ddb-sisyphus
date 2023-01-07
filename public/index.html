@@ -97,10 +97,10 @@
             }
 
             function checkSavedState() {
-                console.log("CHECKSTATE: Checking saved state");
+                // console.debug("CHECKSTATE: Checking saved state");
                 const unchanged = JSON.stringify(APP_STATE) === JSON.stringify(APP_STATE_SAVED);
                 setSavedFlag(unchanged);
-                console.log(`CHECKSTATE: Unchanged = ${unchanged}`);
+                // console.debug(`CHECKSTATE: Unchanged = ${unchanged}`);
             }
 
             function redrawFacets() {
@@ -239,11 +239,14 @@
                     return;
                 }
                 
-                APP_STATE.facets.push({ name });
+                APP_STATE.facets.push(getNewFacet(name));
+                APP_STATE.facets = APP_STATE.facets.sort((a, b) => sortComparator(a.name, b.name));
                 redrawPage();
 
                 console.debug("ADDFACET: New facet added:", name);
             }
+
+            function getNewFacet(name) { return { name, fields: [] }; }
 
             function addField() {
                 if (!selectedFacet) { alert("Please select a facet first"); return; }
@@ -251,13 +254,20 @@
                 const facet = getFacetByName(selectedFacet);
                 const name = prompt("Please provide a new field name")?.trim();
                 if (!name) { return; }
-                if (facet?.fields?.includes?.(name)) { alert("Facet already contains this field"); return; }
+                if (facet?.fields?.map(field => field.name).includes?.(name)) { alert("Facet already contains this field"); return; }
                 if (!Array.isArray(facet?.fields)) { facet.fields = []; }
-                facet.fields.push(name);
+                facet.fields.push(getNewField(name));
 
-                // TODO Order fields
+                facet.fields = facet.fields.sort((a, b) => sortComparator(a.name, b.name));
                 
                 redrawPage();
+            }
+
+            function getNewField(name) { return { name, type: "" } };
+
+            function sortComparator(a, b) {
+                const aLower = a?.toLowerCase(), bLower = b?.toLowerCase();
+                return aLower == bLower ? a > b : aLower > bLower;
             }
 
             function selectFacet() {
@@ -315,6 +325,7 @@
                 const oldCount = APP_STATE.facets.length;
                 APP_STATE.facets = APP_STATE.facets.filter(facet => facet.name !== selectedFacet);
                 const newCount = APP_STATE.facets.length;
+                selectedFacet = undefined;
                 redrawPage();
 
                 console.warn(`DELETEFACET: Removed a facet: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
@@ -353,18 +364,22 @@
             function getValidatedState(state) {
                 let newState = clone(state);
                 newState.facets.forEach(facet => {
-                    facet.fields = facet.fields.map(field => {
-                        if (typeof field === "object") { return field; }
-                        if (typeof field === "string") {
-                            return {
-                                name: field,
-                                type: "",
-                            };
-                        }
-                        
-                        return field;
-                    })
-                })
+                    facet.fields = facet.fields
+                        .map(field => {
+                            if (typeof field === "object") { return field; }
+                            if (typeof field === "string") {
+                                return {
+                                    name: field,
+                                    type: "",
+                                };
+                            }
+                            
+                            return field;
+                        })
+                        .sort((a, b) => sortComparator(a.name, b.name));
+                });
+
+                newState.facets = newState.facets.sort((a, b) => sortComparator(a.name, b.name));
 
                 return newState;
             }
