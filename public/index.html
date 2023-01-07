@@ -70,6 +70,7 @@
                 loadAppState();
                 redrawPage();
                 setClick("saveState", saveAppState);
+                setClick("loadFromOrbit", loadFromOrbit);
                 setClick("nukeFromOrbit", nukeFromOrbit);
                 setClick("addFacet", addFacet);
                 setClick("addField", addField);
@@ -316,12 +317,25 @@
 
             function saveAppState() {
                 console.debug("SAVEAPP: Saving application state");
+                // const validatedState = getValidatedState(APP_STATE);
                 const dataAsString = JSON.stringify(APP_STATE);
                 window.localStorage.setItem(CONSTS.LSKEY, dataAsString);
                 setSavedFlag(true);
                 console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
             }
             
+            function loadFromOrbit() {
+                console.warn("LOADROMORBIT: Confirming user is crazy");
+                if (!confirm("Are you sure you want to load all of app state?")) { return; }
+                let newAppState;
+                if (!(newAppState = prompt("Please specify the entire app state").trim())) { return; }
+                
+                console.warn("LOADROMORBIT: Loading from orbit, hold on to something");
+                window.localStorage.setItem(CONSTS.LSKEY, newAppState);
+                console.warn("LOADROMORBIT: Target is loaded");
+                location.reload();
+            }
+
             function nukeFromOrbit() {
                 console.warn("NUKEFROMORBIT: Confirming user is crazy");
                 if (!confirm("Are you sure you want to delete all of app state?")) { return; }
@@ -336,6 +350,7 @@
                 console.debug("LOADAPP: Loading application from local storage")
                 const data = window.localStorage.getItem(CONSTS.LSKEY);
                 APP_STATE = JSON.parse(data) ?? getDefaultAppState();
+                console.log(`LOADAPP: ${data}`);
                 console.debug(`LOADAPP: Application loaded from state, facets loaded: ${APP_STATE?.facets?.length ?? 0}`)
             }
 
@@ -372,6 +387,7 @@
     <body onkeydown="processKeys(event);" onload="preparePage();">
         <div class="action-bar">
             <button id="saveState">Save</button>
+            <button id="loadFromOrbit">Load</button>
             <button id="nukeFromOrbit">Nuke State</button>
             <div class="hidden" id="unsaved">
                 <br>

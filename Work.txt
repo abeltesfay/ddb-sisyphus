@@ -1,7 +1,12 @@
 January 7
 [x] Show all fields when no facet selected
-[ ] Types on fields
+[x] Types on fields
   [x] Show dropdown to right of each field
+  [8] Save dropdown value to field
+[x] Load app_state from input
+  [x] Button to prompt
+  [x] Code
+[ ] Types on fields
   [ ] Save dropdown value to field
 [ ] Add fields easily without clicking "Add" button
 [ ] Add fields from other facets
