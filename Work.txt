@@ -1,6 +1,3 @@
-January 7
-[ ] Delete Facet Button
-
 2023 January 6
 [x] Install express
   npm i express
@@ -18,5 +15,7 @@ January 7
 [x] Show facet fields
 [x] Edit Facet Name
   - https://stackoverflow.com/questions/31075893/how-to-fix-favicon-ico-error-failed-to-load-resource-neterr-empty-response
-[ ] Edit Facet Fields
+[x] Edit Facet Fields
   - https://tpiros.dev/blog/contains-vs-includes/
+[x] Delete Facet Button
+[x] Delete Field Button

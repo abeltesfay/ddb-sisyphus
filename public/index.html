@@ -59,6 +59,8 @@
                 setClick("addField", addField);
                 setClick("editFacetName", editFacetName);
                 setClick("editFieldName", editFieldName);
+                setClick("deleteFacet", deleteFacet);
+                setClick("deleteField", deleteField);
                 
                 console.debug("PREP: Finished prep");
             }
@@ -75,6 +77,8 @@
             function redrawFacets() {
                 const facetListEle = document.getElementById("facetList");
                 Array.from(facetList.getElementsByTagName("li")).forEach(o => o.remove())
+                document.getElementById("editFacetName").disabled = !selectedFacet;
+                document.getElementById("deleteFacet").disabled = !selectedFacet;
                 
                 let facetNames = APP_STATE?.facets?.map(facet => facet.name);
                 
@@ -91,20 +95,24 @@
                 });
 
                 document.getElementById("editFacetName").disabled = !selectedFacet;
+                document.getElementById("deleteFacet").disabled = !selectedFacet;
             }
 
             function redrawFields() {
                 const fieldListEle = document.getElementById("fieldList");
                 Array.from(fieldListEle.getElementsByTagName("li")).forEach(o => o.remove())
+                document.getElementById("editFieldName").disabled = !selectedField;
+                document.getElementById("deleteField").disabled = !selectedField;
+
                 if (!selectedFacet) { return; }
                 
-                // let fieldNames = APP_STATE?.facets?.fieldsmap(field => facet.name);
                 let fieldNames = getFacetByName(selectedFacet).fields ?? [];
                 
                 fieldNames?.forEach(field => {
                     let fieldEle = document.createElement("li");
                     fieldEle.innerText = field;
                     fieldEle.dataset.name = field;
+                    fieldEle.dataset.facet = selectedFacet;
                     fieldEle.onclick = selectField.bind(fieldEle);
                     fieldListEle.appendChild(fieldEle);
 
@@ -112,8 +120,6 @@
                         fieldEle.classList.add("highlightedfield");
                     }
                 });
-
-                document.getElementById("editFieldName").disabled = !selectedField;
             }
 
             function getFacetByName(name) {
@@ -201,20 +207,38 @@
                 console.debug(`EDITFACET: Field name updated from ${selectedFacet}.${oldFieldName} to ${selectedFacet}.${name}`);
             }
 
+            function deleteFacet() {
+                if (!selectedFacet) { return; }
+                if (!confirm(`Are you SURE you want to delete facet ${selectedFacet}?`)) { return; }
+
+                const name = selectedFacet;
+                const oldCount = APP_STATE.facets.length;
+                APP_STATE.facets = APP_STATE.facets.filter(facet => facet.name !== selectedFacet);
+                const newCount = APP_STATE.facets.length;
+                setSavedFlag(oldCount === newCount);
+                redrawPage();
+
+                console.warn(`DELETEFACET: Removed a facet: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
+            }
+
+            function deleteField() {
+                if (!selectedFacet || !selectField) { return; }
+                if (!confirm(`Are you SURE you want to delete field ${selectedFacet}.${selectedField}?`)) { return; }
+
+                let facet = getFacetByName(selectedFacet);
+                let name = selectedField;
+                const oldCount = facet.fields.length;
+                facet.fields = facet.fields.filter(field => field !== selectedField);
+                const newCount = facet.fields.length;
+                setSavedFlag(oldCount === newCount);
+                redrawPage();
+
+                console.warn(`DELETEFIELD: Removed a field: ${selectedField}.${name}. Old count=[${oldCount}], new count=[${newCount}]`);
+            }
+
             function selectField() {
                 selectedField = this.innerText;
                 redrawPage();
-            }
-
-            function deleteFacet() {
-                if (!confirm("Are you SURE you want to delete this facet?")) { return; }
-                const name = this.innerText;
-                const oldCount = APP_STATE.facets.length;
-                APP_STATE.facets = APP_STATE.facets.filter(facet => facet.name !== this.innerText);
-                const newCount = APP_STATE.facets.length;
-                setSavedFlag(oldCount === newCount);
-                redrawPage()
-                console.warn(`DELETEFACET: Removed a facet: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
             }
 
             function saveAppState() {
@@ -286,6 +310,7 @@
                 <h2>Facets</h2>
                 <button id="addFacet" value="Add">Add</button>
                 <button disabled id="editFacetName" value="Edit">Edit</button>
+                <button disabled id="deleteFacet" value="Edit">Delete</button>
                 <ol id="facetList">
                 </ol>
             </div>
@@ -293,6 +318,7 @@
                 <h2>Fields</h2>
                 <button id="addField" value="Add">Add</button>
                 <button disabled id="editFieldName" value="Edit">Edit</button>
+                <button disabled id="deleteField" value="Delete">Delete</button>
                 <ol id="fieldList">
                 </ol>
             </div>
