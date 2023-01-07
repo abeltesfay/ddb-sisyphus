@@ -1,5 +1,8 @@
 2023 January 6
 [x] Install express
   npm i express
-[ ] Start a simple webserver
+[x] Start a simple webserver
   - http://expressjs.com/en/starter/static-files.html
+[ ] Build a tool
+  - https://stackoverflow.com/questions/8711888/auto-refresh-code-in-html-using-meta-tags
+  - ctrl+shift+z auto activates and refreshes page

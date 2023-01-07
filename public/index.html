@@ -6,31 +6,55 @@
             .facets {
                 border: 1pt solid black;
                 width: 20%;
+                padding: 0 1em;
+                margin: .5em;
+            }
+
+            .bottom-bar {
+                border: 1pt solid black;
+                margin: .5em;
                 padding: 1em;
             }
+
+            button {
+                cursor: pointer;
+                padding: .5em 1em;
+                min-width: 6em;
+            }
+
+            .hidden { display: none; }
         </style>
         <!-- <meta http-equiv="refresh" content="5" > -->
         <script type="text/javascript">
-            let facets = [
-                { name: "temporary facet" }
-            ];
+            const CONSTS = {
+                LSKEY: "SISYPHUS_DATA",
+            };
+
+            let APP_STATE = {
+                facets: []
+            };
 
             function preparePage() {
                 console.debug("PREP: Preparing page and buttons");
                 
+                loadAppState();
                 redrawPage();
-                let button = document.getElementById("addFacet");
-                button.onclick = addFacet;
+                setClick("addFacet", addFacet);
+                setClick("saveState", saveAppState);
+                setClick("nukeFromOrbit", nukeFromOrbit);
                 
                 console.debug("PREP: Finished prep");
             }
+
+            function setClick(id, fn) { document.getElementById(id).onclick = fn; }
 
             function addFacet() {
                 const name = prompt("Please provide a facet name")?.trim();
                 if (!name) { return; }
 
                 console.debug("New facet added:", name);
-                facets.push({ name });
+                APP_STATE.facets.push({ name });
+                setSavedFlag(false);
                 redrawPage();
             }
 
@@ -42,13 +66,57 @@
                 const facetListEle = document.getElementById("facetList");
                 Array.from(facetList.getElementsByTagName("li")).forEach(o => o.remove())
                 
-                let facetNames = facets.map(facet => facet.name);
+                let facetNames = APP_STATE?.facets?.map(facet => facet.name);
                 
-                facetNames.forEach(facet => {
+                facetNames?.forEach(facet => {
                     let facetEle = document.createElement("li");
                     facetEle.innerText = facet;
                     facetListEle.appendChild(facetEle);
                 });
+            }
+
+            function saveAppState() {
+                console.debug("SAVEAPP: Saving application state");
+                const dataAsString = JSON.stringify(APP_STATE);
+                window.localStorage.setItem(CONSTS.LSKEY, dataAsString);
+                setSavedFlag(true);
+                console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
+            }
+            
+            function nukeFromOrbit() {
+                console.warn("NUKEFROMORBIT: Confirming user is crazy");
+                if (!confirm("Are you sure you want to delete all of app state?")) { return; }
+                
+                console.warn("NUKEFROMORBIT: Nuking from orbit, hold on to your butts");
+                window.localStorage.removeItem(CONSTS.LSKEY);
+                console.warn("NUKEFROMORBIT: Target is cleared");
+            }
+
+            function loadAppState() {
+                console.debug("LOADAPP: Loading application from local storage")
+                const data = window.localStorage.getItem(CONSTS.LSKEY);
+                APP_STATE = JSON.parse(data) ?? getDefaultAppState();
+                console.debug(`LOADAPP: Application loaded from state, facets loaded: ${APP_STATE?.facets?.length ?? 0}`)
+            }
+
+            function getDefaultAppState() { return { facets: [] }; };
+
+            function toggleUnsavedData() {
+                const isVisible = !document.getElementById("#unsaved").classList.contains("hidden");
+                if (isVisible) {
+                    document.getElementById("#unsaved").classList.push("hidden");
+                } else {
+                    document.getElementById("#unsaved").classList.remove("hidden");
+                }
+            }
+
+            function setSavedFlag(isSaved) {
+                const isVisible = !document.getElementById("unsaved").classList.contains("hidden");
+                if (isSaved && isVisible) {
+                    document.getElementById("unsaved").classList.add("hidden");
+                } else if (!isSaved && !isVisible) {
+                    document.getElementById("unsaved").classList.remove("hidden");
+                }
             }
         </script>
     </head>
@@ -59,6 +127,14 @@
             <ol id="facetList">
                 <li>asds</li>
             </ol>
+        </div>
+        <div class="bottom-bar">
+            <button id="saveState">Save</button>
+            <button id="nukeFromOrbit">Nuke State</button>
+            <div class="hidden" id="unsaved">
+                <br>
+                <label>Unsaved data</label>
+            </div>
         </div>
     </body>
 </html>
