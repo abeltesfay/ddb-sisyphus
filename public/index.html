@@ -31,10 +31,26 @@
                 float: left;
                 margin: .5em;
                 padding: 0 1em;
-                width: 20%;
+                /* width: 20%; */
             }
 
-            .facets li, .fields li { cursor: pointer; }
+            .facets li, .fields li {
+                cursor: pointer;
+                position: relative;
+            }
+
+            .fields span {
+                /* min-width: 70%; */
+                display: inline-block;
+                margin-right: 1em;
+            }
+
+            .fields select.spacefiller { visibility: hidden; }
+
+            .fields select.floater {
+                position: absolute;
+                right: 0;
+            }
             
             .highlightedfacet, .highlightedfield { font-weight: bold };
         </style>
@@ -111,15 +127,27 @@
                 
                 let fieldNames = getFacetByName(selectedFacet).fields ?? [];
                 
-                fieldNames?.forEach(field => {
+                fieldNames?.forEach(fieldName => {
                     let fieldEle = document.createElement("li");
-                    fieldEle.innerText = field;
-                    fieldEle.dataset.name = field;
-                    fieldEle.dataset.facet = selectedFacet;
-                    fieldEle.onclick = selectField.bind(fieldEle);
+                    let fieldLabelEle = document.createElement("span");
+                    // fieldText = `${field}`;
+                    // fieldLabelEle.innerText = fieldText;
+                    fieldLabelEle.innerText = fieldName;
+                    fieldLabelEle.dataset.name = fieldName;
+                    fieldLabelEle.dataset.facet = selectedFacet;
+                    fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
+                    fieldEle.appendChild(fieldLabelEle);
                     fieldListEle.appendChild(fieldEle);
 
-                    if (selectedField == field) {
+                    let fieldTypeDropdownEle = getDropdownElement(selectedFacet, fieldName);
+                    let fieldTypeDropdownEleFiller = fieldTypeDropdownEle.cloneNode(true);
+                    fieldTypeDropdownEle.classList.add("floater");
+                    fieldEle.appendChild(fieldTypeDropdownEle);
+                    
+                    fieldTypeDropdownEleFiller.classList.add("spacefiller");
+                    fieldEle.appendChild(fieldTypeDropdownEleFiller);
+
+                    if (selectedField == fieldName) {
                         fieldEle.classList.add("highlightedfield");
                     }
                 });
@@ -131,18 +159,40 @@
                 APP_STATE.facets.forEach(facet => {
                     facet.fields.forEach(field => {
                         let fieldEle = document.createElement("li");
+                        let fieldLabelEle = document.createElement("span");
                         fieldText = `${facet.name}.${field}`;
-                        fieldEle.innerText = fieldText;
-                        fieldEle.dataset.name = field;
-                        fieldEle.dataset.facet = facet.name;
-                        fieldEle.onclick = selectField.bind(fieldEle);
+                        fieldLabelEle.innerText = fieldText;
+                        fieldLabelEle.dataset.name = field;
+                        fieldLabelEle.dataset.facet = facet.name;
+                        fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
+                        fieldEle.appendChild(fieldLabelEle);
                         fieldListEle.appendChild(fieldEle);
+
+                        let fieldTypeDropdownEle = getDropdownElement(facet, field);
+                        let fieldTypeDropdownEleFiller = fieldTypeDropdownEle.cloneNode(true);
+                        fieldTypeDropdownEle.classList.add("floater");
+                        fieldEle.appendChild(fieldTypeDropdownEle);
+
+                        fieldTypeDropdownEleFiller.classList.add("spacefiller");
+                        fieldEle.appendChild(fieldTypeDropdownEleFiller);
 
                         if (selectedField == fieldText) {
                             fieldEle.classList.add("highlightedfield");
                         }
                     });
                 });
+            }
+
+            const DROPDOWNOPTIONS = [ "", "String", "Boolean" ];
+
+            function getDropdownElement(facet, field) {
+                let dropdown = document.createElement("select");
+                DROPDOWNOPTIONS.forEach(value => {
+                    let dropdownEle = document.createElement("option");
+                    dropdownEle.innerText = value;
+                    dropdown.appendChild(dropdownEle);
+                });
+                return dropdown;
             }
 
             function getFacetByName(name) {
