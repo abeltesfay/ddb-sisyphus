@@ -1,5 +1,4 @@
 January 7
-[ ] Edit Facet Fields
 [ ] Delete Facet Button
 
 2023 January 6
@@ -17,5 +16,7 @@ January 7
 [x] Delete Facet
 [x] Add field
 [x] Show facet fields
-[ ] Edit Facet Name
+[x] Edit Facet Name
   - https://stackoverflow.com/questions/31075893/how-to-fix-favicon-ico-error-failed-to-load-resource-neterr-empty-response
+[ ] Edit Facet Fields
+  - https://tpiros.dev/blog/contains-vs-includes/

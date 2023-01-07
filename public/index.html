@@ -58,7 +58,7 @@
                 setClick("addFacet", addFacet);
                 setClick("addField", addField);
                 setClick("editFacetName", editFacetName);
-                // setClick("editFieldName", editFieldName);
+                setClick("editFieldName", editFieldName);
                 
                 console.debug("PREP: Finished prep");
             }
@@ -141,9 +141,12 @@
 
                 const facet = getFacetByName(selectedFacet);
                 const name = prompt("Please provide a new field name")?.trim();
-                if (!name || facet?.fields?.contains?.(name)) { return; }
+                if (!name) { return; }
+                if (facet?.fields?.includes?.(name)) { alert("Facet already contains this field"); return; }
                 if (!Array.isArray(facet?.fields)) { facet.fields = []; }
                 facet.fields.push(name);
+
+                // TODO Order fields
                 
                 setSavedFlag(false);
                 redrawPage();
@@ -166,13 +169,36 @@
                     alert("This name already exists, please choose another");
                     return;
                 }
-
-                let facet = getFacetByName(selectFacet);
+                
+                const oldFacetName = selectedFacet;
+                let facet = getFacetByName(oldFacetName);
                 facet.name = name;
                 setSavedFlag(false);
+                selectedFacet = name;
                 redrawPage();
 
-                console.debug(`EDITFACET: Facet name updated from ${selectedFacet} to ${name}`);
+                console.debug(`EDITFACET: Facet name updated from ${oldFacetName} to ${name}`);
+            }
+
+            function editFieldName() {
+                if (!selectedFacet || !selectedField) { return; }
+                console.debug(`EDITFIELD: Editing facet and field name from ${selectedFacet}.${selectedField}`);
+
+                const name = prompt("Please provide a new field name")?.trim();
+                let facet = getFacetByName(selectedFacet);
+                if (!name ) { return; }
+                if (facet?.fields?.includes?.(name)) { alert("Facet already contains this field"); return; }
+
+                let index  = facet.fields.findIndex(field => field == selectField);
+                facet.fields = facet.fields.filter(field => field !== selectedField);
+                facet.fields.push(name);
+
+                const oldFieldName = selectedField;
+                selectedField = name;
+                setSavedFlag(false);
+                redrawPage();
+                
+                console.debug(`EDITFACET: Field name updated from ${selectedFacet}.${oldFieldName} to ${selectedFacet}.${name}`);
             }
 
             function selectField() {
