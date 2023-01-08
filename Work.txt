@@ -5,6 +5,8 @@ January 8
 [x] Prevent losing unsaved changes
   window.onbeforeunload = function() { return "okay"; }
   - https://stackoverflow.com/questions/48523454/onbeforeunload-doesnt-work-until-mouse-is-clicked-once-in-the-body
+[x] Table Structure / Queries tabs selector
+[ ] Code re-org
 [ ] Add query
   - Get App by Com #5a
   - Query should contain:

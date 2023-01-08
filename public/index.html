@@ -15,6 +15,7 @@
             
             // let selectedFacet = "Review", selectedField = "GSI1-PK", selectedKey;
             let selectedFacet, selectedField, selectedKey;
+            let currentEditor = "tableStructure";
 
             function preparePage() {
                 console.debug("PREP: Preparing page and buttons");
@@ -35,8 +36,21 @@
                 setClick("removeKey", removeKey);
                 setClick("moveKeyUp", moveKeyUp);
                 setClick("moveKeyDown", moveKeyDown);
+                setClick("showTableStructureEditor", showTableStructureEditor);
+                setClick("showQueryEditor", showQueryEditor);
                 
                 console.debug("PREP: Finished prep");
+            }
+
+            function showTableStructureEditor() { currentEditor = "tableStructure"; redrawPage(); }
+            function showQueryEditor() { currentEditor = "tableQueries"; redrawPage(); }
+            function showCurrentEditor() {
+                Array.from(document.getElementsByClassName("editorView")).forEach(editor => {
+                    if (editor.classList.contains("hidden")) { return; }
+                    editor.classList.add("hidden");
+                });
+
+                document.getElementsByClassName(currentEditor)[0].classList.remove("hidden");
             }
 
             function clone(o) { return JSON.parse(JSON.stringify(o)); }
@@ -51,9 +65,10 @@
                     redrawFacets();
                     redrawFields();
                     redrawCompositeEditor();
+                    showCurrentEditor();
                 } catch (error) {
-                    alert("REDRAWPAGE: Redraw page failed.. there's something with the current app state, please log+validate+reload/nuke from orbit data: " + error);
-                    console.error("REDRAWPAGE: Redraw page failed.. there's something with the current app state, please log and validate data", error);
+                    alert("REDRAWPAGE: Redraw page failed, error: " + error);
+                    console.error("REDRAWPAGE: Redraw page failed, error: ", error);
                 }
             }
 
@@ -586,30 +601,36 @@
     </head>
     <body onkeydown="processKeys(event);" onload="preparePage();">
         <div class="action-bar">
-            <button id="saveState">Save</button>
-            <button id="loadFromOrbit">Load</button>
-            <button id="nukeFromOrbit">Nuke State</button>
-            <button id="logState">Log State</button>
+            <fieldset>
+                <legend>View</legend>
+                <button id="showTableStructureEditor">Structure</button>
+                <button id="showQueryEditor">Queries</button>
+            </fieldset>
+            <fieldset>
+                <legend>Application State</legend>
+                <button id="saveState">Save</button>
+                <button id="loadFromOrbit">Load</button>
+                <button id="nukeFromOrbit">Nuke State</button>
+                <button id="logState">Log State</button>
+            </fieldset>
             <div class="hidden unsaved-container" id="unsaved">
                 <label>Unsaved data</label>
             </div>
         </div>
-        <div class="tableContent">
+        <div class="tableStructure editorView hidden">
             <div class="facets">
                 <h2>Facets</h2>
                 <button id="addFacet" value="Add">Add</button>
                 <button disabled id="editFacetName" value="Edit">Edit</button>
                 <button disabled id="deleteFacet" value="Edit">Delete</button>
-                <ol id="facetList">
-                </ol>
+                <ol id="facetList"></ol>
             </div>
             <div class="fields">
                 <h2>Fields</h2>
                 <button id="addField" value="Add">Add</button>
                 <button disabled id="editFieldName" value="Edit">Edit</button>
                 <button disabled id="deleteField" value="Delete">Delete</button>
-                <ol id="fieldList">
-                </ol>
+                <ol id="fieldList"></ol>
             </div>
             <div class="composite hidden" id="compositeEditor">
                 <h2>Composite Key</h2>
@@ -626,6 +647,15 @@
                 </select>
                 <br/>
                 <br/>
+            </div>
+        </div>
+        <div class="tableQueries hidden editorView">
+            <div class="queries">
+                <h2>Queries</h2>
+                <button id="addQuery" value="Add">Add</button>
+                <!-- <button disabled id="editFacetName" value="Edit">Edit</button> -->
+                <!-- <button disabled id="deleteFacet" value="Edit">Delete</button> -->
+                <ol id="queryList"></ol>
             </div>
         </div>
     </body>
