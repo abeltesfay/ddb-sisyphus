@@ -3,7 +3,7 @@ function saveAppState() {
     const validatedState = getValidatedState(APP_STATE);
     const dataAsString = JSON.stringify(validatedState);
     window.localStorage.setItem(CONSTS.LSKEY, dataAsString);
-    APP_STATE_SAVED = clone(validatedState);
+    APP_STATE = APP_STATE_SAVED = clone(validatedState);
     redrawPage();
     console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
 }
@@ -13,6 +13,8 @@ function getValidatedState(state) {
     let newState = clone(state);
     
     newState.facets = newState.facets ?? [];
+    newState.queries = newState.queries ?? [];
+    newState.indices = newState.indices ?? [];
     
     newState.facets.forEach(facet => {
         facet.fields = facet.fields
