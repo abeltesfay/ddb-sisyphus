@@ -13,9 +13,8 @@
             let APP_STATE = { facets: [] };
             let APP_STATE_SAVED = undefined;
             
-            let selectedFacet = "Review",
-                selectedField = "GSI1-PK",
-                selectedKey;
+            // let selectedFacet = "Review", selectedField = "GSI1-PK", selectedKey;
+            let selectedFacet, selectedField, selectedKey;
 
             function preparePage() {
                 console.debug("PREP: Preparing page and buttons");
@@ -47,10 +46,15 @@
             }
 
             function redrawPage() {
-                checkSavedState();
-                redrawFacets();
-                redrawFields();
-                redrawCompositeEditor();
+                try {
+                    checkSavedState();
+                    redrawFacets();
+                    redrawFields();
+                    redrawCompositeEditor();
+                } catch (error) {
+                    alert("REDRAWPAGE: Redraw page failed.. there's something with the current app state, please log+validate+reload/nuke from orbit data: " + error);
+                    console.error("REDRAWPAGE: Redraw page failed.. there's something with the current app state, please log and validate data", error);
+                }
             }
 
             function checkSavedState() {
@@ -354,6 +358,9 @@
             // Do some data shuffling/validating on object structure
             function getValidatedState(state) {
                 let newState = clone(state);
+                
+                newState.facets = newState.facets ?? [];
+                
                 newState.facets.forEach(facet => {
                     facet.fields = facet.fields
                         .map(field => {
@@ -380,11 +387,21 @@
             function loadFromOrbit() {
                 console.warn("LOADROMORBIT: Confirming user is crazy");
                 if (!confirm("Are you sure you want to load all of app state?")) { return; }
-                let newAppState;
-                if (!(newAppState = prompt("Please specify the entire app state").trim())) { return; }
+                let newAppStateStr;
+                if (!(newAppStateStr = prompt("Please specify the entire app state").trim())) { return; }
                 
                 console.warn("LOADROMORBIT: Loading from orbit, hold on to something");
-                window.localStorage.setItem(CONSTS.LSKEY, newAppState);
+
+                try {
+                    let newAppState = JSON.parse(newAppStateStr);
+                    newAppState.facets.length;
+                } catch (exception) {
+                    alert("LOADROMORBIT: Failed to parse JSON, please check data");
+                    console.error("LOADROMORBIT: Failed to parse JSON, please check load", exception);
+                    return;
+                }
+
+                window.localStorage.setItem(CONSTS.LSKEY, newAppStateStr);
                 console.warn("LOADROMORBIT: Target is loaded");
                 location.reload();
             }
@@ -406,10 +423,16 @@
 
             function loadAppState() {
                 console.debug("LOADAPP: Loading application from local storage")
-                const data = window.localStorage.getItem(CONSTS.LSKEY);
-                APP_STATE = JSON.parse(data) ?? getDefaultAppState();
-                APP_STATE_SAVED = clone(APP_STATE);
-                console.debug(`LOADAPP: Application loaded from state, facets loaded: ${APP_STATE?.facets?.length ?? 0}`)
+                try {
+                    const data = window.localStorage.getItem(CONSTS.LSKEY);
+                    APP_STATE = JSON.parse(data) ?? getDefaultAppState();
+                    APP_STATE_SAVED = clone(APP_STATE);
+                    console.debug(`LOADAPP: Application loaded from state, facets loaded: ${APP_STATE?.facets?.length ?? 0}`)
+                } catch (error) {
+                    APP_STATE_SAVED = APP_STATE = { facets: [] };
+                    alert("LOADAPP: Error while loading app state. Highly recommend you log state and save to a text file: " + error);
+                    console.error("LOADAPP: Error while loading app state. Highly recommend you log state and save to a text file!", error);
+                }
             }
 
             function getDefaultAppState() { return { facets: [] }; };

@@ -1,3 +1,13 @@
+January 8
+[ ] Add query
+  - Get App by Com #5a
+  - Query should contain:
+    - index you're using (which defines pk+sk) <dropdown>
+    - field(s)/static value you're passing in to pk
+    - field(s)/static value you're passing in to sk
+    ^ this is where it gets complicated. need standard way of doing this so we can
+      automate all the checks and etc
+
 January 7
 [x] Show all fields when no facet selected
 [x] Types on fields
@@ -45,6 +55,7 @@ January 7
   [x] Validate no duplicates
 [x] Composite Keys - Up/down button ordering
   - https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedIndex
+[x] Load current data
 
 2023 January 6
 [x] Install express
