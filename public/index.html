@@ -451,8 +451,10 @@
                 const isVisible = !savedBanner.classList.contains("hidden");
                 if (isSaved && isVisible) {
                     savedBanner.classList.add("hidden");
+                    window.onbeforeunload = undefined;
                 } else if (!isSaved && !isVisible) {
                     savedBanner.classList.remove("hidden");
+                    window.onbeforeunload = function() { return "You have unsaved changes"; }
                 }
             }
 
@@ -588,8 +590,7 @@
             <button id="loadFromOrbit">Load</button>
             <button id="nukeFromOrbit">Nuke State</button>
             <button id="logState">Log State</button>
-            <div class="hidden" id="unsaved">
-                <br>
+            <div class="hidden unsaved-container" id="unsaved">
                 <label>Unsaved data</label>
             </div>
         </div>

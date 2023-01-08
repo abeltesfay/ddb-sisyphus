@@ -13,6 +13,14 @@
     min-width: 6em;
 }
 
+.unsaved-container {
+    color: red;
+    float: right;
+    font-style: italic;
+    font-weight:bold;
+    padding: .5em 1em;
+}
+
 .tableContent button { 
     cursor: pointer;
     padding: .25em .5em;
