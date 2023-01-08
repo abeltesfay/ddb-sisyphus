@@ -12,8 +12,39 @@ January 7
   [x] Save dropdown value to field
 [x] Validate previous functionality for changes
 [x] Auto-alphabetize fields
-[ ] Add fields easily without clicking "Add" button
-[ ] Add fields from other facets
+[-] Add fields easily without clicking "Add" button
+[-] Add fields from other facets
+[-] Would be nice to..
+  [o] Easily save json to a file
+  [o] Export json to something that NoSQL Workbench could import
+  [o] Create example documents
+  [o] Specify formats of fields
+    - What does this mean?
+      Oh.. basically link one field to be a concatenation of 2 or more other fields by a delimiter
+      Actually then, this means specify composite key strings used by queries
+  [o] Show us impacted queries when changing a composite key field
+  [o] Create access patterns from composite keys
+    - What does this look like?
+      1. Create name for new query
+      1. Click the fields in the facet that this relies on for querying
+      1. Click the GSI this relies on? May be able to get that automatically from field
+      1. Save the name + field combos
+    - How is this stored in JSON?
+    queries: [{ name: "Get Application by pk SK", fields: ["pk", "sk"], example: { pk: "", sk: "begins_with('lol#')" } }]
+[x] Create concept of composite keys
+  [x] Add "C" as a type dropdown for composite key
+  [x] Hardcode our composite key delimiter to be #
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
+  [x] Show composite key panel on click
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex
+    - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
+  [x] Show other fields in dropdown
+  [x] Add key
+  [x] Delete key
+  [x] Save format
+  [x] Validate no duplicates
+[x] Composite Keys - Up/down button ordering
+  - https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/selectedIndex
 
 2023 January 6
 [x] Install express

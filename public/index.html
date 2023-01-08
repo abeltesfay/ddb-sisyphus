@@ -3,67 +3,19 @@
     <head>
         <title>DynamoDB Table Designer</title>
         <link rel="shortcut icon" href="#">
-        <style>
-            .hidden { display: none; }
-
-            .action-bar {
-                border: 1pt solid grey;
-                border-radius: 5px;
-                margin: .5em .5em 0;
-                padding: .5em;
-            }
-
-            .action-bar button {
-                cursor: pointer;
-                padding: .5em 1em;
-                min-width: 6em;
-            }
-
-            .tableContent button { 
-                cursor: pointer;
-                padding: .25em .5em;
-                min-width: 3em;
-            }
-
-            .facets, .fields {
-                border: 1pt solid grey;
-                border-radius: 5px;
-                float: left;
-                margin: .5em;
-                padding: 0 1em;
-                /* width: 20%; */
-            }
-
-            .facets li, .fields li {
-                cursor: pointer;
-                position: relative;
-            }
-
-            .fields span {
-                /* min-width: 70%; */
-                display: inline-block;
-                margin-right: 1em;
-            }
-
-            .fields select.spacefiller { visibility: hidden; }
-
-            .fields select.floater {
-                position: absolute;
-                right: 0;
-            }
-            
-            .highlightedfacet, .highlightedfield { font-weight: bold };
-        </style>
-        <!-- <meta http-equiv="refresh" content="5" > -->
+        <link href="index.css" rel="stylesheet">
         <script type="text/javascript">
             const CONSTS = {
                 LSKEY: "SISYPHUS_DATA",
+                DELIM: "#",
             };
 
             let APP_STATE = { facets: [] };
             let APP_STATE_SAVED = undefined;
             
-            let selectedFacet = undefined, selectedField = undefined;
+            let selectedFacet = "Review",
+                selectedField = "GSI1-PK",
+                selectedKey;
 
             function preparePage() {
                 console.debug("PREP: Preparing page and buttons");
@@ -80,6 +32,10 @@
                 setClick("editFieldName", editFieldName);
                 setClick("deleteFacet", deleteFacet);
                 setClick("deleteField", deleteField);
+                setClick("addKey", addKey);
+                setClick("removeKey", removeKey);
+                setClick("moveKeyUp", moveKeyUp);
+                setClick("moveKeyDown", moveKeyDown);
                 
                 console.debug("PREP: Finished prep");
             }
@@ -94,6 +50,7 @@
                 checkSavedState();
                 redrawFacets();
                 redrawFields();
+                redrawCompositeEditor();
             }
 
             function checkSavedState() {
@@ -172,7 +129,7 @@
                         let fieldLabelEle = document.createElement("span");
                         fieldText = `${facet.name}.${field.name}`;
                         fieldLabelEle.innerText = fieldText;
-                        fieldLabelEle.dataset.name = field;
+                        fieldLabelEle.dataset.name = field.name;
                         fieldLabelEle.dataset.facet = facet.name;
                         fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
                         fieldEle.appendChild(fieldLabelEle);
@@ -193,7 +150,7 @@
                 });
             }
 
-            const DROPDOWNOPTIONS = [ "", "S", "B" ];
+            const DROPDOWNOPTIONS = [ "", "S", "B", "C" ];
 
             function getDropdownElement(facetName, fieldName) {
                 let dropdown = document.createElement("select");
@@ -225,8 +182,9 @@
             }
 
             function getFacetFieldByNames(facetName, fieldName) {
+                // console.debug(`GETFACET: ${facetName}.${fieldName}`);
                 let facet = getFacetByName(facetName);
-                let field = facet.fields[facet.fields.findIndex(field => field.name == fieldName)];
+                let field = facet?.fields[facet.fields.findIndex(field => field.name == fieldName)];
                 return field;
             }
 
@@ -263,7 +221,24 @@
                 redrawPage();
             }
 
-            function getNewField(name) { return { name, type: "" } };
+            function addKey() {
+                let key = document.getElementById("compositeKeyOptions").value;
+                if (!key) { return; }
+                
+                let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+                if (!facetName || !fieldName) { return; }
+
+                let field = getFacetFieldByNames(facetName, fieldName);
+                if (field.keys.includes(key)) {
+                    alert("This would be a duplicate key");
+                    return;
+                }
+
+                field.keys.push(key);
+                redrawPage();
+            }
+
+            function getNewField(name) { return { name, type: "", keys: [] } };
 
             function sortComparator(a, b) {
                 const aLower = a?.toLowerCase(), bLower = b?.toLowerCase();
@@ -345,6 +320,22 @@
                 console.warn(`DELETEFIELD: Removed a field: ${selectedField}.${name}. Old count=[${oldCount}], new count=[${newCount}]`);
             }
 
+            function removeKey() {
+                let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+                if (!facetName || !fieldName || !selectedKey) { return; }
+
+                if (!confirm(`Are you sure you want to remove key ${selectedKey} from ${facetName}.${fieldName}?`)) { return; }
+                let field = getFacetFieldByNames(facetName, fieldName);
+                if (field.type != "C") {
+                    alert(`Field type is ${field.type}, but expected "C". Cannot remove field ${fieldName}.`);
+                    return;
+                }
+
+                let index = field.keys.findIndex(o => o === selectedKey);
+                field.keys = field.keys.filter((key, filterIndex) => index !== filterIndex);
+                redrawPage();
+            }
+
             function selectField() {
                 selectedField = this.innerText;
                 redrawPage();
@@ -366,15 +357,17 @@
                 newState.facets.forEach(facet => {
                     facet.fields = facet.fields
                         .map(field => {
-                            if (typeof field === "object") { return field; }
-                            if (typeof field === "string") {
-                                return {
-                                    name: field,
-                                    type: "",
-                                };
+                            if (typeof field === "object" && !Array.isArray(field)) {
+                                if (!Object.keys(field).includes("keys")) { field.keys = []; }
+                                return field;
                             }
                             
-                            return field;
+                            console.error("Error for some reason this is not an array:", JSON.stringify(field));
+                            return {
+                                name: field + "",
+                                type: "",
+                                keys: [],
+                            };
                         })
                         .sort((a, b) => sortComparator(a.name, b.name));
                 });
@@ -431,12 +424,128 @@
             }
 
             function setSavedFlag(isSaved) {
-                const isVisible = !document.getElementById("unsaved").classList.contains("hidden");
+                const savedBanner = document.getElementById("unsaved");
+                const isVisible = !savedBanner.classList.contains("hidden");
                 if (isSaved && isVisible) {
-                    document.getElementById("unsaved").classList.add("hidden");
+                    savedBanner.classList.add("hidden");
                 } else if (!isSaved && !isVisible) {
-                    document.getElementById("unsaved").classList.remove("hidden");
+                    savedBanner.classList.remove("hidden");
                 }
+            }
+
+            function redrawCompositeEditor() {
+                let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+                let field = getFacetFieldByNames(facetName, fieldName);
+                
+                // Flip visibility
+                const editorVisible = field?.type === "C";
+                setCompositeEditorVisible(editorVisible);
+                if (!editorVisible) { return; }
+
+                fillCompositeDropdown();
+            }
+
+            function getSelectedFacetAndFieldNames() {
+                if (selectedFacet) {
+                    return { facetName: selectedFacet, fieldName: selectedField };
+                }
+
+                if (selectedField) {
+                    fieldNames = selectedField?.split(".");
+                    const facetName = fieldNames?.[0], fieldName = fieldNames?.[1];
+                    return { facetName, fieldName };
+                }
+
+                return { facetName: undefined, fieldName: undefined };
+            }
+
+            function fillCompositeDropdown() {
+                selectedKey = undefined;
+                const compositeDropdown = document.getElementById("compositeKeyOptions");
+                const compositeKeyList = document.getElementById("compositeKeys");
+                Array.from(compositeDropdown.getElementsByTagName("option")).forEach(o => o.innerText != "" && o.remove());
+                Array.from(compositeKeyList.getElementsByTagName("option")).forEach(o => o.remove());
+                
+                let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+
+                const compositeKey = document.getElementById("compositeKeys");
+                let field = getFacetFieldByNames(facetName, fieldName);
+                field.keys.forEach(key => {
+                    let selectableKeyEle = document.createElement("option");
+                    selectableKeyEle.innerText = key;
+                    selectableKeyEle.dataset.field = key;
+                    selectableKeyEle.onclick = selectKey.bind(selectableKeyEle);
+                    compositeKey.appendChild(selectableKeyEle);
+                });
+
+                let fieldNames = getFacetByName(facetName).fields
+                    .filter(fieldToAdd => fieldToAdd.type !== "C" && !field.keys.includes(fieldToAdd.name))
+                    .map(field => field.name);
+                
+                // Create an element for each non-composite type field name
+                fieldNames.forEach(fieldName => {
+                    // TODO Push element into dropdown
+                    let selectableKeyEle = document.createElement("option");
+                    selectableKeyEle.innerText = fieldName;
+                    compositeDropdown.appendChild(selectableKeyEle);
+                });
+            }
+
+            function selectKey() {
+                selectedKey = this.dataset.field;
+            }
+
+            function setCompositeEditorVisible(visible) {
+                const editor = document.getElementById("compositeEditor");
+                const isVisible = !editor.classList.contains("hidden");
+
+                if (visible && !isVisible) {
+                    editor.classList.remove("hidden");
+                } else if (!visible && isVisible) {
+                    editor.classList.add("hidden");
+                }
+            }
+
+            function moveKeyUp() {
+                let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+                if (!facetName || !fieldName || !selectedKey) { return; }
+
+                // TODO Warning about moving keys around.. maybe flash the impacted queries?
+                let field = getFacetFieldByNames(facetName, fieldName);
+                if (field.keys.length <= 1) { return; }
+
+                let index = field.keys.findIndex(o => o === selectedKey);
+                if (index == 0) { return; }
+
+                let currentKey = selectedKey;
+                let upKey = field.keys[index - 1];
+                field.keys[index - 1] = currentKey;
+                field.keys[index] = upKey;
+                redrawPage();
+
+                selectedKey = currentKey;
+                document.getElementById("compositeKeys").selectedIndex = index - 1;
+            }
+
+            function moveKeyDown() {
+                let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+                if (!facetName || !fieldName || !selectedKey) { return; }
+                
+                // TODO Warning about moving keys around.. maybe flash the impacted queries?
+                let field = getFacetFieldByNames(facetName, fieldName);
+                if (field.keys.length <= 1) { return; }
+                
+                let index = field.keys.findIndex(o => o === selectedKey);
+                if (index === field.keys.length - 1) { return; }
+
+                let currentKey = selectedKey;
+                let downKey = field.keys[index + 1];
+                field.keys[index + 1] = currentKey;
+                field.keys[index] = downKey;
+                redrawPage();
+                
+                selectedKey = currentKey;
+                document.getElementById("compositeKeys").selectedIndex = index + 1;
             }
 
             function processKeys(event) {
@@ -444,6 +553,7 @@
                 if (event.key === "Escape") {
                     selectedFacet = null;
                     selectedField = null;
+                    selectedKey = null;
                     redrawPage();
                 };
             }
@@ -477,7 +587,22 @@
                 <ol id="fieldList">
                 </ol>
             </div>
-            <div></div>
+            <div class="composite hidden" id="compositeEditor">
+                <h2>Composite Key</h2>
+                <button id="addKey" value="Add">Add</button>
+                <button id="removeKey" value="remove">Remove</button>
+                <button id="moveKeyUp" value="up">Up</button>
+                <button id="moveKeyDown" value="down">Down</button>
+                <br/>
+                <select class="compositeKeys" id="compositeKeys" multiple>
+
+                </select>
+                <select class="compositeKeyOptions" id="compositeKeyOptions">
+                    <option></option>
+                </select>
+                <br/>
+                <br/>
+            </div>
         </div>
     </body>
 </html>

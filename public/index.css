@@ -1,0 +1,55 @@
+.hidden { display: none; }
+
+.action-bar {
+    border: 1pt solid grey;
+    border-radius: 5px;
+    margin: .5em .5em 0;
+    padding: .5em;
+}
+
+.action-bar button {
+    cursor: pointer;
+    padding: .5em 1em;
+    min-width: 6em;
+}
+
+.tableContent button { 
+    cursor: pointer;
+    padding: .25em .5em;
+    min-width: 3em;
+}
+
+.facets, .fields, .composite {
+    border: 1pt solid grey;
+    border-radius: 5px;
+    float: left;
+    margin: .5em;
+    padding: 0 1em;
+    /* width: 20%; */
+}
+
+.facets li, .fields li {
+    cursor: pointer;
+    position: relative;
+}
+
+.fields span {
+    /* min-width: 70%; */
+    display: inline-block;
+    margin-right: 1em;
+}
+
+.fields select.spacefiller { visibility: hidden; }
+
+.fields select.floater {
+    position: absolute;
+    right: 0;
+}
+
+.highlightedfacet, .highlightedfield { font-weight: bold }
+
+.compositeKeys, .compositeKeyOptions {
+    /* margin-bottom: 1em; */
+    margin-top: 1em;
+    width: 100%;
+}
