@@ -9,13 +9,14 @@
         <script type="text/javascript" src="util.js"></script>
         <script type="text/javascript" src="ux.js"></script>
         <script type="text/javascript" src="ux-keys.js"></script>
-        <script type="text/javascript" src="structure.js"></script>
+        <script type="text/javascript" src="editorStructure.js"></script>
+        <script type="text/javascript" src="editorQueries.js"></script>
         <script type="text/javascript">
             let APP_STATE = getDefaultAppState();
             let APP_STATE_SAVED = undefined;
             
             // let selectedFacet = "Review", selectedField = "GSI1-PK", selectedKey;
-            let selectedFacet, selectedField, selectedKey;
+            let selectedFacet, selectedField, selectedKey, selectedQuery;
 
             // let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
             let currentEditor = CONSTS.EDITORS.QUERIES;
@@ -39,7 +40,7 @@
                 <label>Unsaved data</label>
             </div>
         </div>
-        <div class="tableStructure editorView hidden">
+        <div class="tableStructureEditor editView hidden">
             <div class="facets">
                 <h2>Facets</h2>
                 <button id="addFacet" value="Add">Add</button>
@@ -71,12 +72,12 @@
                 <br/>
             </div>
         </div>
-        <div class="queries hidden editorView">
+        <div class="queryEditor editView hidden">
             <div class="queries">
                 <h2>Queries</h2>
                 <button id="addQuery" value="Add">Add</button>
-                <!-- <button disabled id="editFacetName" value="Edit">Edit</button> -->
-                <!-- <button disabled id="deleteFacet" value="Edit">Delete</button> -->
+                <button disabled id="editQueryName" value="Edit">Edit</button>
+                <button disabled id="deleteQuery" value="Edit">Delete</button>
                 <ol id="queryList"></ol>
             </div>
         </div>

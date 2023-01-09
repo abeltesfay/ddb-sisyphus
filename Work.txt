@@ -1,3 +1,6 @@
+January 9
+[ ] Add query (contin)
+
 January 8
 [x] Error handling loading app state
 [x] Change "saved field" to be fixed/static at top right of page
@@ -6,8 +9,8 @@ January 8
   window.onbeforeunload = function() { return "okay"; }
   - https://stackoverflow.com/questions/48523454/onbeforeunload-doesnt-work-until-mouse-is-clicked-once-in-the-body
 [x] Table Structure / Queries tabs selector
-[ ] Code re-org
-[ ] Add query
+[x] Code re-org
+[x] Add query
   - Get App by Com #5a
   - Query should contain:
     - short description, e.g.: getApplicationDetailsByApplicantId

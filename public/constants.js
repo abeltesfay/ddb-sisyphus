@@ -3,7 +3,7 @@ const CONSTS = {
     DELIM: "#",
     DROPDOWNOPTIONS: [ "", "S", "B", "C" ],
     EDITORS: {
-        TABLESTRUCT: "tableStructure",
-        QUERIES: "queries",
+        TABLESTRUCT: "tableStructureEditor",
+        QUERIES: "queryEditor",
     },
 };

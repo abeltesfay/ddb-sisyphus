@@ -32,6 +32,16 @@ function getNewDropdownElement(facetName, fieldName) {
     return dropdown;
 }
 
+function getNewQuery(name) {
+    return {
+        name,
+        description: "",
+        index: "",
+        pk: [],
+        sk: [],
+    };
+}
+
 // Simple element finders
 function getFacetByName(name) {
     return APP_STATE.facets[APP_STATE.facets.findIndex(facet => facet.name == name)];

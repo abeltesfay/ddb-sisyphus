@@ -4,8 +4,9 @@ function processKeys(event) {
         selectedFacet = null;
         selectedField = null;
         selectedKey = null;
+        selectedQuery = null;
         
-        currentEditor = CONSTS.EDITORS.TABLESTRUCT;
+        // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
 
         redrawPage();
     };

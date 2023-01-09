@@ -32,7 +32,7 @@
     min-width: 3em;
 }
 
-.facets, .fields, .composite {
+.facets, .fields, .composite, .queries {
     border: 1pt solid grey;
     border-radius: 5px;
     float: left;
@@ -59,7 +59,7 @@
     right: 0;
 }
 
-.highlightedfacet, .highlightedfield { font-weight: bold }
+.highlightedfacet, .highlightedfield, .highlightedquery { font-weight: bold }
 
 .compositeKeys, .compositeKeyOptions {
     /* margin-bottom: 1em; */

@@ -19,6 +19,8 @@ function preparePage() {
     setClick("moveKeyDown", moveKeyDown);
     setClick("showTableStructureEditor", showTableStructureEditor);
     setClick("showQueryEditor", showQueryEditor);
+    setClick("addQuery", addQuery);
+    setClick("deleteQuery", deleteQuery);
     
     console.debug("PREP: Finished prep");
 }
@@ -30,6 +32,8 @@ function redrawPage() {
         redrawFields();
         redrawCompositeEditor();
         showCurrentEditor();
+
+        redrawQueries();
     } catch (error) {
         alert("REDRAWPAGE: Redraw page failed, error: " + error);
         console.error("REDRAWPAGE: Redraw page failed, error: ", error);
@@ -66,7 +70,7 @@ function setSavedFlag(isSaved) {
 
 function redrawFacets() {
     const facetListEle = document.getElementById("facetList");
-    Array.from(facetList.getElementsByTagName("li")).forEach(o => o.remove())
+    Array.from(facetListEle.getElementsByTagName("li")).forEach(o => o.remove())
     document.getElementById("editFacetName").disabled = !selectedFacet;
     document.getElementById("deleteFacet").disabled = !selectedFacet;
     
@@ -209,6 +213,30 @@ function fillCompositeDropdown() {
     });
 }
 
+function redrawQueries() {
+    const queryListEle = document.getElementById("queryList");
+    Array.from(queryListEle.getElementsByTagName("li")).forEach(o => o.remove())
+    document.getElementById("editQueryName").disabled = !selectedFacet;
+    document.getElementById("deleteQuery").disabled = !selectedFacet;
+    
+    let queryNames = APP_STATE?.queries?.map(query => query.name);
+    
+    queryNames?.forEach(query => {
+        let queryEle = document.createElement("li");
+        queryEle.innerText = query;
+        queryEle.dataset.name = query;
+        queryEle.onclick = selectQuery.bind(queryEle);
+        queryListEle.appendChild(queryEle);
+
+        if (selectedQuery == query) {
+            queryEle.classList.add("highlightedquery");
+        }
+    });
+
+    document.getElementById("editQueryName").disabled = !selectedQuery;
+    document.getElementById("deleteQuery").disabled = !selectedQuery;
+}
+
 //
 // Tabs
 //
@@ -217,10 +245,18 @@ function showTableStructureEditor() { currentEditor = CONSTS.EDITORS.TABLESTRUCT
 function showQueryEditor() { currentEditor = CONSTS.EDITORS.QUERIES; redrawPage(); }
 
 function showCurrentEditor() {
-    Array.from(document.getElementsByClassName("editorView")).forEach(editor => {
+    Array.from(document.getElementsByClassName("editView")).forEach(editor => {
         if (editor.classList.contains("hidden")) { return; }
         editor.classList.add("hidden");
     });
 
-    document.getElementsByClassName(currentEditor)[0].classList.remove("hidden");
+    const editor = document.getElementsByClassName(currentEditor)[0];
+
+    if (!editor || !editor.classList.contains("editView")) {
+        alert(`Couldn't find selected editor ${currentEditor}`);
+        console.error(`Couldn't find selected editor ${currentEditor}`);
+        return;
+    }
+    
+    editor.classList.remove("hidden");
 }
