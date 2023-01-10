@@ -34,6 +34,7 @@ function redrawPage() {
         showCurrentEditor();
 
         redrawQueries();
+        redrawQueryEditArea();
     } catch (error) {
         alert("REDRAWPAGE: Redraw page failed, error: " + error);
         console.error("REDRAWPAGE: Redraw page failed, error: ", error);
@@ -235,6 +236,36 @@ function redrawQueries() {
 
     document.getElementById("editQueryName").disabled = !selectedQuery;
     document.getElementById("deleteQuery").disabled = !selectedQuery;
+}
+
+function redrawQueryEditArea() {
+    let nameEle = document.getElementById("queryName");
+    let descrEle = document.getElementById("queryDescription");
+    let indexEle = document.getElementById("queryIndex");
+    nameEle.value = "";
+    descrEle.value = "";
+    // TODO Select index
+    // TODO Fill indexes
+    redrawQueryIndices();
+    if (!selectedQuery) { return; }
+
+    const query = getQueryByName(selectedQuery);
+    nameEle.value = selectedQuery;
+    descrEle.value = query.description;
+}
+
+function redrawQueryIndices(indexToSelect) {
+    const queryIndexEle = document.getElementById("queryIndex");
+    Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove())
+
+    APP_STATE.indices.unshift("");
+    APP_STATE.indices?.forEach(index => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.innerText = index;
+        if (index === indexToSelect) { option.selected = true; }
+        queryIndexEle.appendChild(option);
+    });
 }
 
 //

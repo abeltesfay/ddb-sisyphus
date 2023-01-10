@@ -75,10 +75,17 @@
         <div class="queryEditor editView hidden">
             <div class="queries">
                 <h2>Queries</h2>
-                <button id="addQuery" value="Add">Add</button>
-                <button disabled id="editQueryName" value="Edit">Edit</button>
-                <button disabled id="deleteQuery" value="Edit">Delete</button>
-                <ol id="queryList"></ol>
+                <div class="queryList">
+                    <button id="addQuery" value="Add">Add</button>
+                    <button disabled id="editQueryName" value="Edit">Edit</button>
+                    <button disabled id="deleteQuery" value="Edit">Delete</button>
+                    <ol id="queryList"></ol>
+                </div>
+                <div class="queryDetails">
+                    <input readonly id="queryName" placeholder="Query Id" />
+                    <input id="queryDescription" placeholder="Description" />
+                    <select id="queryIndex" placeholder="Index" />
+                </div>
             </div>
         </div>
     </body>

@@ -67,3 +67,7 @@ function getSelectedFacetAndFieldNames() {
 
     return { facetName: undefined, fieldName: undefined };
 }
+
+function getQueryByName(name) {
+    return APP_STATE.queries[APP_STATE.queries.findIndex(query => query.name == name)];
+}

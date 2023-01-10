@@ -1,5 +1,7 @@
 January 9
-[ ] Add query (contin)
+[x] Add query (contin)
+[x] Show indexes in selectable dropdown
+[ ] Add index
 
 January 8
 [x] Error handling loading app state
