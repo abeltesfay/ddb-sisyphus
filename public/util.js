@@ -84,3 +84,5 @@ function getQueryByName(name) {
 function getIndexByName(name) {
     return APP_STATE.indices[APP_STATE.indices.findIndex(index => index.name == name)];
 }
+
+function gebi(id) { return document.getElementById(id); }

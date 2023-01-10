@@ -42,6 +42,18 @@ function deleteQuery() {
     console.warn(`DELETEQUERY: Removed a query: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
 }
 
+function updateQuery() {
+    if (!selectedQuery) { return; }
+
+    let query = getQueryByName(selectedQuery)
+    query.description = gebi("queryDescription").value
+    query.index = gebi("queryIndex").value
+    redrawPage();
+}
+
+//
+// Indexes
+//
 function addIndex() {
     const name = prompt("Please provide a new, unique index name")?.trim();
     if (!name) { return; }
@@ -56,4 +68,28 @@ function addIndex() {
     redrawPage();
 
     console.debug("ADDINDEX: New index added:", name);
+}
+
+function deleteIndex() {
+    if (!selectedIndex) { return; }
+    if (!confirm(`Are you SURE you want to delete index ${selectedIndex}?`)) { return; }
+
+    const name = selectedIndex;
+    const oldCount = APP_STATE.indices.length;
+    APP_STATE.indices = APP_STATE.indices.filter(index => index.name !== selectedIndex);
+    const newCount = APP_STATE.indices.length;
+    selectedIndex = undefined;
+    redrawPage();
+
+    console.warn(`DELETEQUERY: Removed a index: ${name}. Old count=[${oldCount}], new count=[${newCount}]`);
+}
+
+function updateIndex() {
+    if (!selectedIndex) { return; }
+
+    let index = getIndexByName(selectedIndex)
+    index.description = gebi("indexDescription").value
+    index.pk = gebi("indexPk").value
+    index.sk = gebi("indexSk").value
+    redrawPage();
 }

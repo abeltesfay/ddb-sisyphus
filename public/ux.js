@@ -22,6 +22,9 @@ function preparePage() {
     setClick("addQuery", addQuery);
     setClick("addIndex", addIndex);
     setClick("deleteQuery", deleteQuery);
+    setClick("deleteIndex", deleteIndex);
+    setClick("updateIndex", updateIndex);
+    setClick("updateQuery", updateQuery);
     
     console.debug("PREP: Finished prep");
 }
@@ -222,6 +225,7 @@ function redrawQueries() {
     Array.from(queryListEle.getElementsByTagName("li")).forEach(o => o.remove())
     document.getElementById("editQueryName").disabled = !selectedQuery;
     document.getElementById("deleteQuery").disabled = !selectedQuery;
+    document.getElementById("updateQuery").disabled = !selectedQuery;
     
     let queryNames = APP_STATE?.queries?.map(query => query.name);
     
@@ -245,17 +249,18 @@ function redrawQueryEditArea() {
     let nameEle = document.getElementById("queryName");
     let descrEle = document.getElementById("queryDescription");
     let indexEle = document.getElementById("queryIndex");
+    let queryPkEle = document.getElementById("queryPk");
     Array.from(indexEle.getElementsByTagName("option")).forEach(o => o.remove())
     nameEle.value = "";
     descrEle.value = "";
-    // TODO Select index
-    // TODO Fill indexes
+    queryPkEle.value = "";
     if (!selectedQuery) { return; }
     
     const query = getQueryByName(selectedQuery);
     nameEle.value = selectedQuery;
     descrEle.value = query.description;
-    redrawQueryIndicesDropdown(selectedQuery);
+    queryPkEle.value = getIndexByName(query.index).pk;
+    redrawQueryIndicesDropdown(query.index);
 }
 
 function redrawQueryIndicesDropdown(indexToSelect) {
@@ -268,7 +273,7 @@ function redrawQueryIndicesDropdown(indexToSelect) {
         const option = document.createElement("option");
         option.value = index.name;
         option.innerText = index.name;
-        if (index === indexToSelect) { option.selected = true; }
+        if (index.name === indexToSelect) { option.selected = true; }
         queryIndexEle.appendChild(option);
     });
 }
@@ -278,7 +283,7 @@ function redrawIndices() {
     Array.from(indexListEle.getElementsByTagName("li")).forEach(o => o.remove())
     document.getElementById("editIndexName").disabled = !selectedIndex;
     document.getElementById("deleteIndex").disabled = !selectedIndex;
-    document.getElementById("saveIndex").disabled = !selectedIndex;
+    document.getElementById("updateIndex").disabled = !selectedIndex;
     
     let indexNames = APP_STATE?.indices?.map(index => index.name);
     
@@ -314,9 +319,9 @@ function redrawIndexEditArea() {
     nameEle.value = selectedIndex;
     descrEle.value = index.description;
     let allFields = APP_STATE.facets
-        .map(facet => facet.fields.map(field => field.name))
+        .map(facet => facet.fields.map(field => `${facet.name}.${field.name}`))
         .flat()
-        .filter((field, index, arr) => index == arr.indexOf(field))
+        // .filter((field, index, arr) => index == arr.indexOf(field)) // get unique items
         .sort(sortComparator);
     
     // Empty value
@@ -332,6 +337,9 @@ function redrawIndexEditArea() {
         fieldEle2.innerText = field;
         pkEle.appendChild(fieldEle1);
         skEle.appendChild(fieldEle2);
+
+        if (index.pk === field) { fieldEle1.selected = true; }
+        if (index.sk === field) { fieldEle2.selected = true; }
     });
 }
 

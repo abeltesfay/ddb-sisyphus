@@ -59,11 +59,18 @@
 
 /* .queryDetails input, .queryDetails select, .indexDetails input, .indexDetails select { */
 .queryEditor select, .queryEditor input {
-    display: block;
+    display: inline-block;
     margin-bottom: 1em;
     padding: .25em;
     width: 80%;
 }
+
+.queryDetails label, .indexDetails label {
+    display: inline-block;
+    width: 12%;
+}
+
+.queryDetails label:after, .indexDetails label:after { content: ":"; }
 
 .facets li, .fields li, .queries li, .indices li {
     cursor: pointer;

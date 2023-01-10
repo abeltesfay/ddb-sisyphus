@@ -1,9 +1,14 @@
 January 10
-[ ] Save index
+[x] Delete index
+[x] Update index (not a save, just update)
+[x] Selected index dropdowns
+[x] Update query pk
+[ ] Update query sk from begins with dropdown
 
 January 9
 [x] Add query (contin)
 [x] Show indexes in selectable dropdown
+  - https://stackoverflow.com/questions/5381621/jquery-function-to-get-all-unique-elements-from-an-array
 [x] Add index
 
 January 8

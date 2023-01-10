@@ -76,13 +76,16 @@
                 <div class="queryList">
                     <button id="addQuery" value="Add">Add</button>
                     <button disabled id="editQueryName" value="Edit">Edit</button>
-                    <button disabled id="deleteQuery" value="Edit">Delete</button>
+                    <button disabled id="deleteQuery" value="Delete">Delete</button>
+                    <button disabled id="updateQuery" value="Update">Update</button>
                     <ol id="queryList"></ol>
                 </div>
                 <div class="queryDetails">
-                    <input readonly id="queryName" placeholder="Query Id" />
-                    <input id="queryDescription" placeholder="Description" />
-                    <select id="queryIndex" placeholder="Index"></select>
+                    <label>Id</label><input readonly id="queryName" placeholder="Query Id" /> <br/>
+                    <label>Desc</label><input id="queryDescription" placeholder="Description" /> <br/>
+                    <label>Idx</label><select id="queryIndex" placeholder="Index"></select> <br/>
+                    <label>PK</label><input readonly id="queryPk" placeholder="Primary key" /> <br/>
+                    <label>SK</label><select id="querySkBeginsWith" title="Sort key begins with values"></select>
                 </div>
             </div>
             <div class="indices">
@@ -91,14 +94,14 @@
                     <button id="addIndex" value="Add">Add</button>
                     <button disabled id="editIndexName" value="Edit">Edit</button>
                     <button disabled id="deleteIndex" value="Delete">Delete</button>
-                    <button disabled id="saveIndex" value="Save">Save</button>
+                    <button disabled id="updateIndex" value="Update">Update</button>
                     <ol id="indexList"></ol>
                 </div>
                 <div class="indexDetails">
-                    <input readonly id="indexName" placeholder="Query Id" />
-                    <input id="indexDescription" placeholder="Description" />
-                    <select id="indexPk" title="partition key"></select>
-                    <select id="indexSk" title="sort key"></select>
+                    <label>Id</label><input readonly id="indexName" placeholder="Index Id" /> <br/>
+                    <label>Desc</label><input id="indexDescription" placeholder="Description" /> <br/>
+                    <label>PK</label><select id="indexPk" title="partition key"></select> <br/>
+                    <label>SK</label><select id="indexSk" title="sort key"></select>
                 </div>
             </div>
         </div>
