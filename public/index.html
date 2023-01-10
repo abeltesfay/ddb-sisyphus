@@ -17,9 +17,10 @@
             
             // let selectedFacet = "Review", selectedField = "GSI1-PK", selectedKey;
             let selectedFacet, selectedField, selectedKey, selectedQuery, selectedIndex;
+            let fieldFilterValue = "";
 
-            // let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
-            let currentEditor = CONSTS.EDITORS.QUERIES;
+            let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
+            // let currentEditor = CONSTS.EDITORS.QUERIES;
         </script>
     </head>
     <body onkeydown="processKeys(event);" onload="preparePage();">
@@ -31,7 +32,7 @@
             </fieldset>
             <fieldset>
                 <legend>Application State</legend>
-                <button id="saveState">Save</button>
+                <button id="saveState" disabled>Save</button>
                 <button id="loadFromOrbit">Load</button>
                 <button id="nukeFromOrbit">Nuke State</button>
                 <button id="logState">Log State</button>
@@ -53,6 +54,7 @@
                 <button id="addField" value="Add">Add</button>
                 <button disabled id="editFieldName" value="Edit">Edit</button>
                 <button disabled id="deleteField" value="Delete">Delete</button>
+                <input id="fieldFilter" />
                 <ol id="fieldList"></ol>
             </div>
             <div class="composite hidden" id="compositeEditor">

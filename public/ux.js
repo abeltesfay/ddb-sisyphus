@@ -1,6 +1,7 @@
 function preparePage() {
     console.debug("PREP: Preparing page and buttons");
     
+    getInputsOnPageRefresh();
     loadAppState();
     redrawPage();
     setClick("saveState", saveAppState);
@@ -14,6 +15,7 @@ function preparePage() {
     setClick("deleteFacet", deleteFacet);
     setClick("deleteField", deleteField);
     setClick("addKey", addKey);
+    gebi("compositeKeyOptions").onchange = addKeyStatic;
     setClick("removeKey", removeKey);
     setClick("moveKeyUp", moveKeyUp);
     setClick("moveKeyDown", moveKeyDown);
@@ -25,8 +27,15 @@ function preparePage() {
     setClick("deleteIndex", deleteIndex);
     setClick("updateIndex", updateIndex);
     setClick("updateQuery", updateQuery);
+    gebi("fieldFilter").onkeyup = updateFieldFilterValue;
+    gebi("queryIndex").onchange = redrawQueryEditIndexArea;
     
     console.debug("PREP: Finished prep");
+}
+
+function getInputsOnPageRefresh() {
+    checkSavedState();
+    updateFieldFilterValue();
 }
 
 function redrawPage() {
@@ -41,6 +50,8 @@ function redrawPage() {
         redrawQueryEditArea();
         redrawIndices();
         redrawIndexEditArea();
+        
+        updateFilteredFields();
     } catch (error) {
         alert("REDRAWPAGE: Redraw page failed, error: " + error);
         console.error("REDRAWPAGE: Redraw page failed, error: ", error);
@@ -54,23 +65,19 @@ function checkSavedState() {
     // console.debug(`CHECKSTATE: Unchanged = ${unchanged}`);
 }
 
-// function toggleUnsavedData() {
-//     const isVisible = !document.getElementById("#unsaved").classList.contains("hidden");
-//     if (isVisible) {
-//         document.getElementById("#unsaved").classList.push("hidden");
-//     } else {
-//         document.getElementById("#unsaved").classList.remove("hidden");
-//     }
-// }
-
 function setSavedFlag(isSaved) {
     const savedBanner = document.getElementById("unsaved");
+    const saveButton = gebi("saveState");
+
+    
     const isVisible = !savedBanner.classList.contains("hidden");
     if (isSaved && isVisible) {
+        saveButton.disabled = true;
         savedBanner.classList.add("hidden");
         window.onbeforeunload = undefined;
     } else if (!isSaved && !isVisible) {
         savedBanner.classList.remove("hidden");
+        saveButton.disabled = false;
         window.onbeforeunload = function() { return "You have unsaved changes"; }
     }
 }
@@ -207,13 +214,22 @@ function fillCompositeDropdown() {
         compositeKey.appendChild(selectableKeyEle);
     });
 
+    // Create our empty option
+    const selectableKeyEmptyValueEle = document.createElement("option");
+    let selectableKeyStaticValueEle = document.createElement("option");
+    selectableKeyEmptyValueEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
+    selectableKeyStaticValueEle.value = CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID;
+    selectableKeyStaticValueEle.innerText = CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID;
+
+    compositeDropdown.appendChild(selectableKeyEmptyValueEle);
+    compositeDropdown.appendChild(selectableKeyStaticValueEle);
+
     let fieldNames = getFacetByName(facetName).fields
         .filter(fieldToAdd => fieldToAdd.type !== "C" && !field.keys.includes(fieldToAdd.name))
         .map(field => field.name);
-    
+
     // Create an element for each non-composite type field name
     fieldNames.forEach(fieldName => {
-        // TODO Push element into dropdown
         let selectableKeyEle = document.createElement("option");
         selectableKeyEle.innerText = fieldName;
         compositeDropdown.appendChild(selectableKeyEle);
@@ -249,27 +265,43 @@ function redrawQueryEditArea() {
     let nameEle = document.getElementById("queryName");
     let descrEle = document.getElementById("queryDescription");
     let indexEle = document.getElementById("queryIndex");
-    let queryPkEle = document.getElementById("queryPk");
-    let querySkBeginsWithEle = gebi("querySkBeginsWith");
 
-    Array.from(indexEle.getElementsByTagName("option")).forEach(o => o.remove())
     nameEle.value = "";
     descrEle.value = "";
+    Array.from(indexEle.getElementsByTagName("option")).forEach(o => o.remove())
+    
+    if (selectedQuery) {
+        const query = getQueryByName(selectedQuery);
+        nameEle.value = selectedQuery;
+        descrEle.value = query.description;
+        redrawQueryIndicesDropdown(query.index);
+    }
+
+    // Must happen after above to allow query's index dropdown to populate
+    redrawQueryEditIndexArea();
+}
+
+function redrawQueryEditIndexArea() {
+    let queryIndexName = gebi("queryIndex").value;
+    let queryPkEle = document.getElementById("queryPk");
+    let querySkBeginsWithEle = gebi("querySkBeginsWith");
+    
     queryPkEle.value = "";
     Array.from(querySkBeginsWithEle.getElementsByTagName("option")).forEach(o => o.remove())
-    if (!selectedQuery) { return; }
     
     const query = getQueryByName(selectedQuery);
-    nameEle.value = selectedQuery;
-    descrEle.value = query.description;
+    if (!queryIndexName) { return; }
+    const index = getIndexByName(queryIndexName);
+    
+    if (index) {
+        const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
+        const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
+        const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "");
+        const queryPkFull = `${index.pk} -> ${fieldKeys}`;
+        queryPkEle.value = queryPkFull;
+    }
 
-    const index = getIndexByName(query.index);
-    const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
-    const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
-    const queryPkFull = `${index.pk} -> ${underlyingField.keys}`;
-    queryPkEle.value = queryPkFull;
-    redrawQueryIndicesDropdown(query.index);
-    redrawQuerySkDropdown(query.sk, query.index);
+    redrawQuerySkDropdown(query.sk, index.name);
 }
 
 function redrawQueryIndicesDropdown(indexToSelect) {
@@ -299,7 +331,8 @@ function redrawQuerySkDropdown(selectedSkValue, indexName) {
     let potentialSearch = "";
     querySkBeginsWithEle.appendChild(document.createElement("option"));
     for (field of underlyingField.keys) {
-        potentialSearch += `${field}${CONSTS.DELIM}`;
+        let cleanedUpField = field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "");
+        potentialSearch += `${cleanedUpField}${CONSTS.DELIM}`;
         const usableSearchPattern = potentialSearch.slice(0, -1);
 
         const option = document.createElement("option");
@@ -374,6 +407,19 @@ function redrawIndexEditArea() {
         if (index.pk === field) { fieldEle1.selected = true; }
         if (index.sk === field) { fieldEle2.selected = true; }
     });
+}
+
+function updateFilteredFields() {
+    let fieldElements = Array.from(gebi("fieldList").getElementsByTagName("li"));
+    fieldElements.forEach(ele => { ele.classList.remove("hidden"); }); // Show all
+    
+    if (fieldFilterValue.trim().length === 0) { return; }
+
+    console.log("Filtering elements");
+    fieldElements.forEach(ele => {
+            const fieldName = ele.getElementsByTagName("span")[0].innerText;
+            if (fieldName.indexOf(fieldFilterValue) === -1) { ele.classList.add("hidden"); }
+        });
 }
 
 //

@@ -145,8 +145,28 @@ function addKey() {
         return;
     }
 
-    field.keys.push(key);
+    if (key === CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID) {
+        let newStaticValue = prompt("Please provide a static value to use:");
+        
+        if (!newStaticValue) {
+            // Flip index to 0
+            gebi("compositeKeyOptions").selectedIndex = 0;
+            return;
+        }
+
+        newStaticValue = `${CONSTS.STATIC_COMPOSITE_KEY.PREFIX}${newStaticValue}`;
+        field.keys.push(newStaticValue);
+    } else {
+        field.keys.push(key);
+    }
+
     redrawPage();
+}
+
+function addKeyStatic() {
+    let key = gebi("compositeKeyOptions").value;
+    if (key !== CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID) { return; }
+    addKey();
 }
 
 function moveKeyUp() {
@@ -203,6 +223,19 @@ function removeKey() {
     }
 
     let index = field.keys.findIndex(o => o === selectedKey);
-    field.keys = field.keys.filter((key, filterIndex) => index !== filterIndex);
+
+    if (index === -1) {
+        // Not found? Let's just remove the field at the array spot bc it's probably null/undefined/non-string
+        let currentSelectedField = gebi("compositeKeys").selectedIndex;
+        field.keys = field.keys.filter((key, filterIndex) => currentSelectedField !== filterIndex);
+    } else {
+        field.keys = field.keys.filter((key, filterIndex) => index !== filterIndex);
+    }
+
     redrawPage();
+}
+
+function updateFieldFilterValue() {
+    fieldFilterValue = gebi("fieldFilter").value.trim();
+    updateFilteredFields();
 }
