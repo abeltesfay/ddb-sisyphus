@@ -42,6 +42,15 @@ function getNewQuery(name) {
     };
 }
 
+function getNewIndex(name) {
+    return {
+        name,
+        description: "",
+        pk: "",
+        sk: "",
+    };
+}
+
 // Simple element finders
 function getFacetByName(name) {
     return APP_STATE.facets[APP_STATE.facets.findIndex(facet => facet.name == name)];
@@ -70,4 +79,8 @@ function getSelectedFacetAndFieldNames() {
 
 function getQueryByName(name) {
     return APP_STATE.queries[APP_STATE.queries.findIndex(query => query.name == name)];
+}
+
+function getIndexByName(name) {
+    return APP_STATE.indices[APP_STATE.indices.findIndex(index => index.name == name)];
 }

@@ -41,30 +41,31 @@
     /* width: 20%; */
 }
 
-.queries {
+.queries, .indices {
     border: 1pt solid grey;
     border-radius: 5px;
     margin: .5em;
     padding: 0 1em;
 }
 
-.queryList, .queryDetails {
+.queryList, .queryDetails, .indexList, .indexDetails {
     display: inline-block;
     width: 50%;
 }
 
-.queryDetails {
+.queryDetails, .indexDetails {
     width: 45%
 }
 
-.queryDetails input, .queryDetails select {
+/* .queryDetails input, .queryDetails select, .indexDetails input, .indexDetails select { */
+.queryEditor select, .queryEditor input {
     display: block;
     margin-bottom: 1em;
     padding: .25em;
     width: 80%;
 }
 
-.facets li, .fields li, .queries li {
+.facets li, .fields li, .queries li, .indices li {
     cursor: pointer;
     position: relative;
 }
@@ -82,7 +83,7 @@
     right: 0;
 }
 
-.highlightedfacet, .highlightedfield, .highlightedquery { font-weight: bold }
+.highlightedfacet, .highlightedfield, .highlightedquery, .highlightedindex { font-weight: bold }
 
 .compositeKeys, .compositeKeyOptions {
     /* margin-bottom: 1em; */

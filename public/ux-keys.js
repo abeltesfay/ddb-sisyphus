@@ -5,6 +5,7 @@ function processKeys(event) {
         selectedField = null;
         selectedKey = null;
         selectedQuery = null;
+        selectedIndex = null;
         
         // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
 

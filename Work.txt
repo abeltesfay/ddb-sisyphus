@@ -1,7 +1,10 @@
+January 10
+[ ] Save index
+
 January 9
 [x] Add query (contin)
 [x] Show indexes in selectable dropdown
-[ ] Add index
+[x] Add index
 
 January 8
 [x] Error handling loading app state

@@ -20,6 +20,7 @@ function preparePage() {
     setClick("showTableStructureEditor", showTableStructureEditor);
     setClick("showQueryEditor", showQueryEditor);
     setClick("addQuery", addQuery);
+    setClick("addIndex", addIndex);
     setClick("deleteQuery", deleteQuery);
     
     console.debug("PREP: Finished prep");
@@ -35,6 +36,8 @@ function redrawPage() {
 
         redrawQueries();
         redrawQueryEditArea();
+        redrawIndices();
+        redrawIndexEditArea();
     } catch (error) {
         alert("REDRAWPAGE: Redraw page failed, error: " + error);
         console.error("REDRAWPAGE: Redraw page failed, error: ", error);
@@ -217,8 +220,8 @@ function fillCompositeDropdown() {
 function redrawQueries() {
     const queryListEle = document.getElementById("queryList");
     Array.from(queryListEle.getElementsByTagName("li")).forEach(o => o.remove())
-    document.getElementById("editQueryName").disabled = !selectedFacet;
-    document.getElementById("deleteQuery").disabled = !selectedFacet;
+    document.getElementById("editQueryName").disabled = !selectedQuery;
+    document.getElementById("deleteQuery").disabled = !selectedQuery;
     
     let queryNames = APP_STATE?.queries?.map(query => query.name);
     
@@ -242,29 +245,93 @@ function redrawQueryEditArea() {
     let nameEle = document.getElementById("queryName");
     let descrEle = document.getElementById("queryDescription");
     let indexEle = document.getElementById("queryIndex");
+    Array.from(indexEle.getElementsByTagName("option")).forEach(o => o.remove())
     nameEle.value = "";
     descrEle.value = "";
     // TODO Select index
     // TODO Fill indexes
-    redrawQueryIndices();
     if (!selectedQuery) { return; }
-
+    
     const query = getQueryByName(selectedQuery);
     nameEle.value = selectedQuery;
     descrEle.value = query.description;
+    redrawQueryIndicesDropdown(selectedQuery);
 }
 
-function redrawQueryIndices(indexToSelect) {
+function redrawQueryIndicesDropdown(indexToSelect) {
     const queryIndexEle = document.getElementById("queryIndex");
     Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove())
 
-    APP_STATE.indices.unshift("");
+    queryIndexEle.appendChild(document.createElement("option"));
+
     APP_STATE.indices?.forEach(index => {
         const option = document.createElement("option");
-        option.value = index;
-        option.innerText = index;
+        option.value = index.name;
+        option.innerText = index.name;
         if (index === indexToSelect) { option.selected = true; }
         queryIndexEle.appendChild(option);
+    });
+}
+
+function redrawIndices() {
+    const indexListEle = document.getElementById("indexList");
+    Array.from(indexListEle.getElementsByTagName("li")).forEach(o => o.remove())
+    document.getElementById("editIndexName").disabled = !selectedIndex;
+    document.getElementById("deleteIndex").disabled = !selectedIndex;
+    document.getElementById("saveIndex").disabled = !selectedIndex;
+    
+    let indexNames = APP_STATE?.indices?.map(index => index.name);
+    
+    indexNames?.forEach(index => {
+        let indexEle = document.createElement("li");
+        indexEle.innerText = index;
+        indexEle.dataset.name = index;
+        indexEle.onclick = selectIndex.bind(indexEle);
+        indexListEle.appendChild(indexEle);
+
+        if (selectedIndex == index) {
+            indexEle.classList.add("highlightedindex");
+        }
+    });
+
+    document.getElementById("editIndexName").disabled = !selectedIndex;
+    document.getElementById("deleteIndex").disabled = !selectedIndex;
+}
+
+function redrawIndexEditArea() {
+    let nameEle = document.getElementById("indexName");
+    let descrEle = document.getElementById("indexDescription");
+    let pkEle = document.getElementById("indexPk");
+    let skEle = document.getElementById("indexSk");
+
+    nameEle.value = "";
+    descrEle.value = "";
+    Array.from(pkEle.getElementsByTagName("option")).forEach(o => o.remove())
+    Array.from(skEle.getElementsByTagName("option")).forEach(o => o.remove())
+    if (!selectedIndex) { return; }
+
+    const index = getIndexByName(selectedIndex);
+    nameEle.value = selectedIndex;
+    descrEle.value = index.description;
+    let allFields = APP_STATE.facets
+        .map(facet => facet.fields.map(field => field.name))
+        .flat()
+        .filter((field, index, arr) => index == arr.indexOf(field))
+        .sort(sortComparator);
+    
+    // Empty value
+    pkEle.appendChild(document.createElement("option"));
+    skEle.appendChild(fieldEle2 = document.createElement("option"));
+
+    allFields.forEach(field => {
+        const fieldEle1 = document.createElement("option");
+        const fieldEle2 = document.createElement("option");
+        fieldEle1.value = field;
+        fieldEle1.innerText = field;
+        fieldEle2.value = field;
+        fieldEle2.innerText = field;
+        pkEle.appendChild(fieldEle1);
+        skEle.appendChild(fieldEle2);
     });
 }
 
