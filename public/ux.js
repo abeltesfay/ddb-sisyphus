@@ -296,19 +296,21 @@ function redrawQueryEditIndexArea() {
     if (index) {
         const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
         const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
-        const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "");
+        const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
         const queryPkFull = `${index.pk} -> ${fieldKeys}`;
         queryPkEle.value = queryPkFull;
     }
 
-    redrawQuerySkDropdown(query.sk, index.name);
+    redrawQuerySkDropdown(query.sk, index?.name);
 }
 
 function redrawQueryIndicesDropdown(indexToSelect) {
     const queryIndexEle = document.getElementById("queryIndex");
     Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove());
 
-    queryIndexEle.appendChild(document.createElement("option"));
+    let pleaseSelectOption = document.createElement("option");
+    pleaseSelectOption.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
+    queryIndexEle.appendChild(pleaseSelectOption);
 
     APP_STATE.indices?.forEach(index => {
         const option = document.createElement("option");
@@ -415,7 +417,6 @@ function updateFilteredFields() {
     
     if (fieldFilterValue.trim().length === 0) { return; }
 
-    console.log("Filtering elements");
     fieldElements.forEach(ele => {
             const fieldName = ele.getElementsByTagName("span")[0].innerText;
             if (fieldName.indexOf(fieldFilterValue) === -1) { ele.classList.add("hidden"); }

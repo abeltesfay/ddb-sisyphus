@@ -9,6 +9,7 @@ function processKeys(event) {
         
         // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
 
+        gebi("fieldFilter").focus();
         redrawPage();
     };
 }

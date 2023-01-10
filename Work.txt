@@ -5,11 +5,13 @@ January 10
 [x] Update query pk
 [x] Update query pk to contain derived value
 [x] Update query sk from begins with dropdown
-[X] Update composite key with static value
+[x] Update composite key with static value
   [x] Add a filter on the fields section
   [x] Fix bugs in updating queries
   [x] Toggle save if there is a savable state
   [x] Prefix static value composite keys with an indicator
+[x] Query editor pk field replace comma with delim
+[x] Query editor index add please select option
 
 January 9
 [x] Add query (contin)
