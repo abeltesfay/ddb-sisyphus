@@ -3,7 +3,8 @@ function saveAppState() {
     const validatedState = getValidatedState(APP_STATE);
     const dataAsString = JSON.stringify(validatedState);
     window.localStorage.setItem(CONSTS.LSKEY, dataAsString);
-    APP_STATE = APP_STATE_SAVED = clone(validatedState);
+    APP_STATE = clone(validatedState);
+    APP_STATE_SAVED = clone(APP_STATE);
     redrawPage();
     console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
 }

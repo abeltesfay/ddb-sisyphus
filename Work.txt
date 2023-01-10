@@ -3,7 +3,8 @@ January 10
 [x] Update index (not a save, just update)
 [x] Selected index dropdowns
 [x] Update query pk
-[ ] Update query sk from begins with dropdown
+[x] Update query pk to contain derived value
+[x] Update query sk from begins with dropdown
 
 January 9
 [x] Add query (contin)

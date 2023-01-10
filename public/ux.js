@@ -121,7 +121,7 @@ function redrawFields() {
         fieldEle.appendChild(fieldLabelEle);
         fieldListEle.appendChild(fieldEle);
 
-        let fieldTypeDropdownEle = getNewDropdownElement(selectedFacet, field.name);
+        let fieldTypeDropdownEle = getNewFieldTypeElement(selectedFacet, field.name);
         let fieldTypeDropdownEleFiller = fieldTypeDropdownEle.cloneNode(true);
         fieldTypeDropdownEle.classList.add("floater");
         fieldEle.appendChild(fieldTypeDropdownEle);
@@ -150,7 +150,7 @@ function redrawAllFields() {
             fieldEle.appendChild(fieldLabelEle);
             fieldListEle.appendChild(fieldEle);
 
-            let fieldTypeDropdownEle = getNewDropdownElement(facet.name, field.name);
+            let fieldTypeDropdownEle = getNewFieldTypeElement(facet.name, field.name);
             let fieldTypeDropdownEleFiller = fieldTypeDropdownEle.cloneNode(true);
             fieldTypeDropdownEle.classList.add("floater");
             fieldEle.appendChild(fieldTypeDropdownEle);
@@ -250,22 +250,31 @@ function redrawQueryEditArea() {
     let descrEle = document.getElementById("queryDescription");
     let indexEle = document.getElementById("queryIndex");
     let queryPkEle = document.getElementById("queryPk");
+    let querySkBeginsWithEle = gebi("querySkBeginsWith");
+
     Array.from(indexEle.getElementsByTagName("option")).forEach(o => o.remove())
     nameEle.value = "";
     descrEle.value = "";
     queryPkEle.value = "";
+    Array.from(querySkBeginsWithEle.getElementsByTagName("option")).forEach(o => o.remove())
     if (!selectedQuery) { return; }
     
     const query = getQueryByName(selectedQuery);
     nameEle.value = selectedQuery;
     descrEle.value = query.description;
-    queryPkEle.value = getIndexByName(query.index).pk;
+
+    const index = getIndexByName(query.index);
+    const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
+    const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
+    const queryPkFull = `${index.pk} -> ${underlyingField.keys}`;
+    queryPkEle.value = queryPkFull;
     redrawQueryIndicesDropdown(query.index);
+    redrawQuerySkDropdown(query.sk, query.index);
 }
 
 function redrawQueryIndicesDropdown(indexToSelect) {
     const queryIndexEle = document.getElementById("queryIndex");
-    Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove())
+    Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove());
 
     queryIndexEle.appendChild(document.createElement("option"));
 
@@ -276,6 +285,30 @@ function redrawQueryIndicesDropdown(indexToSelect) {
         if (index.name === indexToSelect) { option.selected = true; }
         queryIndexEle.appendChild(option);
     });
+}
+
+function redrawQuerySkDropdown(selectedSkValue, indexName) {
+    const querySkBeginsWithEle = document.getElementById("querySkBeginsWith");
+    Array.from(querySkBeginsWithEle.getElementsByTagName("option")).forEach(o => o.remove());
+    if (!indexName) { return; }
+
+    const index = getIndexByName(indexName);
+    const underlyingFacetFieldName = getFacetAndFieldByFullName(index.sk);
+    const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
+
+    let potentialSearch = "";
+    querySkBeginsWithEle.appendChild(document.createElement("option"));
+    for (field of underlyingField.keys) {
+        potentialSearch += `${field}${CONSTS.DELIM}`;
+        const usableSearchPattern = potentialSearch.slice(0, -1);
+
+        const option = document.createElement("option");
+        option.value = usableSearchPattern;
+        option.innerText = usableSearchPattern;
+        querySkBeginsWithEle.appendChild(option);
+
+        if (selectedSkValue === usableSearchPattern) { option.selected = true; }
+    }
 }
 
 function redrawIndices() {

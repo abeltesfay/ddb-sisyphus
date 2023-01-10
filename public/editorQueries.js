@@ -48,6 +48,7 @@ function updateQuery() {
     let query = getQueryByName(selectedQuery)
     query.description = gebi("queryDescription").value
     query.index = gebi("queryIndex").value
+    query.sk = gebi("querySkBeginsWith").value;
     redrawPage();
 }
 

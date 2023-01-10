@@ -16,7 +16,7 @@ function getNewFacet(name) { return { name, fields: [] }; }
 
 function getNewField(name) { return { name, type: "", keys: [] } };
 
-function getNewDropdownElement(facetName, fieldName) {
+function getNewFieldTypeElement(facetName, fieldName) {
     let dropdown = document.createElement("select");
     dropdown.dataset.facet = facetName;
     dropdown.dataset.field = fieldName;
@@ -70,6 +70,16 @@ function getSelectedFacetAndFieldNames() {
 
     if (selectedField) {
         fieldNames = selectedField?.split(".");
+        const facetName = fieldNames?.[0], fieldName = fieldNames?.[1];
+        return { facetName, fieldName };
+    }
+
+    return { facetName: undefined, fieldName: undefined };
+}
+
+function getFacetAndFieldByFullName(fullname) {
+    if (fullname) {
+        fieldNames = fullname?.split(".");
         const facetName = fieldNames?.[0], fieldName = fieldNames?.[1];
         return { facetName, fieldName };
     }
