@@ -19,6 +19,10 @@ January 11
 [o] Exact match vs fuzzy match checkbox
 [x] Don't remove documents, show under "excluded" header
 [x] Stop clearing fields when selecting a row
+[ ] Test non-pk-sk index in example editor
+  [x] Fix keys so we're looking at the right ones
+  [ ] Push pk/sk back in to queue if not being used in filtering
+[ ] Support non-pk-sk index filtering in example editor
 [ ] Support non-composite sk on examples editor
   [ ] Logic read bar in input
   [ ] Test

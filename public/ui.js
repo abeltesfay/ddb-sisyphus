@@ -467,9 +467,8 @@ function redrawExamplePage() {
     redrawExampleFacetList();
     redrawExampleAddFields();
     
-    redrawExampleDocuments();
-
     redrawExamplesReadBar();
+    redrawExampleDocuments();
 }
 
 function redrawExampleButtons() {
@@ -564,21 +563,21 @@ function redrawExampleDocuments() {
         .filter(ele => !ele.classList.contains("dontDelete"))
         .forEach(ele => ele.remove());
 
-    const examplesFilterPkValue = gebi("examplesFilterPk")?.value;
-    const examplesFilterSkValue = gebi("examplesFilterSk")?.value;
+    const examplesFilterPk = gebi("examplesFilterPk");
+    const examplesFilterSk = gebi("examplesFilterSk");
 
     createExamplesLabelRow("Included:");
     let excludedExamples = [];
     
     APP_STATE.examples.forEach((example, index) => {
-        let excludedExample = createExampleRow(example, index, examplesFilterPkValue, examplesFilterSkValue);
+        let excludedExample = createExampleRow(example, index, examplesFilterPk, examplesFilterSk);
         if (excludedExample) { excludedExamples.push(excludedExample); }
     });
     
     createExamplesLabelRow("Excluded:");
     excludedExamples.forEach(example => {
-        let { example: _example, index, examplesFilterPkValue, examplesFilterSkValue } = example;
-        createExampleRow(_example, index, examplesFilterPkValue, examplesFilterSkValue, false);
+        let { example: _example, index, examplesFilterPk, examplesFilterSk } = example;
+        createExampleRow(_example, index, examplesFilterPk, examplesFilterSk, false);
     });
 }
 
@@ -592,17 +591,25 @@ function createExamplesLabelRow(label) {
     examplesBody.appendChild(row);
 }
 
-function createExampleRow(example, index, examplesFilterPkValue, examplesFilterSkValue, filter = true) {
+function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, filter = true) {
     let examplesBody = gebi("examplesBody");
 
-    const pkValue = example["pk"].trim().length === 0 ? "-" : example["pk"];
-    const skValue = example["sk"].trim().length === 0 ? "-" : example["sk"];
-    if (filter && examplesFilterPkValue && examplesFilterPkValue?.length !== 0 && pkValue !== examplesFilterPkValue) {
-        return { example, index, examplesFilterPkValue, examplesFilterSkValue  };
+    const pkKey = examplesFilterPk?.dataset.fieldname ?? "pk";
+    const skKey = examplesFilterSk?.dataset.fieldname ?? "sk";
+    const pkValue = example[pkKey]?.trim().length === 0 ? "-" : example[pkKey];
+    const skValue = example[skKey]?.trim().length === 0 ? "-" : example[skKey];
+
+    // Filtering by queries/top row input fields
+    if (filter
+            && examplesFilterPk && examplesFilterPk.value.length !== 0
+            && pkValue !== examplesFilterPk.value) {
+        return { example, index, examplesFilterPk, examplesFilterSk  };
     }
     
-    if (filter && examplesFilterSkValue && examplesFilterSkValue?.length !== 0 && skValue.indexOf(examplesFilterSkValue) !== 0) {
-        return { example, index, examplesFilterPkValue, examplesFilterSkValue  };
+    if (filter && examplesFilterSk
+        && examplesFilterSk.value.length !== 0
+        && skValue.indexOf(examplesFilterSk.value) !== 0) {
+        return { example, index, examplesFilterPk, examplesFilterSk  };
     }
 
     let exampleRow = dce("tr");
@@ -612,20 +619,20 @@ function createExampleRow(example, index, examplesFilterPkValue, examplesFilterS
     if (index == selectedExampleDocument) { exampleRow.classList.add("highlightedexample"); }
     
     let exampleTd = dce("td");
-    exampleTd.title = "pk";
+    exampleTd.title = `pk (${pkKey})`;
     exampleTd.innerText = pkValue;
     exampleRow.appendChild(exampleTd);
     exampleRow.onclick = selectExampleDocument;
     
     exampleTd = dce("td");
-    exampleTd.title = "sk";
+    exampleTd.title = `sk (${skKey})`;
     exampleTd.innerText = skValue;
     exampleRow.appendChild(exampleTd);
     exampleRow.onclick = selectExampleDocument;
 
     let fieldIndex = 0;
     for (field in example) {
-        if (fieldIndex++ <= 1 || field === "pk" || field === "sk") { continue; }
+        if (fieldIndex++ <= 1 || field === pkKey || field === skKey) { continue; }
 
         let exampleTd = dce("td");
         exampleTd.title = field;
@@ -700,6 +707,8 @@ function redrawExamplesReadQueryInputs() {
 
 function redrawExamplesReadTableInputsRowReset() {
     const queryName = gebi("examplesQuerySelect").value;
+    const query = getQueryByName(queryName);
+    const index = getIndexByName(query?.index);
     Array.from(gebi("examplesHeaderRowQueryLabels").getElementsByTagName("th")).forEach(ele => ele.remove());
     Array.from(gebi("examplesHeaderRowQueryInputs").getElementsByTagName("th")).forEach(ele => ele.remove());
 
@@ -709,6 +718,7 @@ function redrawExamplesReadTableInputsRowReset() {
 
     let inputEle = dce("input");
     inputEle.id = "examplesFilterPk";
+    if (index) { inputEle.dataset.fieldname = index.pk.split(".")[1]; }
     inputEle.readOnly = queryName.trim().length !== 0;
     
     let inputCellEle = dce("th");
@@ -722,6 +732,7 @@ function redrawExamplesReadTableInputsRowReset() {
     
     inputEle = dce("input");
     inputEle.id = "examplesFilterSk";
+    if (index) { inputEle.dataset.fieldname = index.sk.split(".")[1]; }
     inputEle.readOnly = queryName.trim().length !== 0;
     
     inputCellEle = dce("th");

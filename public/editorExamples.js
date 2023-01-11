@@ -72,6 +72,7 @@ function updateNewExampleInputs() {
 
 function selectExamplesQuery() {
     selectedExamplesQuery = gebi("examplesQuerySelect").value;
+    examplesFilterValues = {};
     redrawPage();
 }
 
