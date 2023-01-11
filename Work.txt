@@ -1,8 +1,7 @@
 January 11
-[ ] Do we need to specify pk/sk fields for table?
-[ ] Do we need to get into table details?
-[ ] Validate pk and sk are not empty string
-[ ] Validate keys are not duplicated
+[o] Do we need to specify pk/sk fields for table?
+[o] Do we need to get into table details?
+[ ] Add example query select
 
 January 10
 [x] Delete index
@@ -57,6 +56,8 @@ January 10
 [-] Edit example
 [x] Migrate pk/sk to the front of the display
 [x] Migrate pk/sk to the front of the inputs
+[x] Validate pk and sk are not empty string
+[x] Validate keys are not duplicated
 [-] Add example has "CALCULATED" label for composite type fields
   - https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
   - Grayed out and marking other composite key fields instead
