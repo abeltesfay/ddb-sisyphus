@@ -50,8 +50,8 @@ function deleteExample() {
     selectedExampleDocument = null;
 }
 
-// Update all the composite key fields that are read only when another field is changed
-function updateExampleInputs() {
+// While adding an example, update all the composite key fields that are read only when another field is changed
+function updateNewExampleInputs() {
     let exampleInputFields = Array.from(gebi("examplesNewDocumentToAdd").getElementsByTagName("input")).filter(ele => ele.readOnly);
     const facetName = gebi("exampleFacetList").value;
 
@@ -73,4 +73,14 @@ function updateExampleInputs() {
 function selectExamplesQuery() {
     selectedExamplesQuery = gebi("examplesQuerySelect").value;
     redrawPage();
+}
+
+function updateExampleQueryInputs() {
+    examplesFilterValues = Array.from(document.getElementsByClassName("examplesQueryInputField"))
+        .reduce((curObj, curEle) => {
+            curObj[curEle.dataset.fieldname] = curEle.value;
+            return curObj;
+        }, {});
+
+    redrawExampleQueryInputs();
 }

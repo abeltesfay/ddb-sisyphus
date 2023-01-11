@@ -111,6 +111,42 @@ function getIndexByName(name) {
     return APP_STATE.indices[APP_STATE.indices.findIndex(index => index.name === name)];
 }
 
+function getFieldKeysByQueryName(queryName) {
+    const query = getQueryByName(queryName);
+    if (!query) { return; }
+    const index = getIndexByName(query.index);
+    if (!index) { return; }
+    
+    let pkFields = [], skFields = [];
+
+    const underlyingFacetFieldNamePk = getFacetAndFieldByFullName(index.pk);
+    const underlyingFieldPk = getFacetFieldByNames(underlyingFacetFieldNamePk.facetName, underlyingFacetFieldNamePk.fieldName);
+
+    if (underlyingFieldPk.keys) {
+        pkFields = [pkFields, clone(underlyingFieldPk.keys)].flat();
+        // const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
+        // const queryPkFull = `${index.pk} -> ${fieldKeys}`;
+        // examplesQueryPkEle.value = queryPkFull;
+    } else {
+        // Non-composite key field
+        pkFields.push(underlyingFieldPk.name);
+    }
+
+    const underlyingFacetFieldNameSk = getFacetAndFieldByFullName(index.sk);
+    const underlyingFieldSk = getFacetFieldByNames(underlyingFacetFieldNameSk.facetName, underlyingFacetFieldNameSk.fieldName);
+
+    if (underlyingFieldSk.keys) {
+        skFields = [skFields, clone(underlyingFieldSk.keys)].flat();
+    } else {
+        // Non-composite key field
+        skFields.push(underlyingFieldSk.name);
+    }
+
+    return { pkFields, skFields };
+}
+
+function getKVArr(o) { return Object.keys(o).map(key => ({ key, value: o[key] })); }
+
 //
 // Validation
 //

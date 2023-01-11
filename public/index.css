@@ -119,6 +119,10 @@
     cursor: pointer;
 }
 
+.examplesRowSpacing th {
+    padding-top: 1.5em;
+}
+
 .examplesBarWrite, .examplesBarRead {
     display: inline-block;
     margin-right: 1em;

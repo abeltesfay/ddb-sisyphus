@@ -12,11 +12,13 @@ January 11
   [x] Update pk readonly input when query inputs change
 [x] Filter documents based on pk query inputs
 [x] Filter only if a pk field has text in it
-[ ] Add sk fields
+[x] Add sk fields
   [x] Add inputs
   [x] Populate sk filter readonly input
-  [ ] Filter on sk
-[ ] Exact match vs fuzzy match checkbox
+  [x] Filter on sk
+[o] Exact match vs fuzzy match checkbox
+[x] Don't remove documents, show under "excluded" header
+[x] Stop clearing fields when selecting a row
 [ ] Support non-composite sk on examples editor
   [ ] Logic read bar in input
   [ ] Test
