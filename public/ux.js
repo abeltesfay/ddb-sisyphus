@@ -32,6 +32,7 @@ function preparePage() {
     // setClick("editExample", editExample);
     // setClick("copyExample", copyExample);
     setClick("deleteExample", deleteExample);
+    gebi("compositeKeyFieldsOnly").onchange = toggleExampleAddCkfsOnly;
     
     setEditorViewButtons();
     
@@ -519,23 +520,34 @@ function redrawExampleAddFields() {
 
     customizedFacetFields.forEach(field => {
         const isPartOfACompositeKeyField = compositeKeyFields.includes(field.name);
-        let td = dce("th");
-        td.innerText = field.name;
-        if (isPartOfACompositeKeyField) { td.classList.add("compositeKeyField"); }
-        newTableHeaderRow.appendChild(td);
-
+        let newTh = dce("th");
+        newTh.innerText = field.name;
+        if (isPartOfACompositeKeyField) { newTh.classList.add("composite-key-field-colorlabel"); }
+        if (isPartOfACompositeKeyField || field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newTh.classList.add("composite-key-field-toggleckfs"); }
+        newTableHeaderRow.appendChild(newTh);
+        
         // Input field
         let newInput = dce("input");
         newInput.id = `EXAMPLEFIELD#${field.name}`;
         newInput.dataset.fieldname = `${field.name}`;
+        if (field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newInput.readOnly = true; } // Must fill in other fields to fill these
+        
+        let newTd = dce("td");
+        
         if (isPartOfACompositeKeyField) {
             newInput.onkeyup = updateExampleInputs;
             newInput.onchange = updateExampleInputs;
         }
 
-        if (field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newInput.readOnly = true; } // Must fill in other fields to fill these
+        if (isPartOfACompositeKeyField || field.type === CONSTS.FIELD_TYPES.COMPOSITE) {
+            newTd.classList.add("composite-key-field-toggleckfs");
+        }
+        
+        if (!isPartOfACompositeKeyField && field.type !== CONSTS.FIELD_TYPES.COMPOSITE && gebi("compositeKeyFieldsOnly").checked) {
+            newTh.classList.add("hidden");
+            newTd.classList.add("hidden");
+        }
 
-        let newTd = dce("td");
         newTd.appendChild(newInput);
         
         newRow.appendChild(newTd);
@@ -582,6 +594,28 @@ function redrawExampleDocuments() {
 
         examplesBody.append(exampleRow);
     });
+}
+
+function toggleExampleAddCkfsOnly() {
+    const showOnlyCkfs = this.checked;
+
+    if (showOnlyCkfs) {
+        [Array.from(gebi("examplesNewBody").getElementsByTagName("th")),
+            Array.from(gebi("examplesNewBody").getElementsByTagName("td"))]
+            .flat()
+            .filter(ele => !ele.classList.contains("composite-key-field-toggleckfs"))
+            .forEach(ele => {
+                ele.classList.add("hidden")
+            });
+    } else {
+        [Array.from(gebi("examplesNewBody").getElementsByTagName("th")),
+            Array.from(gebi("examplesNewBody").getElementsByTagName("td"))]
+            .flat()
+            .filter(ele => !ele.classList.contains("composite-key-field-toggleckfs"))
+            .forEach(ele => {
+                ele.classList.remove("hidden")
+            });
+    }
 }
 
 //

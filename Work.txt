@@ -61,6 +61,7 @@ January 10
   - https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
   - Grayed out and marking other composite key fields instead
 [x] Update composite key fields on composite key part change
+[x] Checkbox to hide non-composite key inputs
 
 January 9
 [x] Add query (contin)
