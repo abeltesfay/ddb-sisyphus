@@ -134,12 +134,14 @@ function selectKey() {
 
 function addKey() {
     let key = document.getElementById("compositeKeyOptions").value;
-    if (!key) { return; }
+    if (!key || key.trim().length === 0) { return; }
     
     let { facetName, fieldName } = getSelectedFacetAndFieldNames();
     if (!facetName || !fieldName) { return; }
 
     let field = getFacetFieldByNames(facetName, fieldName);
+    if (!Array.isArray(field.keys)) { field.keys = []; }
+
     if (field.keys.includes(key)) {
         alert("This would be a duplicate key");
         return;
@@ -154,7 +156,7 @@ function addKey() {
             return;
         }
 
-        newStaticValue = `${CONSTS.STATIC_COMPOSITE_KEY.PREFIX}${newStaticValue}`;
+        newStaticValue = `${CONSTS.STATIC_COMPOSITE_KEY.PREFIX}${newStaticValue.toUpperCase()}`;
         field.keys.push(newStaticValue);
     } else {
         field.keys.push(key);
@@ -217,8 +219,8 @@ function removeKey() {
 
     if (!confirm(`Are you sure you want to remove key ${selectedKey} from ${facetName}.${fieldName}?`)) { return; }
     let field = getFacetFieldByNames(facetName, fieldName);
-    if (field.type != "C") {
-        alert(`Field type is ${field.type}, but expected "C". Cannot remove field ${fieldName}.`);
+    if (field.type != CONSTS.FIELD_TYPES.COMPOSITE) {
+        alert(`Field type is ${field.type}, but expected "${CONSTS.FIELD_TYPES.COMPOSITE}". Cannot remove field ${fieldName}.`);
         return;
     }
 

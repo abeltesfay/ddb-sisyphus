@@ -12,6 +12,29 @@ January 10
   [x] Prefix static value composite keys with an indicator
 [x] Query editor pk field replace comma with delim
 [x] Query editor index add please select option
+[x] Drop "keys" on fields unless type is "C"
+[x] Add in car's queries
+  [x] Prevent add from adding empty string
+  [x] Automatically uppercase static values?
+  [-] Worked pretty well.
+    - Had to re-create pk-sk fields for the Review facet, but
+      wasn't a ton of work.
+    - Re-creating the pk-sk fields for the Review facet allowed
+      me to see exactly what the format of that field will be..
+      this will be invaluable for future modifications to pk-sk
+      in that it can show cascading changes we need to make
+[x] Case-insensitive field filtering
+[?] How do we want to handle broken relationships?
+  [o] You can remove a field on a facet, but it won't cascade
+      failures through to a composite field type -> index -> query
+    - What should it do here? Alert the user a field doesn't exist
+      on a query makes the most sense to me.
+  [o] You can change the order of a composite key
+    - We should alert the user of any queries that have pk/sk
+      that are no longer valid/findable in our list 
+[x] Query editor pk/sk should handle non composite keys
+[x] Query editor pk/sk should handle no/empty sort key
+[x] Update dropdown constants to be an enum
 
 January 9
 [x] Add query (contin)

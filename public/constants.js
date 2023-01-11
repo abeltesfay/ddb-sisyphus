@@ -1,6 +1,11 @@
-const CONSTS = {
+let CONSTS = {
     LSKEY: "SISYPHUS_DATA",
     DELIM: "#",
+    FIELD_TYPES: {
+        STRING: "S",
+        BOOLEAN: "B",
+        COMPOSITE: "C",
+    },
     DROPDOWNOPTIONS: [ "", "S", "B", "C" ],
     DROPDOWN_KEY_DEFAULT_LABEL: " - Please Select a Value - ",
     STATIC_COMPOSITE_KEY: {

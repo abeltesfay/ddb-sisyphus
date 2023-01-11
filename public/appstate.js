@@ -21,16 +21,22 @@ function getValidatedState(state) {
         facet.fields = facet.fields
             .map(field => {
                 if (typeof field === "object" && !Array.isArray(field)) {
-                    if (!Object.keys(field).includes("keys")) { field.keys = []; }
+                    if (field.type === CONSTS.FIELD_TYPES.COMPOSITE) {
+                        if (!Object.keys(field).includes("keys")) { field.keys = []; }
+                    } else {
+                        delete field.keys;
+                    }
+                    
                     return field;
                 }
                 
                 console.error("Error for some reason this is not an array:", JSON.stringify(field));
-                return {
+                let finalField = {
                     name: field + "",
                     type: "",
-                    keys: [],
                 };
+
+                return finalField;
             })
             .sort((a, b) => sortComparator(a.name, b.name));
     });

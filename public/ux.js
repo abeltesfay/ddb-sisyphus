@@ -177,7 +177,7 @@ function redrawCompositeEditor() {
     let field = getFacetFieldByNames(facetName, fieldName);
     
     // Flip visibility
-    const editorVisible = field?.type === "C";
+    const editorVisible = field?.type === CONSTS.FIELD_TYPES.COMPOSITE;
     setCompositeEditorVisible(editorVisible);
     if (!editorVisible) { return; }
 
@@ -209,28 +209,31 @@ function fillCompositeDropdown() {
     field.keys.forEach(key => {
         let selectableKeyEle = document.createElement("option");
         selectableKeyEle.innerText = key;
+        selectableKeyEle.value = key;
         selectableKeyEle.dataset.field = key;
         selectableKeyEle.onclick = selectKey.bind(selectableKeyEle);
         compositeKey.appendChild(selectableKeyEle);
     });
 
-    // Create our empty option
-    const selectableKeyEmptyValueEle = document.createElement("option");
+    // Create our empty & static prompt options
+    let selectableKeyEmptyValueEle = document.createElement("option");
     let selectableKeyStaticValueEle = document.createElement("option");
     selectableKeyEmptyValueEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
-    selectableKeyStaticValueEle.value = CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID;
     selectableKeyStaticValueEle.innerText = CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID;
+    selectableKeyEmptyValueEle.value = "";
+    selectableKeyStaticValueEle.value = CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID;
 
     compositeDropdown.appendChild(selectableKeyEmptyValueEle);
     compositeDropdown.appendChild(selectableKeyStaticValueEle);
 
     let fieldNames = getFacetByName(facetName).fields
-        .filter(fieldToAdd => fieldToAdd.type !== "C" && !field.keys.includes(fieldToAdd.name))
+        .filter(fieldToAdd => fieldToAdd.type !== CONSTS.FIELD_TYPES.COMPOSITE && !field.keys.includes(fieldToAdd.name))
         .map(field => field.name);
 
     // Create an element for each non-composite type field name
     fieldNames.forEach(fieldName => {
         let selectableKeyEle = document.createElement("option");
+        selectableKeyEle.value = fieldName;
         selectableKeyEle.innerText = fieldName;
         compositeDropdown.appendChild(selectableKeyEle);
     });
@@ -296,9 +299,16 @@ function redrawQueryEditIndexArea() {
     if (index) {
         const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
         const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
-        const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
-        const queryPkFull = `${index.pk} -> ${fieldKeys}`;
-        queryPkEle.value = queryPkFull;
+        
+        if (underlyingField.keys) {
+            const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
+            const queryPkFull = `${index.pk} -> ${fieldKeys}`;
+            queryPkEle.value = queryPkFull;
+        } else {
+            // Non-composite key field
+            const queryPkFull = `${index.pk} -> ${underlyingField.name}`;
+            queryPkEle.value = queryPkFull;
+        }
     }
 
     redrawQuerySkDropdown(query.sk, index?.name);
@@ -309,13 +319,14 @@ function redrawQueryIndicesDropdown(indexToSelect) {
     Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove());
 
     let pleaseSelectOption = document.createElement("option");
+    pleaseSelectOption.value = "";
     pleaseSelectOption.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
     queryIndexEle.appendChild(pleaseSelectOption);
 
     APP_STATE.indices?.forEach(index => {
         const option = document.createElement("option");
-        option.value = index.name;
         option.innerText = index.name;
+        option.value = index.name;
         if (index.name === indexToSelect) { option.selected = true; }
         queryIndexEle.appendChild(option);
     });
@@ -330,16 +341,28 @@ function redrawQuerySkDropdown(selectedSkValue, indexName) {
     const underlyingFacetFieldName = getFacetAndFieldByFullName(index.sk);
     const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
 
-    let potentialSearch = "";
+    // Empty/no-string option
     querySkBeginsWithEle.appendChild(document.createElement("option"));
+
+    // Single option if field is a non-composite key
+    if (underlyingField.type !== CONSTS.FIELD_TYPES.COMPOSITE) {
+        const option = document.createElement("option");
+        option.innerText = underlyingField.name;
+        option.value = underlyingField.name;
+        querySkBeginsWithEle.appendChild(option);
+        if (selectedSkValue === underlyingField.name) { option.selected = true; }
+        return;
+    }
+
+    let potentialSearch = "";
     for (field of underlyingField.keys) {
         let cleanedUpField = field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "");
         potentialSearch += `${cleanedUpField}${CONSTS.DELIM}`;
         const usableSearchPattern = potentialSearch.slice(0, -1);
 
         const option = document.createElement("option");
-        option.value = usableSearchPattern;
         option.innerText = usableSearchPattern;
+        option.value = usableSearchPattern;
         querySkBeginsWithEle.appendChild(option);
 
         if (selectedSkValue === usableSearchPattern) { option.selected = true; }
@@ -399,10 +422,10 @@ function redrawIndexEditArea() {
     allFields.forEach(field => {
         const fieldEle1 = document.createElement("option");
         const fieldEle2 = document.createElement("option");
-        fieldEle1.value = field;
         fieldEle1.innerText = field;
-        fieldEle2.value = field;
         fieldEle2.innerText = field;
+        fieldEle1.value = field;
+        fieldEle2.value = field;
         pkEle.appendChild(fieldEle1);
         skEle.appendChild(fieldEle2);
 
@@ -416,10 +439,11 @@ function updateFilteredFields() {
     fieldElements.forEach(ele => { ele.classList.remove("hidden"); }); // Show all
     
     if (fieldFilterValue.trim().length === 0) { return; }
+    let filterValue = fieldFilterValue.toLowerCase();
 
     fieldElements.forEach(ele => {
-            const fieldName = ele.getElementsByTagName("span")[0].innerText;
-            if (fieldName.indexOf(fieldFilterValue) === -1) { ele.classList.add("hidden"); }
+            const fieldName = ele.getElementsByTagName("span")[0].innerText.toLocaleLowerCase();
+            if (fieldName.indexOf(filterValue) === -1) { ele.classList.add("hidden"); }
         });
 }
 

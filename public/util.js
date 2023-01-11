@@ -22,11 +22,13 @@ function getNewFieldTypeElement(facetName, fieldName) {
     dropdown.dataset.field = fieldName;
     dropdown.onchange = selectFieldType;
 
-    CONSTS.DROPDOWNOPTIONS.forEach(value => {
+    dropdown.appendChild(document.createElement("option"));
+    
+    Object.values(CONSTS.FIELD_TYPES).forEach(value => {
         let dropdownEle = document.createElement("option");
-        if (value === getFacetFieldByNames(facetName, fieldName).type) { dropdownEle.selected = true; }
         dropdownEle.innerText = value;
         dropdown.appendChild(dropdownEle);
+        if (value === getFacetFieldByNames(facetName, fieldName).type) { dropdownEle.selected = true; }
     });
 
     return dropdown;
