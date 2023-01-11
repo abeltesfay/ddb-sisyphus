@@ -2,7 +2,19 @@ January 11
 [o] Do we need to specify pk/sk fields for table?
 [o] Do we need to get into table details?
 [x] Add example query select
-[ ] Get pk key inputs
+[x] Rename ux to ui finally
+[x] Get pk key inputs
+[x] Get sk key inputs
+[x] Create necessary pk inputs in table
+  [x] Create list of inputs
+  [x] Create header element(s)
+  [x] Create input element(s)
+  [x] Update pk readonly input when query inputs change
+[ ] Filter documents based on query inputs
+[ ] Exact match vs fuzzy match checkbox
+[ ] Support non-composite sk on examples editor
+  [ ] Logic read bar in input
+  [ ] Test
 
 January 10
 [x] Delete index

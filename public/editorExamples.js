@@ -65,6 +65,7 @@ function updateExampleInputs() {
     });
 }
 
-function selectExampleQuery() {
-    selectedExampleQuery = gebi("exampleQuerySelect").value;
+function selectExamplesQuery() {
+    selectedExamplesQuery = gebi("examplesQuerySelect").value;
+    redrawPage();
 }

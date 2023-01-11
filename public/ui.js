@@ -33,7 +33,7 @@ function preparePage() {
     // setClick("copyExample", copyExample);
     setClick("deleteExample", deleteExample);
     gebi("compositeKeyFieldsOnly").onchange = toggleExampleAddCkfsOnly;
-    gebi("exampleQuerySelect").onchange = selectExampleQuery;
+    gebi("examplesQuerySelect").onchange = selectExamplesQuery;
     
     setEditorViewButtons();
     
@@ -467,7 +467,7 @@ function redrawExamplePage() {
     redrawExampleFacetList();
     redrawExampleAddFields();
     redrawExampleDocuments();
-    redrawExampleReadBar();
+    redrawExamplesReadBar();
 }
 
 function redrawExampleButtons() {
@@ -561,7 +561,7 @@ function redrawExampleDocuments() {
     
     // Clean all other rows out
     Array.from(examplesBody.getElementsByTagName("tr"))
-        .filter(ele => ele.id !== "examplesHeaderRow")
+        .filter(ele => !ele.classList.contains("dontDelete"))
         .forEach(ele => ele.remove());
 
     APP_STATE.examples.forEach((example, index) => {
@@ -598,23 +598,175 @@ function redrawExampleDocuments() {
     });
 }
 
-function redrawExampleReadBar() {
-    let exampleQuerySelectEle = gebi("exampleQuerySelect");
-    Array.from(exampleQuerySelectEle.getElementsByClassName("option")).forEach(ele => ele.remove());
+function redrawExamplesReadBar() {
+    redrawExamplesReadQuerySelector();
+    redrawExamplesReadQueryInputs();
+    redrawExamplesReadTableInputsRowReset();
+    redrawExamplesReadTableInputFields();
+    updateExampleQueryInputs();
+}
+
+function redrawExamplesReadQuerySelector() {
+    let examplesQuerySelectEle = gebi("examplesQuerySelect");
+    Array.from(examplesQuerySelectEle.getElementsByTagName("option")).forEach(ele => ele.remove());
 
     let pleaseSelectEle = dce("option");
     pleaseSelectEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
     pleaseSelectEle.value = "";
-    exampleQuerySelectEle.appendChild(pleaseSelectEle);
+    examplesQuerySelectEle.appendChild(pleaseSelectEle);
 
     APP_STATE.queries.forEach(query => {
         let optionEle = dce("option");
         optionEle.innerText = query.name;
         optionEle.value = query.name;
-        exampleQuerySelectEle.appendChild(optionEle);
+        examplesQuerySelectEle.appendChild(optionEle);
 
-        if (selectedExampleQuery === query.name) { optionEle.selected = true; }
+        if (selectedExamplesQuery === query.name) { optionEle.selected = true; }
     });
+}
+
+function redrawExamplesReadQueryInputs() {
+    // let examplesBarRead = gebi("examplesBarRead");
+    // Array.from(examplesBarRead.getElementsByTagName("input"))
+    const queryName = gebi("examplesQuerySelect").value;
+    let examplesQueryPkEle = gebi("examplesQueryPk");
+    let examplesQuerySkEle = gebi("examplesQuerySk");
+    examplesQueryPkEle.value = "";
+    examplesQuerySkEle.value = "";
+
+    let query = getQueryByName(queryName);
+    if (!query) { return; }
+
+    // Fill inputs that explain index pk/sk next to dropdown
+    const index = getIndexByName(query.index);
+    if (!index) {
+        alert(`No index found for query [${queryName}], please update query to have one`);
+        return;
+    }
+    
+    const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
+    const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
+    
+    if (underlyingField.keys) {
+        const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
+        const queryPkFull = `${index.pk} -> ${fieldKeys}`;
+        examplesQueryPkEle.value = queryPkFull;
+    } else {
+        // Non-composite key field
+        const queryPkFull = `${index.pk} -> ${underlyingField.name}`;
+        examplesQueryPkEle.value = queryPkFull;
+    }
+
+    examplesQuerySkEle.value = query.sk;
+}
+
+function redrawExamplesReadTableInputsRowReset() {
+    const queryName = gebi("examplesQuerySelect").value;
+    Array.from(gebi("examplesHeaderRowQueryLabels").getElementsByTagName("th")).forEach(ele => ele.remove());
+    Array.from(gebi("examplesHeaderRowQueryInputs").getElementsByTagName("th")).forEach(ele => ele.remove());
+
+    // Add pk and sk
+    let headerCellEle = dce("th");
+    headerCellEle.innerText = "pk";
+
+    let inputEle = dce("input");
+    inputEle.id = "examplesFilterPk";
+    inputEle.readOnly = queryName.trim().length !== 0;
+    
+    let inputCellEle = dce("th");
+    inputCellEle.appendChild(inputEle);
+    
+    gebi("examplesHeaderRowQueryLabels").appendChild(headerCellEle);
+    gebi("examplesHeaderRowQueryInputs").appendChild(inputCellEle);
+
+    headerCellEle = dce("th");
+    headerCellEle.innerText = "sk";
+    
+    inputEle = dce("input");
+    inputEle.id = "examplesFilterSk";
+    inputEle.readOnly = queryName.trim().length !== 0;
+    
+    inputCellEle = dce("th");
+    inputCellEle.appendChild(inputEle);
+
+    gebi("examplesHeaderRowQueryLabels").appendChild(headerCellEle);
+    gebi("examplesHeaderRowQueryInputs").appendChild(inputCellEle);
+}
+
+function redrawExamplesReadTableInputFields() {
+    const queryName = gebi("examplesQuerySelect").value;
+    let query = getQueryByName(queryName);
+    if (!query) { return; }
+
+    const { pkFields, skFields } = getFieldKeysByQueryName(query.name);
+    pkFields.forEach( pkField => {
+        if (pkField.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) { return; }
+        let headerCellEle = dce("th");
+        headerCellEle.innerText = pkField;
+
+        let inputEle = dce("input");
+        let inputCellEle = dce("th");
+        inputCellEle.appendChild(inputEle);
+        inputCellEle.onkeyup = updateExampleQueryInputs;
+        inputCellEle.onchange = updateExampleQueryInputs;
+        inputEle.dataset.fieldname = pkField;
+        inputEle.classList.add(`examplesQueryInputField`);
+
+        gebi("examplesHeaderRowQueryLabels").appendChild(headerCellEle);
+        gebi("examplesHeaderRowQueryInputs").appendChild(inputCellEle);
+    });
+
+    // TODO skFields
+}
+
+function updateExampleQueryInputs() {
+    let fieldInputs = document.getElementsByClassName("examplesQueryInputField");
+    let fieldKeys = getFieldKeysByQueryName(selectedExamplesQuery);
+    if (!fieldKeys) { return; }
+    
+    // Get input fields and push into an object we can reference below
+    let fields = Array.from(fieldInputs)
+        .reduce((prevVal, ele) => {
+            prevVal[ele.dataset.fieldname] = ele.value;
+            return prevVal;
+        }, {});
+
+    // Bring together the pk values we need
+    const pkValue = fieldKeys.pkFields
+        .reduce((prevVal, curVal) => {
+            if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+                return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
+            } else {
+                return [prevVal, fields[curVal]].flat();
+            }
+        }, []);
+
+    gebi("examplesFilterPk").value = pkValue.join(CONSTS.DELIM);
+}
+
+function getFieldKeysByQueryName(queryName) {
+    const query = getQueryByName(queryName);
+    if (!query) { return; }
+    const index = getIndexByName(query.index);
+    if (!index) { return; }
+    
+    const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
+    const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
+    let pkFields = [], skFields = [];
+
+    if (underlyingField.keys) {
+        pkFields = [pkFields, clone(underlyingField.keys)].flat()
+        // const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
+        // const queryPkFull = `${index.pk} -> ${fieldKeys}`;
+        // examplesQueryPkEle.value = queryPkFull;
+    } else {
+        // Non-composite key field
+        pkFields.push(underlyingField.name);
+    }
+
+    // TODO Logic for skfields
+
+    return { pkFields, skFields };
 }
 
 function toggleExampleAddCkfsOnly() {

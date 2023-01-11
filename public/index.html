@@ -23,7 +23,7 @@
                 selectedIndex,
                 selectedExampleFacetToAdd,
                 selectedExampleDocument,
-                selectedExampleQuery;
+                selectedExamplesQuery;
             let fieldFilterValue = "";
                 
             let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
@@ -36,7 +36,7 @@
             // selectedFacet = "Review"
             // selectedField = "GSI1-PK"
             // selectedKey = undefined;
-            selectedExampleQuery = "getApplicationByApplicantEmployeeId";
+            selectedExamplesQuery = "getApplicationByApplicantEmployeeId";
         </script>
     </head>
     <body onkeydown="processKeys(event);" onload="preparePage();">
@@ -127,7 +127,7 @@
         <div class="examplesEditor editView hidden">
             <div class="examples">
                 <h2>Example Documents</h2>
-                <div class="exampleDocumentBarWrite">
+                <div class="examplesBarWrite">
                     <select id="exampleFacetList"></select>
                     <button disabled id="addExample" value="Add">Add</button>
                     <button disabled id="copyExample" value="Copy">Copy</button>
@@ -135,8 +135,10 @@
                     <button disabled id="deleteExample" value="Delete">Delete</button>
                     <input id="compositeKeyFieldsOnly" value="compositeKeyFieldsOnly" type="checkbox"><label for="compositeKeyFieldsOnly">CKFs</label></input>
                 </div>
-                <div class="exampleDocumentBarRead">
-                    <select id="exampleQuerySelect"></select>
+                <div class="examplesBarRead">
+                    <select id="examplesQuerySelect"></select>
+                    <input id="examplesQueryPk" readonly title="pk" />
+                    <input id="examplesQuerySk" readonly title="sk" />
                 </div>
                 <div>
                     <table id="exampleNewTable">
@@ -148,7 +150,17 @@
                 <div>
                     <table id="examplesTable">
                         <tbody id="examplesBody">
-                            <tr id="examplesHeaderRow"></tr>
+                            <tr id="examplesHeaderRowQueryLabels" class="dontDelete">
+                                <th>pk</th>
+                                <th>sk</th>
+                            </tr>
+                            <tr id="examplesHeaderRowQueryInputs" class="dontDelete">
+                                <th><input></th>
+                                <th><input></th>
+                            </tr>
+                            <tr id="examplesHeaderRowDocuments" class="dontDelete">
+                                <th>Documents:</th>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
