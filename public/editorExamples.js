@@ -26,7 +26,12 @@ function addExample() {
 function selectExampleFacetToAdd() {
     selectedExampleFacetToAdd = this.value;
     redrawPage();
-    gebi("examplesNewDocumentToAdd").getElementsByTagName("input")[0].focus();
+    focusFirstNonReadOnlyInput();
+}
+
+function focusFirstNonReadOnlyInput() {
+    // TODO.. this focuses on the first input
+    gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input")?.[0]?.focus();
 }
 
 function selectExampleDocument() {

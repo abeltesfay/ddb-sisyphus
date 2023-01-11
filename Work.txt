@@ -10,7 +10,9 @@ January 11
   [x] Create header element(s)
   [x] Create input element(s)
   [x] Update pk readonly input when query inputs change
-[ ] Filter documents based on query inputs
+[x] Filter documents based on pk query inputs
+[x] Filter only if a pk field has text in it
+[ ] Add sk fields
 [ ] Exact match vs fuzzy match checkbox
 [ ] Support non-composite sk on examples editor
   [ ] Logic read bar in input

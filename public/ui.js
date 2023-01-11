@@ -564,7 +564,15 @@ function redrawExampleDocuments() {
         .filter(ele => !ele.classList.contains("dontDelete"))
         .forEach(ele => ele.remove());
 
+    const examplesFilterPkValue = gebi("examplesFilterPk")?.value;
+    const examplesFilterSkValue = gebi("examplesFilterSk")?.value;
+
     APP_STATE.examples.forEach((example, index) => {
+        const pkValue = example["pk"].trim().length === 0 ? "-" : example["pk"];
+        const skValue = example["sk"].trim().length === 0 ? "-" : example["sk"];
+        if (examplesFilterPkValue && examplesFilterPkValue?.length !== 0 && pkValue !== examplesFilterPkValue) { return; }
+        // if (examplesFilterSkValue && examplesFilterSkValue?.length !== 0 && skValue !== examplesFilterSkValue) { return; }
+
         let exampleRow = dce("tr");
         exampleRow.id = `exampleRow#${index}`;
         exampleRow.dataset.id = index;
@@ -573,13 +581,13 @@ function redrawExampleDocuments() {
         
         let exampleTd = dce("td");
         exampleTd.title = "pk";
-        exampleTd.innerText = example["pk"].trim().length === 0 ? "-" : example["pk"];
+        exampleTd.innerText = pkValue;
         exampleRow.appendChild(exampleTd);
         exampleRow.onclick = selectExampleDocument;
         
         exampleTd = dce("td");
         exampleTd.title = "sk";
-        exampleTd.innerText = example["sk"].trim().length === 0 ? "-" : example["sk"];
+        exampleTd.innerText = skValue;
         exampleRow.appendChild(exampleTd);
         exampleRow.onclick = selectExampleDocument;
 
@@ -720,28 +728,34 @@ function redrawExamplesReadTableInputFields() {
 }
 
 function updateExampleQueryInputs() {
-    let fieldInputs = document.getElementsByClassName("examplesQueryInputField");
+    let fieldInputs = Array.from(document.getElementsByClassName("examplesQueryInputField"));
     let fieldKeys = getFieldKeysByQueryName(selectedExamplesQuery);
     if (!fieldKeys) { return; }
     
-    // Get input fields and push into an object we can reference below
-    let fields = Array.from(fieldInputs)
-        .reduce((prevVal, ele) => {
+    if (!fieldInputs.some(ele => ele.value.length != 0)) {
+        gebi("examplesFilterPk").value = ""
+    } else {
+        // Get input fields and push into an object we can reference below
+        let fields = fieldInputs.reduce((prevVal, ele) => {
             prevVal[ele.dataset.fieldname] = ele.value;
             return prevVal;
         }, {});
-
-    // Bring together the pk values we need
-    const pkValue = fieldKeys.pkFields
-        .reduce((prevVal, curVal) => {
-            if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
-                return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
-            } else {
-                return [prevVal, fields[curVal]].flat();
-            }
-        }, []);
-
-    gebi("examplesFilterPk").value = pkValue.join(CONSTS.DELIM);
+    
+    
+        // Bring together the pk values we need
+        const pkValue = fieldKeys.pkFields
+            .reduce((prevVal, curVal) => {
+                if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+                    return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
+                    } else {
+                        return [prevVal, fields[curVal]].flat();
+                    }
+                }, []);
+        
+        gebi("examplesFilterPk").value = pkValue.join(CONSTS.DELIM);
+    }
+    
+    redrawExampleDocuments();
 }
 
 function getFieldKeysByQueryName(queryName) {
