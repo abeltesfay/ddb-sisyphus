@@ -35,6 +35,7 @@ January 10
 [x] Query editor pk/sk should handle non composite keys
 [x] Query editor pk/sk should handle no/empty sort key
 [x] Update dropdown constants to be an enum
+[x] Flip enabled buttons depending on current editor
 
 January 9
 [x] Add query (contin)

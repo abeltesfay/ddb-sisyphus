@@ -19,8 +19,6 @@ function preparePage() {
     setClick("removeKey", removeKey);
     setClick("moveKeyUp", moveKeyUp);
     setClick("moveKeyDown", moveKeyDown);
-    setClick("showTableStructureEditor", showTableStructureEditor);
-    setClick("showQueryEditor", showQueryEditor);
     setClick("addQuery", addQuery);
     setClick("addIndex", addIndex);
     setClick("deleteQuery", deleteQuery);
@@ -29,6 +27,7 @@ function preparePage() {
     setClick("updateQuery", updateQuery);
     gebi("fieldFilter").onkeyup = updateFieldFilterValue;
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
+    setEditorViewButtons();
     
     console.debug("PREP: Finished prep");
 }
@@ -36,6 +35,11 @@ function preparePage() {
 function getInputsOnPageRefresh() {
     checkSavedState();
     updateFieldFilterValue();
+}
+
+function setEditorViewButtons() {
+    setClick("showTableStructureEditor", showTableStructureEditor);
+    setClick("showQueryEditor", showQueryEditor);
 }
 
 function redrawPage() {
@@ -455,6 +459,14 @@ function showTableStructureEditor() { currentEditor = CONSTS.EDITORS.TABLESTRUCT
 function showQueryEditor() { currentEditor = CONSTS.EDITORS.QUERIES; redrawPage(); }
 
 function showCurrentEditor() {
+    const buttons = Array.from(document.getElementsByClassName("showEditorButton"));
+
+    buttons.forEach(element => {
+        const id = element.id.toLowerCase();
+        const buttonToDisable = currentEditor.toLowerCase();
+        element.disabled = id.indexOf(buttonToDisable) !== -1;
+    });
+
     Array.from(document.getElementsByClassName("editView")).forEach(editor => {
         if (editor.classList.contains("hidden")) { return; }
         editor.classList.add("hidden");
