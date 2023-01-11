@@ -9,6 +9,20 @@ function setClick(id, fn) {
     if (gebi(id)) { gebi(id).onclick = fn; }
 }
 
+function getDatetimeFormatted() {
+    const dt = new Date();
+    const month = new Intl.DateTimeFormat('en-US', {month: 'short'}).format(dt),
+        day = dt.getDate(),
+        year = dt.getFullYear(),
+        hour = (dt.getHours() % 12) == 0 ? 12 : ('0' + (dt.getHours() % 12)).slice(-2),
+        min = ('0' + dt.getMinutes()).slice(-2),
+        ampm = dt.getHours() > 11 ? "PM" : "AM";
+    return `${month} ${day}, ${year} ${hour}:${min} ${ampm}`;
+}
+
+function gebi(id) { return document.getElementById(id); }
+function dce(tag) { return document.createElement(tag); }
+
 // Default structure for some fields
 function getDefaultAppState() { return { facets: [], queries: [], indices: {} }; };
 
@@ -97,5 +111,26 @@ function getIndexByName(name) {
     return APP_STATE.indices[APP_STATE.indices.findIndex(index => index.name === name)];
 }
 
-function gebi(id) { return document.getElementById(id); }
-function dce(tag) { return document.createElement(tag); }
+//
+// Validation
+//
+function isGoodExampleDocument(doc) {
+    if (!isObject(doc)) { alert(`Expected object, got type ${doc}`); return false; }
+    if (isEmpty(doc.pk)) { alert(`Expected non-empty pk, got: "${doc.pk}"`); return false; }
+    if (isEmpty(doc.sk)) { alert(`Expected non-empty sk, got: "${doc.sk}"`); return false; }
+
+    // Check for duplicates
+    let duplicateExamples = APP_STATE.examples.filter(example => example.pk === doc.pk && example.sk == doc.sk);
+    if (duplicateExamples.length > 0) {
+        alert(`This document is a duplicate for pk=[${doc.pk}], sk=[${doc.sk}]`);
+        return false;
+    }
+
+    return true;
+}
+
+function isEmpty(o) { return isUndefinedNull(o) || !isString(o) || o.trim().length === 0;}
+function isObject(o) { return !isUndefinedNull(o); }
+
+function isUndefinedNull(o) { return typeof o === "undefined" || o === null; }
+function isString(o) { return typeof o === "string"; }

@@ -29,6 +29,9 @@ function preparePage() {
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
     gebi("exampleFacetList").onchange = selectExampleFacetToAdd;
     setClick("addExample", addExample);
+    // setClick("editExample", editExample);
+    // setClick("copyExample", copyExample);
+    setClick("deleteExample", deleteExample);
     
     setEditorViewButtons();
     
@@ -60,7 +63,6 @@ function redrawPage() {
         redrawIndexEditArea();
 
         redrawExamplePage();
-        redrawExampleAddFields();
         
         updateFilteredFields();
     } catch (error) {
@@ -462,13 +464,14 @@ function redrawExamplePage() {
     redrawExampleButtons();
     redrawExampleFacetList();
     redrawExampleAddFields();
+    redrawExampleDocuments();
 }
 
 function redrawExampleButtons() {
     gebi("addExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("editExample").disabled = !selectedExampleDocument;
+    gebi("copyExample").disabled = !selectedExampleDocument;
     gebi("deleteExample").disabled = !selectedExampleDocument;
-    // gebi("pushExample").disabled = !(gebi("examplesNewHeaderRow").getElementsByTagName("th").length > 0);
 }
 
 function redrawExampleFacetList() {
@@ -504,20 +507,80 @@ function redrawExampleAddFields() {
     let newRow = dce("tr");
     newRow.id = "examplesNewDocumentToAdd";
     newTableBody.appendChild(newRow);
-    
-    facet.fields.forEach(field => {
+
+    let customizedFacetFields = clone(facet.fields)
+    let pk = customizedFacetFields.filter(field => field.name === "pk")[0];
+    let sk = customizedFacetFields.filter(field => field.name === "sk")[0];
+    customizedFacetFields = customizedFacetFields.filter(field => field.name !== "pk" && field.name !== "sk");
+    customizedFacetFields.unshift(sk);
+    customizedFacetFields.unshift(pk);
+
+    const compositeKeyFields = facet.fields.map(field => field.keys).flat();
+
+    customizedFacetFields.forEach(field => {
+        const isPartOfACompositeKeyField = compositeKeyFields.includes(field.name);
         let td = dce("th");
         td.innerText = field.name;
+        if (isPartOfACompositeKeyField) { td.classList.add("compositeKeyField"); }
         newTableHeaderRow.appendChild(td);
 
         // Input field
         let newInput = dce("input");
-        newInput.id = field.name;
+        newInput.id = `EXAMPLEFIELD#${field.name}`;
+        newInput.dataset.fieldname = `${field.name}`;
+        if (isPartOfACompositeKeyField) {
+            newInput.onkeyup = updateExampleInputs;
+            newInput.onchange = updateExampleInputs;
+        }
+
+        if (field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newInput.readOnly = true; } // Must fill in other fields to fill these
 
         let newTd = dce("td");
         newTd.appendChild(newInput);
         
         newRow.appendChild(newTd);
+    });
+}
+
+function redrawExampleDocuments() {
+    let examplesBody = gebi("examplesBody");
+    
+    // Clean all other rows out
+    Array.from(examplesBody.getElementsByTagName("tr"))
+        .filter(ele => ele.id !== "examplesHeaderRow")
+        .forEach(ele => ele.remove());
+
+    APP_STATE.examples.forEach((example, index) => {
+        let exampleRow = dce("tr");
+        exampleRow.id = `exampleRow#${index}`;
+        exampleRow.dataset.id = index;
+
+        if (index == selectedExampleDocument) { exampleRow.classList.add("highlightedexample"); }
+        
+        let exampleTd = dce("td");
+        exampleTd.title = "pk";
+        exampleTd.innerText = example["pk"].trim().length === 0 ? "-" : example["pk"];
+        exampleRow.appendChild(exampleTd);
+        exampleRow.onclick = selectExampleDocument;
+        
+        exampleTd = dce("td");
+        exampleTd.title = "sk";
+        exampleTd.innerText = example["sk"].trim().length === 0 ? "-" : example["sk"];
+        exampleRow.appendChild(exampleTd);
+        exampleRow.onclick = selectExampleDocument;
+
+        let fieldIndex = 0;
+        for (field in example) {
+            if (fieldIndex++ <= 1 || field === "pk" || field === "sk") { continue; }
+
+            let exampleTd = dce("td");
+            exampleTd.title = field;
+            exampleTd.innerText = example[field].trim().length === 0 ? "-" : example[field];
+            exampleRow.appendChild(exampleTd);
+            exampleRow.onclick = selectExampleDocument;
+        }
+
+        examplesBody.append(exampleRow);
     });
 }
 

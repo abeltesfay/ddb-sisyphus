@@ -6,6 +6,8 @@ function processKeys(event) {
         selectedKey = null;
         selectedQuery = null;
         selectedIndex = null;
+        selectedExampleFacetToAdd = null;
+        selectedExampleDocument = null;
         
         // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
 

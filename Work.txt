@@ -1,3 +1,9 @@
+January 11
+[ ] Do we need to specify pk/sk fields for table?
+[ ] Do we need to get into table details?
+[ ] Validate pk and sk are not empty string
+[ ] Validate keys are not duplicated
+
 January 10
 [x] Delete index
 [x] Update index (not a save, just update)
@@ -37,10 +43,24 @@ January 10
 [x] Update dropdown constants to be an enum
 [x] Flip enabled buttons depending on current editor
 [x] Example document section
+  - https://developer.mozilla.org/en-US/docs/Web/CSS/border-collapse
 [x] Add example
-[ ] Show examples
-[ ] Delete example
-[ ] Edit example
+[x] Show examples
+  [x] Delete all rows
+  [x] Add a row for each example
+  [x] Add a single field value in a td to each row
+[x] Delete example
+  [x] Select a row
+  [x] Prompt
+  [x] Remove
+[x] Add example - add facet name to object so we know what it is
+[-] Edit example
+[x] Migrate pk/sk to the front of the display
+[x] Migrate pk/sk to the front of the inputs
+[-] Add example has "CALCULATED" label for composite type fields
+  - https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/readonly
+  - Grayed out and marking other composite key fields instead
+[x] Update composite key fields on composite key part change
 
 January 9
 [x] Add query (contin)

@@ -97,7 +97,34 @@
     right: 0;
 }
 
-.highlightedfacet, .highlightedfield, .highlightedquery, .highlightedindex { font-weight: bold }
+.examples table {
+    margin-top: .5em;
+    border-collapse: collapse;
+}
+.examples table td {
+    padding: .25em .5em;
+}
+
+.examples table th.compositeKeyField {
+    color: red;
+}
+
+.examples table td input:read-only {
+    background-color: #eee;
+    border: 1pt solid gray;
+}
+
+.examples tr:hover {
+    background-color: #EEE;
+    cursor: pointer;
+}
+
+.highlightedfacet, .highlightedfield, .highlightedquery, .highlightedindex, .highlightedexample { font-weight: bold }
+
+.highlightedexample, .highlightedexample:hover {
+    background-color: #CCC;
+    /* color: white; */
+}
 
 .compositeKeys, .compositeKeyOptions {
     /* margin-bottom: 1em; */
