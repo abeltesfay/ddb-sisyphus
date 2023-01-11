@@ -6,7 +6,7 @@ function sortComparator(a, b) {
 }
 
 function setClick(id, fn) {
-    if (document.getElementById(id)) { document.getElementById(id).onclick = fn; }
+    if (gebi(id)) { gebi(id).onclick = fn; }
 }
 
 // Default structure for some fields
@@ -17,15 +17,15 @@ function getNewFacet(name) { return { name, fields: [] }; }
 function getNewField(name) { return { name, type: "", keys: [] } };
 
 function getNewFieldTypeElement(facetName, fieldName) {
-    let dropdown = document.createElement("select");
+    let dropdown = dce("select");
     dropdown.dataset.facet = facetName;
     dropdown.dataset.field = fieldName;
     dropdown.onchange = selectFieldType;
 
-    dropdown.appendChild(document.createElement("option"));
+    dropdown.appendChild(dce("option"));
     
     Object.values(CONSTS.FIELD_TYPES).forEach(value => {
-        let dropdownEle = document.createElement("option");
+        let dropdownEle = dce("option");
         dropdownEle.innerText = value;
         dropdown.appendChild(dropdownEle);
         if (value === getFacetFieldByNames(facetName, fieldName).type) { dropdownEle.selected = true; }

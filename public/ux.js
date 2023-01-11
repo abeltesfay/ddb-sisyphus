@@ -77,7 +77,7 @@ function checkSavedState() {
 }
 
 function setSavedFlag(isSaved) {
-    const savedBanner = document.getElementById("unsaved");
+    const savedBanner = gebi("unsaved");
     const saveButton = gebi("saveState");
 
     
@@ -94,15 +94,15 @@ function setSavedFlag(isSaved) {
 }
 
 function redrawFacets() {
-    const facetListEle = document.getElementById("facetList");
+    const facetListEle = gebi("facetList");
     Array.from(facetListEle.getElementsByTagName("li")).forEach(o => o.remove())
-    document.getElementById("editFacetName").disabled = !selectedFacet;
-    document.getElementById("deleteFacet").disabled = !selectedFacet;
+    gebi("editFacetName").disabled = !selectedFacet;
+    gebi("deleteFacet").disabled = !selectedFacet;
     
     let facetNames = APP_STATE?.facets?.map(facet => facet.name);
     
     facetNames?.forEach(facet => {
-        let facetEle = document.createElement("li");
+        let facetEle = dce("li");
         facetEle.innerText = facet;
         facetEle.dataset.name = facet;
         facetEle.onclick = selectFacet.bind(facetEle);
@@ -113,23 +113,23 @@ function redrawFacets() {
         }
     });
 
-    document.getElementById("editFacetName").disabled = !selectedFacet;
-    document.getElementById("deleteFacet").disabled = !selectedFacet;
+    gebi("editFacetName").disabled = !selectedFacet;
+    gebi("deleteFacet").disabled = !selectedFacet;
 }
 
 function redrawFields() {
-    const fieldListEle = document.getElementById("fieldList");
+    const fieldListEle = gebi("fieldList");
     Array.from(fieldListEle.getElementsByTagName("li")).forEach(o => o.remove())
-    document.getElementById("editFieldName").disabled = !selectedField;
-    document.getElementById("deleteField").disabled = !selectedField;
+    gebi("editFieldName").disabled = !selectedField;
+    gebi("deleteField").disabled = !selectedField;
 
     if (!selectedFacet) { redrawAllFields(); return; }
     
     let fields = getFacetByName(selectedFacet).fields ?? [];
     
     fields?.forEach(field => {
-        let fieldEle = document.createElement("li");
-        let fieldLabelEle = document.createElement("span");
+        let fieldEle = dce("li");
+        let fieldLabelEle = dce("span");
         // fieldText = `${field}`;
         // fieldLabelEle.innerText = fieldText;
         fieldLabelEle.innerText = field.name;
@@ -154,12 +154,12 @@ function redrawFields() {
 }
 
 function redrawAllFields() {
-    const fieldListEle = document.getElementById("fieldList");
+    const fieldListEle = gebi("fieldList");
     
     APP_STATE.facets.forEach(facet => {
         facet.fields.forEach(field => {
-            let fieldEle = document.createElement("li");
-            let fieldLabelEle = document.createElement("span");
+            let fieldEle = dce("li");
+            let fieldLabelEle = dce("span");
             fieldText = `${facet.name}.${field.name}`;
             fieldLabelEle.innerText = fieldText;
             fieldLabelEle.dataset.name = field.name;
@@ -196,7 +196,7 @@ function redrawCompositeEditor() {
 }
 
 function setCompositeEditorVisible(visible) {
-    const editor = document.getElementById("compositeEditor");
+    const editor = gebi("compositeEditor");
     const isVisible = !editor.classList.contains("hidden");
 
     if (visible && !isVisible) {
@@ -208,17 +208,17 @@ function setCompositeEditorVisible(visible) {
 
 function fillCompositeDropdown() {
     selectedKey = undefined;
-    const compositeDropdown = document.getElementById("compositeKeyOptions");
-    const compositeKeyList = document.getElementById("compositeKeys");
+    const compositeDropdown = gebi("compositeKeyOptions");
+    const compositeKeyList = gebi("compositeKeys");
     Array.from(compositeDropdown.getElementsByTagName("option")).forEach(o => o.innerText != "" && o.remove());
     Array.from(compositeKeyList.getElementsByTagName("option")).forEach(o => o.remove());
     
     let { facetName, fieldName } = getSelectedFacetAndFieldNames();
 
-    const compositeKey = document.getElementById("compositeKeys");
+    const compositeKey = gebi("compositeKeys");
     let field = getFacetFieldByNames(facetName, fieldName);
     field.keys.forEach(key => {
-        let selectableKeyEle = document.createElement("option");
+        let selectableKeyEle = dce("option");
         selectableKeyEle.innerText = key;
         selectableKeyEle.value = key;
         selectableKeyEle.dataset.field = key;
@@ -227,8 +227,8 @@ function fillCompositeDropdown() {
     });
 
     // Create our empty & static prompt options
-    let selectableKeyEmptyValueEle = document.createElement("option");
-    let selectableKeyStaticValueEle = document.createElement("option");
+    let selectableKeyEmptyValueEle = dce("option");
+    let selectableKeyStaticValueEle = dce("option");
     selectableKeyEmptyValueEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
     selectableKeyStaticValueEle.innerText = CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID;
     selectableKeyEmptyValueEle.value = "";
@@ -243,7 +243,7 @@ function fillCompositeDropdown() {
 
     // Create an element for each non-composite type field name
     fieldNames.forEach(fieldName => {
-        let selectableKeyEle = document.createElement("option");
+        let selectableKeyEle = dce("option");
         selectableKeyEle.value = fieldName;
         selectableKeyEle.innerText = fieldName;
         compositeDropdown.appendChild(selectableKeyEle);
@@ -251,16 +251,16 @@ function fillCompositeDropdown() {
 }
 
 function redrawQueries() {
-    const queryListEle = document.getElementById("queryList");
+    const queryListEle = gebi("queryList");
     Array.from(queryListEle.getElementsByTagName("li")).forEach(o => o.remove())
-    document.getElementById("editQueryName").disabled = !selectedQuery;
-    document.getElementById("deleteQuery").disabled = !selectedQuery;
-    document.getElementById("updateQuery").disabled = !selectedQuery;
+    gebi("editQueryName").disabled = !selectedQuery;
+    gebi("deleteQuery").disabled = !selectedQuery;
+    gebi("updateQuery").disabled = !selectedQuery;
     
     let queryNames = APP_STATE?.queries?.map(query => query.name);
     
     queryNames?.forEach(query => {
-        let queryEle = document.createElement("li");
+        let queryEle = dce("li");
         queryEle.innerText = query;
         queryEle.dataset.name = query;
         queryEle.onclick = selectQuery.bind(queryEle);
@@ -271,14 +271,14 @@ function redrawQueries() {
         }
     });
 
-    document.getElementById("editQueryName").disabled = !selectedQuery;
-    document.getElementById("deleteQuery").disabled = !selectedQuery;
+    gebi("editQueryName").disabled = !selectedQuery;
+    gebi("deleteQuery").disabled = !selectedQuery;
 }
 
 function redrawQueryEditArea() {
-    let nameEle = document.getElementById("queryName");
-    let descrEle = document.getElementById("queryDescription");
-    let indexEle = document.getElementById("queryIndex");
+    let nameEle = gebi("queryName");
+    let descrEle = gebi("queryDescription");
+    let indexEle = gebi("queryIndex");
 
     nameEle.value = "";
     descrEle.value = "";
@@ -297,7 +297,7 @@ function redrawQueryEditArea() {
 
 function redrawQueryEditIndexArea() {
     let queryIndexName = gebi("queryIndex").value;
-    let queryPkEle = document.getElementById("queryPk");
+    let queryPkEle = gebi("queryPk");
     let querySkBeginsWithEle = gebi("querySkBeginsWith");
     
     queryPkEle.value = "";
@@ -326,16 +326,16 @@ function redrawQueryEditIndexArea() {
 }
 
 function redrawQueryIndicesDropdown(indexToSelect) {
-    const queryIndexEle = document.getElementById("queryIndex");
+    const queryIndexEle = gebi("queryIndex");
     Array.from(queryIndexEle.getElementsByTagName("option")).forEach(o => o.remove());
 
-    let pleaseSelectOption = document.createElement("option");
+    let pleaseSelectOption = dce("option");
     pleaseSelectOption.value = "";
     pleaseSelectOption.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
     queryIndexEle.appendChild(pleaseSelectOption);
 
     APP_STATE.indices?.forEach(index => {
-        const option = document.createElement("option");
+        const option = dce("option");
         option.innerText = index.name;
         option.value = index.name;
         if (index.name === indexToSelect) { option.selected = true; }
@@ -344,7 +344,7 @@ function redrawQueryIndicesDropdown(indexToSelect) {
 }
 
 function redrawQuerySkDropdown(selectedSkValue, indexName) {
-    const querySkBeginsWithEle = document.getElementById("querySkBeginsWith");
+    const querySkBeginsWithEle = gebi("querySkBeginsWith");
     Array.from(querySkBeginsWithEle.getElementsByTagName("option")).forEach(o => o.remove());
     if (!indexName) { return; }
 
@@ -353,11 +353,11 @@ function redrawQuerySkDropdown(selectedSkValue, indexName) {
     const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
 
     // Empty/no-string option
-    querySkBeginsWithEle.appendChild(document.createElement("option"));
+    querySkBeginsWithEle.appendChild(dce("option"));
 
     // Single option if field is a non-composite key
     if (underlyingField.type !== CONSTS.FIELD_TYPES.COMPOSITE) {
-        const option = document.createElement("option");
+        const option = dce("option");
         option.innerText = underlyingField.name;
         option.value = underlyingField.name;
         querySkBeginsWithEle.appendChild(option);
@@ -371,7 +371,7 @@ function redrawQuerySkDropdown(selectedSkValue, indexName) {
         potentialSearch += `${cleanedUpField}${CONSTS.DELIM}`;
         const usableSearchPattern = potentialSearch.slice(0, -1);
 
-        const option = document.createElement("option");
+        const option = dce("option");
         option.innerText = usableSearchPattern;
         option.value = usableSearchPattern;
         querySkBeginsWithEle.appendChild(option);
@@ -381,16 +381,16 @@ function redrawQuerySkDropdown(selectedSkValue, indexName) {
 }
 
 function redrawIndices() {
-    const indexListEle = document.getElementById("indexList");
+    const indexListEle = gebi("indexList");
     Array.from(indexListEle.getElementsByTagName("li")).forEach(o => o.remove())
-    document.getElementById("editIndexName").disabled = !selectedIndex;
-    document.getElementById("deleteIndex").disabled = !selectedIndex;
-    document.getElementById("updateIndex").disabled = !selectedIndex;
+    gebi("editIndexName").disabled = !selectedIndex;
+    gebi("deleteIndex").disabled = !selectedIndex;
+    gebi("updateIndex").disabled = !selectedIndex;
     
     let indexNames = APP_STATE?.indices?.map(index => index.name);
     
     indexNames?.forEach(index => {
-        let indexEle = document.createElement("li");
+        let indexEle = dce("li");
         indexEle.innerText = index;
         indexEle.dataset.name = index;
         indexEle.onclick = selectIndex.bind(indexEle);
@@ -401,15 +401,15 @@ function redrawIndices() {
         }
     });
 
-    document.getElementById("editIndexName").disabled = !selectedIndex;
-    document.getElementById("deleteIndex").disabled = !selectedIndex;
+    gebi("editIndexName").disabled = !selectedIndex;
+    gebi("deleteIndex").disabled = !selectedIndex;
 }
 
 function redrawIndexEditArea() {
-    let nameEle = document.getElementById("indexName");
-    let descrEle = document.getElementById("indexDescription");
-    let pkEle = document.getElementById("indexPk");
-    let skEle = document.getElementById("indexSk");
+    let nameEle = gebi("indexName");
+    let descrEle = gebi("indexDescription");
+    let pkEle = gebi("indexPk");
+    let skEle = gebi("indexSk");
 
     nameEle.value = "";
     descrEle.value = "";
@@ -427,12 +427,12 @@ function redrawIndexEditArea() {
         .sort(sortComparator);
     
     // Empty value
-    pkEle.appendChild(document.createElement("option"));
-    skEle.appendChild(fieldEle2 = document.createElement("option"));
+    pkEle.appendChild(dce("option"));
+    skEle.appendChild(fieldEle2 = dce("option"));
 
     allFields.forEach(field => {
-        const fieldEle1 = document.createElement("option");
-        const fieldEle2 = document.createElement("option");
+        const fieldEle1 = dce("option");
+        const fieldEle2 = dce("option");
         fieldEle1.innerText = field;
         fieldEle2.innerText = field;
         fieldEle1.value = field;
@@ -475,13 +475,13 @@ function redrawExampleFacetList() {
     const exampleFacetList = gebi("exampleFacetList");
     Array.from(exampleFacetList.getElementsByTagName("option")).forEach(element => element.remove());
 
-    let pleaseSelectElement = document.createElement("option");
+    let pleaseSelectElement = dce("option");
     pleaseSelectElement.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
     pleaseSelectElement.value = "";
     exampleFacetList.appendChild(pleaseSelectElement);
 
     APP_STATE.facets.forEach(facet => {
-        let option = document.createElement("option");
+        let option = dce("option");
         option.innerText = facet.name;
         option.value = facet.name;
         exampleFacetList.appendChild(option);

@@ -133,7 +133,7 @@ function selectKey() {
 }
 
 function addKey() {
-    let key = document.getElementById("compositeKeyOptions").value;
+    let key = gebi("compositeKeyOptions").value;
     if (!key || key.trim().length === 0) { return; }
     
     let { facetName, fieldName } = getSelectedFacetAndFieldNames();
@@ -189,7 +189,7 @@ function moveKeyUp() {
     redrawPage();
 
     selectedKey = currentKey;
-    document.getElementById("compositeKeys").selectedIndex = index - 1;
+    gebi("compositeKeys").selectedIndex = index - 1;
 }
 
 function moveKeyDown() {
@@ -210,7 +210,7 @@ function moveKeyDown() {
     redrawPage();
     
     selectedKey = currentKey;
-    document.getElementById("compositeKeys").selectedIndex = index + 1;
+    gebi("compositeKeys").selectedIndex = index + 1;
 }
 
 function removeKey() {
