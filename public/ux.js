@@ -27,6 +27,9 @@ function preparePage() {
     setClick("updateQuery", updateQuery);
     gebi("fieldFilter").onkeyup = updateFieldFilterValue;
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
+    gebi("exampleFacetList").onchange = selectExampleFacetToAdd;
+    setClick("addExample", addExample);
+    
     setEditorViewButtons();
     
     console.debug("PREP: Finished prep");
@@ -40,6 +43,7 @@ function getInputsOnPageRefresh() {
 function setEditorViewButtons() {
     setClick("showTableStructureEditor", showTableStructureEditor);
     setClick("showQueryEditor", showQueryEditor);
+    setClick("showExamplesEditor", showExamplesEditor);
 }
 
 function redrawPage() {
@@ -54,6 +58,9 @@ function redrawPage() {
         redrawQueryEditArea();
         redrawIndices();
         redrawIndexEditArea();
+
+        redrawExamplePage();
+        redrawExampleAddFields();
         
         updateFilteredFields();
     } catch (error) {
@@ -451,12 +458,75 @@ function updateFilteredFields() {
         });
 }
 
+function redrawExamplePage() {
+    redrawExampleButtons();
+    redrawExampleFacetList();
+    redrawExampleAddFields();
+}
+
+function redrawExampleButtons() {
+    gebi("addExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("editExample").disabled = !selectedExampleDocument;
+    gebi("deleteExample").disabled = !selectedExampleDocument;
+    // gebi("pushExample").disabled = !(gebi("examplesNewHeaderRow").getElementsByTagName("th").length > 0);
+}
+
+function redrawExampleFacetList() {
+    const exampleFacetList = gebi("exampleFacetList");
+    Array.from(exampleFacetList.getElementsByTagName("option")).forEach(element => element.remove());
+
+    let pleaseSelectElement = document.createElement("option");
+    pleaseSelectElement.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
+    pleaseSelectElement.value = "";
+    exampleFacetList.appendChild(pleaseSelectElement);
+
+    APP_STATE.facets.forEach(facet => {
+        let option = document.createElement("option");
+        option.innerText = facet.name;
+        option.value = facet.name;
+        exampleFacetList.appendChild(option);
+        if (facet.name === selectedExampleFacetToAdd) { option.selected = true; }
+    });
+}
+
+function redrawExampleAddFields() {
+    Array.from(gebi("examplesNewBody").getElementsByTagName("tr"))
+    .filter(ele => ele.id !== "examplesNewHeaderRow")
+    .forEach(ele => ele.remove());
+    
+    let newTableHeaderRow = gebi("examplesNewHeaderRow");
+    Array.from(newTableHeaderRow.getElementsByTagName("th")).forEach(headerCell => headerCell.remove());
+    
+    if (!selectedExampleFacetToAdd || selectedExampleFacetToAdd.trim().length === 0) { return; }
+    
+    const facet = getFacetByName(selectedExampleFacetToAdd);
+    let newTableBody = gebi("examplesNewBody");
+    let newRow = dce("tr");
+    newRow.id = "examplesNewDocumentToAdd";
+    newTableBody.appendChild(newRow);
+    
+    facet.fields.forEach(field => {
+        let td = dce("th");
+        td.innerText = field.name;
+        newTableHeaderRow.appendChild(td);
+
+        // Input field
+        let newInput = dce("input");
+        newInput.id = field.name;
+
+        let newTd = dce("td");
+        newTd.appendChild(newInput);
+        
+        newRow.appendChild(newTd);
+    });
+}
+
 //
 // Tabs
 //
 function showTableStructureEditor() { currentEditor = CONSTS.EDITORS.TABLESTRUCT; redrawPage(); }
-
 function showQueryEditor() { currentEditor = CONSTS.EDITORS.QUERIES; redrawPage(); }
+function showExamplesEditor() { currentEditor = CONSTS.EDITORS.EXAMPLES; redrawPage(); }
 
 function showCurrentEditor() {
     const buttons = Array.from(document.getElementsByClassName("showEditorButton"));

@@ -16,6 +16,7 @@ function getValidatedState(state) {
     newState.facets = newState.facets ?? [];
     newState.queries = newState.queries ?? [];
     newState.indices = newState.indices ?? [];
+    newState.examples = newState.examples ?? [];
     
     newState.facets.forEach(facet => {
         facet.fields = facet.fields

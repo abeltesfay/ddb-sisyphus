@@ -11,16 +11,18 @@
         <script type="text/javascript" src="ux-keys.js"></script>
         <script type="text/javascript" src="editorStructure.js"></script>
         <script type="text/javascript" src="editorQueries.js"></script>
+        <script type="text/javascript" src="editorExamples.js"></script>
         <script type="text/javascript">
             let APP_STATE = getDefaultAppState();
             let APP_STATE_SAVED = undefined;
             
             // let selectedFacet = "Review", selectedField = "GSI1-PK", selectedKey;
-            let selectedFacet, selectedField, selectedKey, selectedQuery, selectedIndex;
+            let selectedFacet, selectedField, selectedKey, selectedQuery, selectedIndex, selectedExampleFacetToAdd, selectedExampleDocument;
             let fieldFilterValue = "";
 
-            let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
+            // let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
             // let currentEditor = CONSTS.EDITORS.QUERIES;
+            let currentEditor = CONSTS.EDITORS.EXAMPLES;
         </script>
     </head>
     <body onkeydown="processKeys(event);" onload="preparePage();">
@@ -29,6 +31,7 @@
                 <legend>View</legend>
                 <button class="showEditorButton" id="showTableStructureEditor" disabled>Facet / Fields</button>
                 <button class="showEditorButton" id="showQueryEditor" disabled>Queries / Indices</button>
+                <button class="showEditorButton" id="showExamplesEditor" disabled>Examples</button>
             </fieldset>
             <fieldset>
                 <legend>Application State</legend>
@@ -105,6 +108,31 @@
                     <label>PK</label><select id="indexPk" title="partition key"></select> <br/>
                     <label>SK</label><select id="indexSk" title="sort key"></select>
                 </div>
+            </div>
+        </div>
+        <div class="examplesEditor editView hidden">
+            <div class="examples">
+                <h2>Example Documents</h2>
+                <select id="exampleFacetList"></select>
+                <button disabled id="addExample" value="Add">Add</button>
+                <button disabled id="editExample" value="Edit">Edit</button>
+                <button disabled id="deleteExample" value="Delete">Delete</button>
+                <!-- <button disabled id="pushExample" value="Push">Push</button> -->
+                <div>
+                    <table id="exampleNewTable">
+                        <tbody id="examplesNewBody">
+                            <tr id="examplesNewHeaderRow"></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="">
+                    <table id="examplesTable">
+                        <tbody id="examplesBody">
+                            <tr id="examplesHeaderRow"></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <br/>
             </div>
         </div>
     </body>

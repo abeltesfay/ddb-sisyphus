@@ -98,3 +98,4 @@ function getIndexByName(name) {
 }
 
 function gebi(id) { return document.getElementById(id); }
+function dce(tag) { return document.createElement(tag); }

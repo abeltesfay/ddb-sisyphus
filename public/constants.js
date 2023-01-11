@@ -15,5 +15,6 @@ let CONSTS = {
     EDITORS: {
         TABLESTRUCT: "tableStructureEditor",
         QUERIES: "queryEditor",
+        EXAMPLES: "examplesEditor",
     },
 };
