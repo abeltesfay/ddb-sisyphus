@@ -29,7 +29,7 @@ function preparePage() {
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
     gebi("exampleFacetList").onchange = selectExampleFacetToAdd;
     setClick("addExample", addExample);
-    // setClick("editExample", editExample);
+    setClick("editExample", editExample);
     // setClick("copyExample", copyExample);
     setClick("deleteExample", deleteExample);
     gebi("compositeKeyFieldsOnly").onchange = toggleExampleAddCkfsOnly;
@@ -465,7 +465,9 @@ function updateFilteredFields() {
 function redrawExamplePage() {
     redrawExampleButtons();
     redrawExampleFacetList();
+    redrawExampleAddOrEditFieldsReset();
     redrawExampleAddFields();
+    redrawExampleEditFields();
     
     redrawExamplesReadBar();
     redrawExampleDocuments();
@@ -473,6 +475,8 @@ function redrawExamplePage() {
 
 function redrawExampleButtons() {
     gebi("addExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("updateExample").disabled = !selectedExampleDocumentToEdit;
+    gebi("cancelExample").disabled = !selectedExampleDocumentToEdit;
     gebi("editExample").disabled = !selectedExampleDocument;
     gebi("copyExample").disabled = !selectedExampleDocument;
     gebi("deleteExample").disabled = !selectedExampleDocument;
@@ -496,17 +500,28 @@ function redrawExampleFacetList() {
     });
 }
 
-function redrawExampleAddFields() {
+function redrawExampleAddFields() {    
+    if (!selectedExampleFacetToAdd || selectedExampleFacetToAdd.trim().length === 0) { return; }
+    console.log("selectedExampleFacetToAdd", selectedExampleFacetToAdd);
+    redrawExampleAddOrEditFields(selectedExampleFacetToAdd);
+}
+
+function redrawExampleEditFields() {    
+    if (!selectedExampleDocumentToEdit || selectedExampleDocumentToEdit.trim().length === 0) { return; }
+    redrawExampleAddOrEditFields(selectedExampleDocumentToEdit);
+}
+
+function redrawExampleAddOrEditFieldsReset() {
     Array.from(gebi("examplesNewBody").getElementsByTagName("tr"))
-    .filter(ele => ele.id !== "examplesNewHeaderRow")
-    .forEach(ele => ele.remove());
+        .filter(ele => ele.id !== "examplesNewHeaderRow")
+        .forEach(ele => ele.remove());
     
     let newTableHeaderRow = gebi("examplesNewHeaderRow");
     Array.from(newTableHeaderRow.getElementsByTagName("th")).forEach(headerCell => headerCell.remove());
-    
-    if (!selectedExampleFacetToAdd || selectedExampleFacetToAdd.trim().length === 0) { return; }
-    
-    const facet = getFacetByName(selectedExampleFacetToAdd);
+}
+
+function redrawExampleAddOrEditFields(facetName) {
+    const facet = getFacetByName(facetName);
     let newTableBody = gebi("examplesNewBody");
     let newRow = dce("tr");
     newRow.id = "examplesNewDocumentToAdd";
@@ -520,6 +535,7 @@ function redrawExampleAddFields() {
     customizedFacetFields.unshift(pk);
 
     const compositeKeyFields = facet.fields.map(field => field.keys).flat();
+    let newTableHeaderRow = gebi("examplesNewHeaderRow");
 
     customizedFacetFields.forEach(field => {
         const isPartOfACompositeKeyField = compositeKeyFields.includes(field.name);

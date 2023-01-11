@@ -1,6 +1,18 @@
 //
 // Examples
 //
+function selectExampleFacetToAdd() {
+    if (selectedExampleDocumentToEdit && !confirm("Looks like you are editing an example, adding a new one will lose any unsaved changes. Are you sure?")) {
+        gebi("exampleFacetList").value = "";
+        return;
+    }
+
+    selectedExampleDocumentToEdit = null;
+    selectedExampleFacetToAdd = this.value;
+    redrawPage();
+    focusFirstNonReadOnlyInput();
+}
+
 function addExample() {
     let exampleFields = gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input");
     
@@ -23,19 +35,15 @@ function addExample() {
     console.debug("ADDEXAMPLE: New example added");
 }
 
-function selectExampleFacetToAdd() {
-    selectedExampleFacetToAdd = this.value;
-    redrawPage();
-    focusFirstNonReadOnlyInput();
-}
-
 function focusFirstNonReadOnlyInput() {
     // TODO.. this focuses on the first input
     gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input")?.[0]?.focus();
 }
 
 function selectExampleDocument() {
+    if (selectedExampleDocumentToEdit && !confirm("Looks like you are editing an example, selecting a different example will lose any unsaved changes. Are you sure?")) { return; }
     selectedExampleDocument = selectedExampleDocument == this.dataset.id ? null : this.dataset.id;
+    selectedExampleDocumentToEdit = null;
     redrawPage();
 }
 
@@ -84,4 +92,13 @@ function updateExampleQueryInputs() {
         }, {});
 
     redrawExampleQueryInputs();
+}
+
+function editExample() {
+    if (selectedExampleFacetToAdd && !confirm("Looks like you are adding an example, editing an existing one will lose any unsaved changes. Are you sure?")) { return; }
+    const example = APP_STATE.examples[selectedExampleDocument];
+    selectedExampleFacetToAdd = null;
+    selectedExampleDocumentToEdit = example.__facetName;
+    redrawPage();
+    focusFirstNonReadOnlyInput();
 }

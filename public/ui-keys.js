@@ -7,6 +7,7 @@ function processKeys(event) {
         selectedQuery = null;
         selectedIndex = null;
         selectedExampleFacetToAdd = null;
+        selectedExampleDocumentToEdit = null;
         selectedExampleDocument = null;
         examplesFilterValues = {};
         
