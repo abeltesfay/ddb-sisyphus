@@ -8,7 +8,7 @@ function selectExampleFacetToAdd() {
     }
 
     selectedExampleDocumentToEdit = null;
-    selectedExampleFacetToAdd = this.value;
+    selectedExampleFacetToAdd = gebi("exampleFacetList").value;
     redrawPage();
     focusFirstNonReadOnlyInput();
 }
@@ -28,7 +28,7 @@ function addExample() {
     if (!isGoodExampleDocument(newExampleDocument)) { return; }
 
     APP_STATE.examples.push(newExampleDocument);
-    selectedExampleFacetToAdd = "";
+    selectedExampleFacetToAdd = null;
     gebi("exampleFacetList").value = "";
 
     redrawPage();
@@ -42,26 +42,26 @@ function focusFirstNonReadOnlyInput() {
 
 function selectExampleDocument() {
     if (selectedExampleDocumentToEdit && !confirm("Looks like you are editing an example, selecting a different example will lose any unsaved changes. Are you sure?")) { return; }
-    selectedExampleDocument = selectedExampleDocument == this.dataset.id ? null : this.dataset.id;
+    selectedExampleDocumentIndex = selectedExampleDocumentIndex == this.dataset.id ? null : this.dataset.id;
     selectedExampleDocumentToEdit = null;
     redrawPage();
 }
 
 function deleteExample() {
-    if (!selectedExampleDocument) { return; }
-    console.warn(`DELETEEXAMPLE: Deleting example #${selectedExampleDocument}`);
+    if (!selectedExampleDocumentIndex) { return; }
+    console.warn(`DELETEEXAMPLE: Deleting example #${selectedExampleDocumentIndex}`);
     if (!confirm("Are you sure you want to delete this example?")) { return; }
 
-    APP_STATE.examples = APP_STATE.examples.filter((item, index) => index != selectedExampleDocument);
+    APP_STATE.examples = APP_STATE.examples.filter((item, index) => index != selectedExampleDocumentIndex);
     redrawPage();
-    console.warn(`DELETEEXAMPLE: Example #${selectedExampleDocument} deleted`);
-    selectedExampleDocument = null;
+    console.warn(`DELETEEXAMPLE: Example #${selectedExampleDocumentIndex} deleted`);
+    selectedExampleDocumentIndex = null;
 }
 
 // While adding an example, update all the composite key fields that are read only when another field is changed
 function updateNewExampleInputs() {
     let exampleInputFields = Array.from(gebi("examplesNewDocumentToAdd").getElementsByTagName("input")).filter(ele => ele.readOnly);
-    const facetName = gebi("exampleFacetList").value;
+    const facetName = getCurrentExampleFacetName();
 
     exampleInputFields.forEach(ele => {
         let fieldName = ele.dataset.fieldname;
@@ -96,9 +96,58 @@ function updateExampleQueryInputs() {
 
 function editExample() {
     if (selectedExampleFacetToAdd && !confirm("Looks like you are adding an example, editing an existing one will lose any unsaved changes. Are you sure?")) { return; }
-    const example = APP_STATE.examples[selectedExampleDocument];
+    const example = APP_STATE.examples[selectedExampleDocumentIndex];
     selectedExampleFacetToAdd = null;
-    selectedExampleDocumentToEdit = example.__facetName;
+    selectedExampleDocumentToEdit = example;
     redrawPage();
+    focusFirstNonReadOnlyInput();
+}
+
+function updateExample() {
+    let exampleFields = gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input");
+    
+    let newExampleDocument = Array.from(exampleFields).reduce((prevValue, curValue) => {
+        const fieldName = curValue.dataset.fieldname;
+        prevValue[fieldName] = curValue.value;
+        return prevValue;
+    }, {
+        __facetName: selectedExampleDocumentToEdit.__facetName, // Should probably protect against this field name in other editor
+        __dttm: getDatetimeFormatted()
+    });
+
+    if (!isGoodExampleDocument(newExampleDocument, true)) { return; }
+
+    APP_STATE.examples[selectedExampleDocumentIndex] = newExampleDocument;
+    selectedExampleDocumentToEdit = null;
+
+    redrawPage();
+    console.debug("ADDEXAMPLE: New example added");   
+}
+
+function copyExample() {
+    if (!selectedExampleDocumentIndex) { return; }
+
+    const example = APP_STATE.examples[selectedExampleDocumentIndex]
+
+    const currentFacetName = example.__facetName;
+
+    if (!selectedExampleFacetToAdd) {
+        selectedExampleFacetToAdd = currentFacetName;
+        gebi("exampleFacetList").value = selectedExampleFacetToAdd;
+        selectExampleFacetToAdd();
+    }
+
+    if (currentFacetName !== selectedExampleFacetToAdd) {
+        alert("Cannot copy values in from an different facet");
+        return;
+    }
+
+    // Validate that current add doesn't already have data
+    const inputEles = Array.from(gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input") ?? []);
+    const alreadyHasInputValues = inputEles.some(ele => ele.value !== "");
+
+    if (alreadyHasInputValues && !confirm("Looks like you are adding an example, copying an existing one in will lose any unsaved changes. Are you sure?")) { return; }
+
+    inputEles.forEach(ele => ele.value = example[ele.dataset.fieldname]);
     focusFirstNonReadOnlyInput();
 }

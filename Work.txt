@@ -1,3 +1,7 @@
+January 12
+[ ] Filter examples by selected index
+[ ] Disable copy if facet list name doesn't match selected
+
 January 11
 [o] Do we need to specify pk/sk fields for table?
 [o] Do we need to get into table details?
@@ -26,10 +30,12 @@ January 11
 [o] Support non-composite sk on examples editor
   [o] Logic read bar in input
   [o] Test
-[ ] Edit example
+[x] Edit example
   [x] Prevent losing data
-  [ ] Pre-populate fields with selected example
-  [ ] Save
+  [x] Pre-populate fields with selected example
+  [x] Save
+[x] Copy example
+[x] Copy should auto-select add as well
 
 January 10
 [x] Delete index

@@ -147,17 +147,27 @@ function getFieldKeysByQueryName(queryName) {
 
 function getKVArr(o) { return Object.keys(o).map(key => ({ key, value: o[key] })); }
 
+function getCurrentExampleFacetName() {
+    if (selectedExampleDocumentToEdit) {
+        return selectedExampleDocumentToEdit.__facetName;
+    } else if (selectedExampleFacetToAdd) {
+        return selectedExampleFacetToAdd;
+    }
+
+    return;
+}
+
 //
 // Validation
 //
-function isGoodExampleDocument(doc) {
+function isGoodExampleDocument(doc, duplicatesAreOkay = false) {
     if (!isObject(doc)) { alert(`Expected object, got type ${doc}`); return false; }
     if (isEmpty(doc.pk)) { alert(`Expected non-empty pk, got: "${doc.pk}"`); return false; }
     if (isEmpty(doc.sk)) { alert(`Expected non-empty sk, got: "${doc.sk}"`); return false; }
 
     // Check for duplicates
     let duplicateExamples = APP_STATE.examples.filter(example => example.pk === doc.pk && example.sk == doc.sk);
-    if (duplicateExamples.length > 0) {
+    if (!duplicatesAreOkay && duplicateExamples.length > 0) {
         alert(`This document is a duplicate for pk=[${doc.pk}], sk=[${doc.sk}]`);
         return false;
     }
