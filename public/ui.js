@@ -571,7 +571,7 @@ function redrawExampleDocuments() {
         const pkValue = example["pk"].trim().length === 0 ? "-" : example["pk"];
         const skValue = example["sk"].trim().length === 0 ? "-" : example["sk"];
         if (examplesFilterPkValue && examplesFilterPkValue?.length !== 0 && pkValue !== examplesFilterPkValue) { return; }
-        // if (examplesFilterSkValue && examplesFilterSkValue?.length !== 0 && skValue !== examplesFilterSkValue) { return; }
+        if (examplesFilterSkValue && examplesFilterSkValue?.length !== 0 && skValue.indexOf(examplesFilterSkValue) !== 0) { return; }
 
         let exampleRow = dce("tr");
         exampleRow.id = `exampleRow#${index}`;
@@ -724,7 +724,22 @@ function redrawExamplesReadTableInputFields() {
         gebi("examplesHeaderRowQueryInputs").appendChild(inputCellEle);
     });
 
-    // TODO skFields
+    skFields.forEach( skField => {
+        if (skField.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) { return; }
+        let headerCellEle = dce("th");
+        headerCellEle.innerText = skField;
+
+        let inputEle = dce("input");
+        let inputCellEle = dce("th");
+        inputCellEle.appendChild(inputEle);
+        inputCellEle.onkeyup = updateExampleQueryInputs;
+        inputCellEle.onchange = updateExampleQueryInputs;
+        inputEle.dataset.fieldname = skField;
+        inputEle.classList.add(`examplesQueryInputField`);
+
+        gebi("examplesHeaderRowQueryLabels").appendChild(headerCellEle);
+        gebi("examplesHeaderRowQueryInputs").appendChild(inputCellEle);
+    });
 }
 
 function updateExampleQueryInputs() {
@@ -734,6 +749,7 @@ function updateExampleQueryInputs() {
     
     if (!fieldInputs.some(ele => ele.value.length != 0)) {
         gebi("examplesFilterPk").value = ""
+        gebi("examplesFilterSk").value = ""
     } else {
         // Get input fields and push into an object we can reference below
         let fields = fieldInputs.reduce((prevVal, ele) => {
@@ -742,8 +758,17 @@ function updateExampleQueryInputs() {
         }, {});
     
     
-        // Bring together the pk values we need
+        // Bring together the pk/sk values we need
         const pkValue = fieldKeys.pkFields
+            .reduce((prevVal, curVal) => {
+                if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+                    return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
+                    } else {
+                        return [prevVal, fields[curVal]].flat();
+                    }
+                }, []);
+
+        const skValue = fieldKeys.skFields
             .reduce((prevVal, curVal) => {
                 if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
                     return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
@@ -753,8 +778,9 @@ function updateExampleQueryInputs() {
                 }, []);
         
         gebi("examplesFilterPk").value = pkValue.join(CONSTS.DELIM);
+        gebi("examplesFilterSk").value = skValue.join(CONSTS.DELIM);
     }
-    
+
     redrawExampleDocuments();
 }
 
@@ -764,21 +790,30 @@ function getFieldKeysByQueryName(queryName) {
     const index = getIndexByName(query.index);
     if (!index) { return; }
     
-    const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
-    const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
     let pkFields = [], skFields = [];
 
-    if (underlyingField.keys) {
-        pkFields = [pkFields, clone(underlyingField.keys)].flat()
+    const underlyingFacetFieldNamePk = getFacetAndFieldByFullName(index.pk);
+    const underlyingFieldPk = getFacetFieldByNames(underlyingFacetFieldNamePk.facetName, underlyingFacetFieldNamePk.fieldName);
+
+    if (underlyingFieldPk.keys) {
+        pkFields = [pkFields, clone(underlyingFieldPk.keys)].flat();
         // const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
         // const queryPkFull = `${index.pk} -> ${fieldKeys}`;
         // examplesQueryPkEle.value = queryPkFull;
     } else {
         // Non-composite key field
-        pkFields.push(underlyingField.name);
+        pkFields.push(underlyingFieldPk.name);
     }
 
-    // TODO Logic for skfields
+    const underlyingFacetFieldNameSk = getFacetAndFieldByFullName(index.sk);
+    const underlyingFieldSk = getFacetFieldByNames(underlyingFacetFieldNameSk.facetName, underlyingFacetFieldNameSk.fieldName);
+
+    if (underlyingFieldSk.keys) {
+        skFields = [skFields, clone(underlyingFieldSk.keys)].flat();
+    } else {
+        // Non-composite key field
+        skFields.push(underlyingFieldSk.name);
+    }
 
     return { pkFields, skFields };
 }
