@@ -1,7 +1,8 @@
 January 11
 [o] Do we need to specify pk/sk fields for table?
 [o] Do we need to get into table details?
-[ ] Add example query select
+[x] Add example query select
+[ ] Get pk key inputs
 
 January 10
 [x] Delete index

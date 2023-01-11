@@ -119,6 +119,11 @@
     cursor: pointer;
 }
 
+.exampleDocumentBarWrite, .exampleDocumentBarRead {
+    display: inline-block;
+    margin-right: 1em;
+}
+
 .highlightedfacet, .highlightedfield, .highlightedquery, .highlightedindex, .highlightedexample { font-weight: bold }
 
 .highlightedexample, .highlightedexample:hover {

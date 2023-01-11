@@ -64,3 +64,7 @@ function updateExampleInputs() {
         ele.value = calculatedFields.join(CONSTS.DELIM);
     });
 }
+
+function selectExampleQuery() {
+    selectedExampleQuery = gebi("exampleQuerySelect").value;
+}

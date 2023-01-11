@@ -33,6 +33,7 @@ function preparePage() {
     // setClick("copyExample", copyExample);
     setClick("deleteExample", deleteExample);
     gebi("compositeKeyFieldsOnly").onchange = toggleExampleAddCkfsOnly;
+    gebi("exampleQuerySelect").onchange = selectExampleQuery;
     
     setEditorViewButtons();
     
@@ -466,6 +467,7 @@ function redrawExamplePage() {
     redrawExampleFacetList();
     redrawExampleAddFields();
     redrawExampleDocuments();
+    redrawExampleReadBar();
 }
 
 function redrawExampleButtons() {
@@ -593,6 +595,25 @@ function redrawExampleDocuments() {
         }
 
         examplesBody.append(exampleRow);
+    });
+}
+
+function redrawExampleReadBar() {
+    let exampleQuerySelectEle = gebi("exampleQuerySelect");
+    Array.from(exampleQuerySelectEle.getElementsByClassName("option")).forEach(ele => ele.remove());
+
+    let pleaseSelectEle = dce("option");
+    pleaseSelectEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
+    pleaseSelectEle.value = "";
+    exampleQuerySelectEle.appendChild(pleaseSelectEle);
+
+    APP_STATE.queries.forEach(query => {
+        let optionEle = dce("option");
+        optionEle.innerText = query.name;
+        optionEle.value = query.name;
+        exampleQuerySelectEle.appendChild(optionEle);
+
+        if (selectedExampleQuery === query.name) { optionEle.selected = true; }
     });
 }
 

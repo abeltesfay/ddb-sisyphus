@@ -16,13 +16,27 @@
             let APP_STATE = getDefaultAppState();
             let APP_STATE_SAVED = undefined;
             
-            // let selectedFacet = "Review", selectedField = "GSI1-PK", selectedKey;
-            let selectedFacet, selectedField, selectedKey, selectedQuery, selectedIndex, selectedExampleFacetToAdd, selectedExampleDocument;
+            let selectedFacet,
+                selectedField,
+                selectedKey,
+                selectedQuery,
+                selectedIndex,
+                selectedExampleFacetToAdd,
+                selectedExampleDocument,
+                selectedExampleQuery;
             let fieldFilterValue = "";
+                
+            let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
 
-            // let currentEditor = CONSTS.EDITORS.TABLESTRUCT;
-            // let currentEditor = CONSTS.EDITORS.QUERIES;
-            let currentEditor = CONSTS.EDITORS.EXAMPLES;
+            // Defaults for testing purposes
+            // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
+            // currentEditor = CONSTS.EDITORS.QUERIES;
+            currentEditor = CONSTS.EDITORS.EXAMPLES;
+
+            // selectedFacet = "Review"
+            // selectedField = "GSI1-PK"
+            // selectedKey = undefined;
+            selectedExampleQuery = "getApplicationByApplicantEmployeeId";
         </script>
     </head>
     <body onkeydown="processKeys(event);" onload="preparePage();">
@@ -113,12 +127,17 @@
         <div class="examplesEditor editView hidden">
             <div class="examples">
                 <h2>Example Documents</h2>
-                <select id="exampleFacetList"></select>
-                <button disabled id="addExample" value="Add">Add</button>
-                <button disabled id="copyExample" value="Copy">Copy</button>
-                <button disabled id="editExample" value="Edit">Edit</button>
-                <button disabled id="deleteExample" value="Delete">Delete</button>
-                <input id="compositeKeyFieldsOnly" value="compositeKeyFieldsOnly" type="checkbox"><label for="compositeKeyFieldsOnly">CKFs</label></input>
+                <div class="exampleDocumentBarWrite">
+                    <select id="exampleFacetList"></select>
+                    <button disabled id="addExample" value="Add">Add</button>
+                    <button disabled id="copyExample" value="Copy">Copy</button>
+                    <button disabled id="editExample" value="Edit">Edit</button>
+                    <button disabled id="deleteExample" value="Delete">Delete</button>
+                    <input id="compositeKeyFieldsOnly" value="compositeKeyFieldsOnly" type="checkbox"><label for="compositeKeyFieldsOnly">CKFs</label></input>
+                </div>
+                <div class="exampleDocumentBarRead">
+                    <select id="exampleQuerySelect"></select>
+                </div>
                 <div>
                     <table id="exampleNewTable">
                         <tbody id="examplesNewBody">
