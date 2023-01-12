@@ -312,7 +312,7 @@ function redrawQueryEditIndexArea() {
     if (!queryIndexName) { return; }
     const index = getIndexByName(queryIndexName);
     
-    if (index) {
+    if (index?.pk) {
         const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
         const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
         
@@ -327,7 +327,7 @@ function redrawQueryEditIndexArea() {
         }
     }
 
-    redrawQuerySkDropdown(query.sk, index?.name);
+    if (index?.sk) { redrawQuerySkDropdown(query.sk, index?.name); }
 }
 
 function redrawQueryIndicesDropdown(indexToSelect) {
@@ -615,18 +615,21 @@ function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, fi
     const skKey = examplesFilterSk?.dataset.fieldname ?? "sk";
     const pkValue = example[pkKey]?.trim().length === 0 ? "-" : example[pkKey];
     const skValue = example[skKey]?.trim().length === 0 ? "-" : example[skKey];
+    const returnableExcludedRowData = { example, index, examplesFilterPk, examplesFilterSk };
+    if (filter && pkValue === undefined) { return returnableExcludedRowData; }
+    if (filter && skValue === undefined) { return returnableExcludedRowData; }
 
     // Filtering by queries/top row input fields
     if (filter
             && examplesFilterPk && examplesFilterPk.value.length !== 0
             && pkValue !== examplesFilterPk.value) {
-        return { example, index, examplesFilterPk, examplesFilterSk  };
+        return returnableExcludedRowData;
     }
     
     if (filter && examplesFilterSk
         && examplesFilterSk.value.length !== 0
         && skValue.indexOf(examplesFilterSk.value) !== 0) {
-        return { example, index, examplesFilterPk, examplesFilterSk  };
+        return returnableExcludedRowData;
     }
 
     let exampleRow = dce("tr");
@@ -699,19 +702,23 @@ function redrawExamplesReadQuerySelector() {
 }
 
 function redrawExamplesReadQueryInputs() {
-    const queryName = gebi("examplesQuerySelect").value;
+    const queryOrIndexName = gebi("examplesQuerySelect").value;
     let examplesQueryPkEle = gebi("examplesQueryPk");
     let examplesQuerySkEle = gebi("examplesQuerySk");
     examplesQueryPkEle.value = "";
     examplesQuerySkEle.value = "";
 
-    let query = getQueryByName(queryName);
-    if (!query) { return; }
+    let queryOrIndex = getQueryByName(queryOrIndexName);
+    let index = null;
+    if (!queryOrIndex) {
+        index = getIndexByName(queryOrIndexName);
+        if (!index) { return; }
+    }
 
     // Fill inputs that explain index pk/sk next to dropdown
-    const index = getIndexByName(query.index);
+    index = index ?? getIndexByName(queryOrIndex.index);
     if (!index) {
-        alert(`No index found for query [${queryName}], please update query to have one`);
+        alert(`No index found for query/index [${queryOrIndexName}], please update query to have one`);
         return;
     }
     
@@ -728,13 +735,13 @@ function redrawExamplesReadQueryInputs() {
         examplesQueryPkEle.value = queryPkFull;
     }
 
-    examplesQuerySkEle.value = query.sk;
+    examplesQuerySkEle.value = queryOrIndex?.sk ?? index.sk.split(".")[1];
 }
 
 function redrawExamplesReadTableInputsRowReset() {
-    const queryName = gebi("examplesQuerySelect").value;
-    const query = getQueryByName(queryName);
-    const index = getIndexByName(query?.index);
+    const queryOrIndexName = gebi("examplesQuerySelect").value;
+    const query = getQueryByName(queryOrIndexName);
+    const index = getIndexByName(query?.index ?? queryOrIndexName);
     Array.from(gebi("examplesHeaderRowQueryLabels").getElementsByTagName("th")).forEach(ele => ele.remove());
     Array.from(gebi("examplesHeaderRowQueryInputs").getElementsByTagName("th")).forEach(ele => ele.remove());
 
@@ -745,7 +752,7 @@ function redrawExamplesReadTableInputsRowReset() {
     let inputEle = dce("input");
     inputEle.id = "examplesFilterPk";
     if (index) { inputEle.dataset.fieldname = index.pk.split(".")[1]; }
-    inputEle.readOnly = queryName.trim().length !== 0;
+    inputEle.readOnly = queryOrIndexName.trim().length !== 0;
     
     let inputCellEle = dce("th");
     inputCellEle.appendChild(inputEle);
@@ -759,7 +766,7 @@ function redrawExamplesReadTableInputsRowReset() {
     inputEle = dce("input");
     inputEle.id = "examplesFilterSk";
     if (index) { inputEle.dataset.fieldname = index.sk.split(".")[1]; }
-    inputEle.readOnly = queryName.trim().length !== 0;
+    inputEle.readOnly = queryOrIndexName.trim().length !== 0;
     
     inputCellEle = dce("th");
     inputCellEle.appendChild(inputEle);

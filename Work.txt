@@ -35,10 +35,12 @@ January 11
   [x] Save
 [x] Copy example
 [x] Copy should auto-select add as well
-[ ] Filter examples by selected index
+[x] Filter examples by selected index
   [x] Add indices to dropdown
   [x] Filter by index fields
-  [ ] Included filter out undefined sk
+  [x] Redraw document examples by gsi-sk index
+  [x] Filter out undefined any document with undefined pk or sk field
+[ ] Allow empty sk in index
 [?] Get unique indices only by field names (pk/sk/etc)
 [?] Prevent # on empty field keys with multi-part sks
 
