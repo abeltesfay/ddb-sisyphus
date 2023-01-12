@@ -53,7 +53,7 @@ function updateQuery() {
 }
 
 //
-// Indexes
+// Indices
 //
 function addIndex() {
     const name = prompt("Please provide a new, unique index name")?.trim();

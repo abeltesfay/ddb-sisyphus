@@ -3,7 +3,17 @@ January 12
 [o] Disable copy if facet list name doesn't match selected
 [ ] Generate query code
   [x] Generator view
-  [ ] Provide baseline code
+  [x] Provide baseline code
+  [x] Get list of queries
+  [x] Generate fn name for first query
+    - https://stackoverflow.com/questions/26557593/textarea-auto-scroll-to-the-bottom
+    - https://stackoverflow.com/questions/11715646/scroll-automatically-to-the-bottom-of-the-page
+  [x] Generate fn params for first query
+  [x] Generate pk combiner for first query
+  [ ] Generate index name for first query
+  [ ] Generate sk combiner for first query
+  [ ] Generate no sk if unnecessary for first query
+[ ] Generate write code
 [ ] Import entire NoSQL Workbench
 
 January 11

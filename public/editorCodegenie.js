@@ -13,8 +13,108 @@ function generateCode() {
     generatorFunction();
 }
 
-function generateJavascript() {
-    // TODO Display static query code
+function generateJavascript() {   
+    // TODO Generate query based off 
+    const dynamicCode = generateDynamicJs();
+
+    const code = `${JS_BASELINE}\n\n${dynamicCode}`;
+    const textarea = gebi("codegenieWishArea");
+    textarea.value = code.trim();
+    textarea.scrollTop = textarea.scrollHeight; // TODO Remove this
+    window.scrollTo(0, 100000); // TODO Remove this
+}
+
+function generateDynamicJs() {
+    let queriesString = [];
+    let indexConstsStrings = generateIndices(APP_STATE.indices);
+
+    for (query of APP_STATE.queries) {
+        const code = generateQuery(query);
+        queriesString.push(code);
+        break;
+    }
+
+    return [indexConstsStrings, queriesString].flat().join("\n");
+}
+
+// function replaceFunctionName(code, str) { return code.replace("<<FUNC_NAME>>", str); }
+
+function generateIndices(indices) {
+    const uniquePkSkCombos = getUniquePkSkFieldNameCombos(indices);
+    let constants = [];
+
+    for (pkSkCombo of uniquePkSkCombos) {
+        const code = generateIndexConstant(pkSkCombo);
+        constants.push(code);
+    }
+
+    let indexes = constants.join("\n\t");
+    let indexConstDefnObject = JS_INDEX_CONST_DEFN.replace("<<INDEXES>>", indexes);
+    return indexConstDefnObject;
+}
+
+function getUniquePkSkFieldNameCombos(indices) {
+    let uniqueKeys = [];
+    let uniquePkSkCombos = indices.map(index => ({ pk: index.pk.split(".")[1], sk: index.sk.split(".")[1] }))
+        .filter(combo => {
+            const key = `${combo.pk}___$#$___${combo.sk}`;
+            if (uniqueKeys.includes(key)) { return false; }
+            uniqueKeys.push(key);
+            return true;
+        });
+
+    return uniquePkSkCombos;
+}
+
+function generateIndexConstant(pkSkCombo) {
+    const indexConstName = `${pkSkCombo.pk}_${pkSkCombo.sk}_INDEX`.toUpperCase();
+    const indexAwsName = `${pkSkCombo.pk}-${pkSkCombo.sk}-index`.toLowerCase();
+
+    const code = JS_INDEX_TEMPLATE.replace("<<INDEX_CONST_NAME>>", indexConstName)
+        .replace("<<INDEX_AWS_NAME>>", indexAwsName)
+        .replace("<<PK_NAME>>", pkSkCombo.pk)
+        .replace("<<SK_NAME>>", pkSkCombo.sk);
+
+    return code;
+}
+
+function generateQuery(query) {
+    const functionParams = getParametersCsvFromQuery(query);
+    const pkCompositeKeyFields = getPkCompositeKeyFieldsCsvFromQuery(query);
+
+    let code = JS_FN_TEMPLATE
+        .replaceAll("<<FUNC_NAME>>", query.name)
+        .replaceAll("<<PARAM_FIELDS>>", functionParams)
+        .replaceAll("<<PK_FIELDS>>", pkCompositeKeyFields)
+        ;
+
+    return code;
+}
+
+function getParametersCsvFromQuery(query) {
+    const fieldKeys = getFieldKeysByQueryName(query.name);
+    const pkParameters = fieldKeys.pkFields.filter(field => field.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) === -1);
+    const skParameters = fieldKeys.skFields.filter(field => field.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) === -1);
+    
+    const parameters = [pkParameters, skParameters]
+        .flat()
+        .filter((field, index, arr) => index == arr.indexOf(field)) // get unique fields only
+
+    return parameters.join(", ");
+}
+
+function getPkCompositeKeyFieldsCsvFromQuery(query) {
+    const fieldKeys = getFieldKeysByQueryName(query.name);
+    const pkParameters = fieldKeys.pkFields.map(field => {
+        // Wrap static string values in double quotes
+        if (field.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+            return `"${field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")}"`;
+        }
+
+        return field; // Return parameter name
+    });
+
+    return pkParameters.join(", ");
 }
 
 function generateObjectList() {
@@ -33,6 +133,40 @@ function generateCFT() {
 //
 // Static code
 //
+// let JS_INDEX_TEMPLATE = `
+// <<INDEX_CONST_NAME>>: {                 \t\t// e.g.: PK_SK_INDEX, SK_DATA_INDEX
+//     name: '<<INDEX_AWS_NAME>>',         \t\t// e.g.: 'pk-sk-index', 'sk-data-index'
+//     pk: { name: '<<PK_NAME>>' },        \t\t// e.g.: 'pk', 'sk'
+//     sk: { name: '<<SK_NAME>>' },        \t\t// e.g.: 'sk', 'data'
+// },`;
+
+let JS_INDEX_TEMPLATE = `<<INDEX_CONST_NAME>>: { name: '<<INDEX_AWS_NAME>>', pk: { name: '<<PK_NAME>>' }, sk: { name: '<<SK_NAME>>' }, },`;
+let JS_INDEX_CONST_DEFN = `const TABLE_INDEXES = {
+\t<<INDEXES>>
+};`
+
+let JS_FN_TEMPLATE = `
+async function <<FUNC_NAME>>(<<PARAM_FIELDS>>) {
+    const pk = keyCombiner(<<PK_FIELDS>>); // Example PK: EMPLOYEE#01234567
+    // const queryInput = getQueryCommandByIndexAndByPkOptionalSk(CONSTS.DB.INDEXES.GSI1PKSK, pk, undefined, true, CONSTS.DB.ENTITIES.APPLICATIONDETAILS);
+    const queryInput = getQueryCommandByIndexAndByPkOptionalSk(<<INDEX_CONST>>, pk, undefined, true, <<ENTITY_TYPE_CONST>>);
+    const results = await getItemsByCommand(queryInput);
+
+    return results?.items;
+}
+`;
+
+// `async function getApplicationByCommitteeApplicant(committeeId, term, applicantEmployeeId) {
+//     // const pk = \`${CONSTS.DB.APPLICATION}#${employeeId}\`;
+//     const pk = \`<<FIELDS>>\`;
+//     const sk = `${committeeId}#${term}#${applicantEmployeeId}`;
+//     const queryInput = getQueryCommandByPkOptionalSk(pk, sk, true, CONSTS.DB.ENTITIES.APPLICATIONDETAILS);
+//     const results = await getItemsByCommand(queryInput);
+
+//     return results?.items;
+// }
+// `;
+
 let JS_BASELINE = `
 const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
@@ -171,4 +305,5 @@ async function getItemsByCommand(command) {
 
     return results = { error: results.error, items: results?.Items, lastEvaluatedKey: results?.LastEvaluatedKey };
 }
+
 `;

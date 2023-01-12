@@ -40,6 +40,7 @@ function preparePage() {
     setEditorViewButtons();
     
     console.debug("PREP: Finished prep");
+    generateCode(); // TODO Remove
 }
 
 function getInputsOnPageRefresh() {
