@@ -20,8 +20,6 @@ function generateJavascript() {
     const code = `${JS_BASELINE}\n\n${dynamicCode}`;
     const textarea = gebi("codegenieWishArea");
     textarea.value = code.trim();
-    textarea.scrollTop = textarea.scrollHeight; // TODO Remove this
-    window.scrollTo(0, 100000); // TODO Remove this
 }
 
 function generateDynamicJs() {

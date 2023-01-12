@@ -4,9 +4,9 @@ let CONSTS = {
     FIELD_TYPES: {
         STRING: "S",
         BOOLEAN: "B",
+        NUMBER: "N",
         COMPOSITE: "C",
     },
-    DROPDOWNOPTIONS: [ "", "S", "B", "C" ],
     DROPDOWN_KEY_DEFAULT_LABEL: " - Please Select a Value - ",
     STATIC_COMPOSITE_KEY: {
         DROPDOWN_PROMPT_ID: "<STATIC_VALUE>",

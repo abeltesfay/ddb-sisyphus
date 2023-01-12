@@ -36,11 +36,11 @@ function preparePage() {
     gebi("compositeKeyFieldsOnly").onchange = toggleExampleAddCkfsOnly;
     gebi("examplesQuerySelect").onchange = selectExamplesQuery;
     setClick("generateCode", generateCode);
+    setClick("importNoSqlWBJson", importNoSqlWBJson);
     
     setEditorViewButtons();
     
     console.debug("PREP: Finished prep");
-    generateCode(); // TODO Remove
 }
 
 function getInputsOnPageRefresh() {

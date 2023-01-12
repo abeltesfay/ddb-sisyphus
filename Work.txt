@@ -15,10 +15,14 @@ January 12
   [x] Generate sk combiner for first query
   [x] Generate no sk if unnecessary
 [x] Fix sk name so it no longer shows undefined in const or aws index name
-[ ] Test generated code
-  [ ] Update pk-sk default index scenario
-[ ] Generate write code
-[ ] Import entire NoSQL Workbench
+[x] Test generated code
+  [x] Update pk-sk default index scenario
+  [x] Fix query function
+    - It works. Nice
+[o] Add skBeginsWith checkbox to queries
+[-] Generate write code - May be too complex
+[x] Load NoSQL Workbench JSON button
+[ ] Import facet names 
 
 January 11
 [o] Do we need to specify pk/sk fields for table?

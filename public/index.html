@@ -5,6 +5,9 @@
         <link rel="shortcut icon" href="#">
         <link href="index.css" rel="stylesheet">
         <script type="text/javascript" src="appstate.js"></script>
+        <script type="text/javascript" src="appstate-import.js"></script>
+        <!-- <script type="text/javascript" src="appstate-tempimp.js"></script> -->
+        <script type="text/javascript" src="appstate-basicnswb.js"></script>
         <script type="text/javascript" src="util.js"></script>
         <script type="text/javascript" src="editorStructure.js"></script>
         <script type="text/javascript" src="editorQueries.js"></script>
@@ -35,7 +38,14 @@
             // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
             // currentEditor = CONSTS.EDITORS.QUERIES;
             // currentEditor = CONSTS.EDITORS.EXAMPLES;
-            currentEditor = CONSTS.EDITORS.CODEGENIE;
+            // currentEditor = CONSTS.EDITORS.CODEGENIE;
+
+            { // Testing out code generation
+                // generateCode(); // TODO Remove
+                // gebi("codegenieWishArea").scrollTop = textarea.scrollHeight; // TODO Remove this
+                // window.scrollTo(0, 100000); // TODO Remove this
+                importNoSqlWBJson();
+            }
 
             // selectedFacet = "Review"
             // selectedField = "GSI1-PK"
@@ -56,6 +66,7 @@
                 <legend>Application State</legend>
                 <button id="saveState" disabled>Save</button>
                 <button id="loadFromOrbit">Load</button>
+                <button id="importNoSqlWBJson">Import</button>
                 <button id="nukeFromOrbit">Nuke State</button>
                 <button id="logState">Log State</button>
             </fieldset>
