@@ -675,9 +675,18 @@ function redrawExamplesReadQuerySelector() {
     Array.from(examplesQuerySelectEle.getElementsByTagName("option")).forEach(ele => ele.remove());
 
     let pleaseSelectEle = dce("option");
-    pleaseSelectEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
+    pleaseSelectEle.innerText = " - Query/Index Filter -";
     pleaseSelectEle.value = "";
     examplesQuerySelectEle.appendChild(pleaseSelectEle);
+
+    APP_STATE.indices.forEach(index => {
+        let optionEle = dce("option");
+        optionEle.innerText = index.name;
+        optionEle.value = index.name;
+        examplesQuerySelectEle.appendChild(optionEle);
+
+        if (selectedExamplesQuery === index.name) { optionEle.selected = true; }
+    });
 
     APP_STATE.queries.forEach(query => {
         let optionEle = dce("option");
@@ -760,11 +769,11 @@ function redrawExamplesReadTableInputsRowReset() {
 }
 
 function redrawExamplesReadTableInputFields() {
-    const queryName = gebi("examplesQuerySelect").value;
-    let query = getQueryByName(queryName);
-    if (!query) { return; }
+    const queryOrIndexName = gebi("examplesQuerySelect").value;
+    if (!getQueryByName(queryOrIndexName) && !getIndexByName(queryOrIndexName)) { return; }
 
-    const { pkFields, skFields } = getFieldKeysByQueryName(query.name);
+    let { pkFields , skFields } = getFieldKeysByQueryName(queryOrIndexName) ?? getFieldKeysByIndexName(queryOrIndexName);
+    
     pkFields.forEach( pkField => {
         if (pkField.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) { return; }
         let headerCellEle = dce("th");
@@ -804,10 +813,14 @@ function redrawExamplesReadTableInputFields() {
 
 function redrawExampleQueryInputs() {
     let fieldKeys = getFieldKeysByQueryName(selectedExamplesQuery);
-    if (!fieldKeys) { return; }
+
+    if (!fieldKeys) {
+        fieldKeys = getFieldKeysByIndexName(selectedExamplesQuery);
+        if (!fieldKeys) { return; }
+    }
     
     let fieldKeyValuesArr = getKVArr(examplesFilterValues);
-    
+
     if (!Object.values(examplesFilterValues).some(val => val.length != 0)) {
         let pkField = gebi("examplesFilterPk") ?? {};
         let skField = gebi("examplesFilterSk") ?? {};
@@ -824,8 +837,8 @@ function redrawExampleQueryInputs() {
         // Bring together the pk/sk values we need
         const pkValue = fieldKeys.pkFields
             .reduce((prevVal, curVal) => {
-                if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
-                    return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
+                    if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+                        return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
                     } else {
                         return [prevVal, fields[curVal]].flat();
                     }
@@ -833,8 +846,8 @@ function redrawExampleQueryInputs() {
 
         const skValue = fieldKeys.skFields
             .reduce((prevVal, curVal) => {
-                if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
-                    return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
+                    if (curVal.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+                        return [prevVal, curVal.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")].flat();
                     } else {
                         return [prevVal, fields[curVal]].flat();
                     }

@@ -114,7 +114,12 @@ function getIndexByName(name) {
 function getFieldKeysByQueryName(queryName) {
     const query = getQueryByName(queryName);
     if (!query) { return; }
-    const index = getIndexByName(query.index);
+
+    return getFieldKeysByIndexName(query.index);
+}
+
+function getFieldKeysByIndexName(indexName) {
+    const index = getIndexByName(indexName);
     if (!index) { return; }
     
     let pkFields = [], skFields = [];

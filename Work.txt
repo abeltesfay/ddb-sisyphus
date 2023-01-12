@@ -1,5 +1,4 @@
 January 12
-[ ] Filter examples by selected index
 [ ] Disable copy if facet list name doesn't match selected
 
 January 11
@@ -36,6 +35,12 @@ January 11
   [x] Save
 [x] Copy example
 [x] Copy should auto-select add as well
+[ ] Filter examples by selected index
+  [x] Add indices to dropdown
+  [x] Filter by index fields
+  [ ] Included filter out undefined sk
+[?] Get unique indices only by field names (pk/sk/etc)
+[?] Prevent # on empty field keys with multi-part sks
 
 January 10
 [x] Delete index
