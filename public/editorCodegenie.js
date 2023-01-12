@@ -66,8 +66,8 @@ function getUniquePkSkFieldNameCombos(indices) {
 }
 
 function generateIndexConstant(pkSkCombo) {
-    const indexConstName = generateIndexNameFromPkSk(pkSkCombo.pk, pkSkCombo.sk);
-    const indexAwsName = `${pkSkCombo.pk}-${pkSkCombo.sk}-index`.toLowerCase();
+    const indexConstName = generateIndexConstNameFromPkSk(pkSkCombo.pk, pkSkCombo.sk);
+    const indexAwsName = generateIndexAwsNameFromPkSk(pkSkCombo.pk, pkSkCombo.sk);
 
     const code = JS_INDEX_TEMPLATE.replace("<<INDEX_CONST_NAME>>", indexConstName)
         .replace("<<INDEX_AWS_NAME>>", indexAwsName)
@@ -77,9 +77,14 @@ function generateIndexConstant(pkSkCombo) {
     return code;
 }
 
-function generateIndexNameFromPkSk(pk, sk) {
-    if (sk === "") { return `${pk}_INDEX`.toUpperCase(); }
+function generateIndexConstNameFromPkSk(pk, sk) {
+    if (!sk || sk === "") { return `${pk}_INDEX`.toUpperCase(); }
     return `${pk}_${sk}_INDEX`.toUpperCase();
+}
+
+function generateIndexAwsNameFromPkSk(pk, sk) {
+    if (!sk || sk === "") { return `${pk}-index`.toLowerCase(); }
+    return `${pkSkCombo.pk}-${pkSkCombo.sk}-index`.toLowerCase()
 }
 
 function generateQuery(query) {
@@ -145,7 +150,7 @@ function generateIndexConstName(indexName) {
     const index = getIndexByName(indexName);
     const pk = index.pk.split(".")[1];
     const sk = index.sk.split(".")[1];     // TODO Handle case where sk doesn't exist/is empty
-    const indexConstName = generateIndexNameFromPkSk(pk, sk);
+    const indexConstName = generateIndexConstNameFromPkSk(pk, sk);
     const indexReference = `TABLE_INDEXES.${indexConstName}`;
     return indexReference;
 }
@@ -187,14 +192,14 @@ async function <<FUNC_NAME>>(<<PARAM_FIELDS>>) {
     return results?.items;
 }`;
 
-// Example JS_FN_TEMPLATE output
-// async function getApplicationByApplicantEmployeeId(applicantEmployeeId, committeeId, term) {
-//     const pk = keyCombiner("APPLICANT", applicantEmployeeId); // Example PK: EMPLOYEE#01234567
-//     const sk = keyCombiner("COMMITTEE", committeeId, "TERM", term);
-//     const queryInput = getQueryCommandByIndexAndByPkOptionalSk(TABLE_INDEXES.PK_SK_INDEX, pk, sk, true, undefined);
-//     const results = await getItemsByCommand(queryInput);
-//     return results?.items;
-// }
+    // Example JS_FN_TEMPLATE output
+    // async function getApplicationByApplicantEmployeeId(applicantEmployeeId, committeeId, term) {
+    //     const pk = keyCombiner("APPLICANT", applicantEmployeeId); // Example PK: EMPLOYEE#01234567
+    //     const sk = keyCombiner("COMMITTEE", committeeId, "TERM", term);
+    //     const queryInput = getQueryCommandByIndexAndByPkOptionalSk(TABLE_INDEXES.PK_SK_INDEX, pk, sk, true, undefined);
+    //     const results = await getItemsByCommand(queryInput);
+    //     return results?.items;
+    // }
 
 let JS_BASELINE = `
 const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");

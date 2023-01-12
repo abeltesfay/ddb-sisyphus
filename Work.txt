@@ -1,7 +1,7 @@
 January 12
 [?] Get unique indices only by field names (pk/sk/etc)
 [o] Disable copy if facet list name doesn't match selected
-[ ] Generate query code
+[x] Generate query code
   [x] Generator view
   [x] Provide baseline code
   [x] Get list of queries
@@ -13,7 +13,9 @@ January 12
   [x] Generate indices const
   [x] Generate index name for first query
   [x] Generate sk combiner for first query
-  [ ] Generate no sk if unnecessary for first query
+  [x] Generate no sk if unnecessary
+[x] Fix sk name so it no longer shows undefined in const or aws index name
+[ ] Test generated code
 [ ] Generate write code
 [ ] Import entire NoSQL Workbench
 
