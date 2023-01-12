@@ -51,6 +51,7 @@ function setEditorViewButtons() {
     setClick("showTableStructureEditor", showTableStructureEditor);
     setClick("showQueryEditor", showQueryEditor);
     setClick("showExamplesEditor", showExamplesEditor);
+    setClick("showCodegenieEditor", showCodegenieEditor);
 }
 
 function redrawPage() {
@@ -925,6 +926,7 @@ function redrawGeneratorOptions() {
 function showTableStructureEditor() { currentEditor = CONSTS.EDITORS.TABLESTRUCT; redrawPage(); }
 function showQueryEditor() { currentEditor = CONSTS.EDITORS.QUERIES; redrawPage(); }
 function showExamplesEditor() { currentEditor = CONSTS.EDITORS.EXAMPLES; redrawPage(); }
+function showCodegenieEditor() { currentEditor = CONSTS.EDITORS.CODEGENIE; redrawPage(); }
 
 function showCurrentEditor() {
     const buttons = Array.from(document.getElementsByClassName("showEditorButton"));
