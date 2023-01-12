@@ -611,13 +611,14 @@ function createExamplesLabelRow(label) {
 function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, filter = true) {
     let examplesBody = gebi("examplesBody");
 
+    const hasSk = typeof examplesFilterPk?.dataset.fieldname === "string" && typeof examplesFilterSk?.dataset.fieldname === "string";
     const pkKey = examplesFilterPk?.dataset.fieldname ?? "pk";
     const skKey = examplesFilterSk?.dataset.fieldname ?? "sk";
     const pkValue = example[pkKey]?.trim().length === 0 ? "-" : example[pkKey];
     const skValue = example[skKey]?.trim().length === 0 ? "-" : example[skKey];
     const returnableExcludedRowData = { example, index, examplesFilterPk, examplesFilterSk };
     if (filter && pkValue === undefined) { return returnableExcludedRowData; }
-    if (filter && skValue === undefined) { return returnableExcludedRowData; }
+    if (filter && hasSk && skValue === undefined) { return returnableExcludedRowData; }
 
     // Filtering by queries/top row input fields
     if (filter
@@ -628,7 +629,8 @@ function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, fi
     
     if (filter && examplesFilterSk
         && examplesFilterSk.value.length !== 0
-        && skValue.indexOf(examplesFilterSk.value) !== 0) {
+        && skValue.indexOf(examplesFilterSk.value) !== 0
+        && hasSk) {
         return returnableExcludedRowData;
     }
 
@@ -644,15 +646,20 @@ function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, fi
     exampleRow.appendChild(exampleTd);
     exampleRow.onclick = selectExampleDocument;
     
-    exampleTd = dce("td");
-    exampleTd.title = `sk (${skKey})`;
-    exampleTd.innerText = skValue;
-    exampleRow.appendChild(exampleTd);
-    exampleRow.onclick = selectExampleDocument;
+    if (hasSk) {
+        exampleTd = dce("td");
+        exampleTd.title = `sk (${skKey})`;
+        exampleTd.innerText = skValue;
+        exampleRow.appendChild(exampleTd);
+        exampleRow.onclick = selectExampleDocument;
+    }
 
     let fieldIndex = 0;
     for (field in example) {
-        if (fieldIndex++ <= 1 || field === pkKey || field === skKey) { continue; }
+        if (fieldIndex++ <= 1 // Skip __facetName
+            || field === pkKey
+            || (hasSk && field === skKey)
+            ) { continue; }
 
         let exampleTd = dce("td");
         exampleTd.title = field;
@@ -765,11 +772,15 @@ function redrawExamplesReadTableInputsRowReset() {
     
     inputEle = dce("input");
     inputEle.id = "examplesFilterSk";
-    if (index) { inputEle.dataset.fieldname = index.sk.split(".")[1]; }
+    if (index && index.sk !== "") { inputEle.dataset.fieldname = index.sk.split(".")[1]; }
     inputEle.readOnly = queryOrIndexName.trim().length !== 0;
     
     inputCellEle = dce("th");
     inputCellEle.appendChild(inputEle);
+    if (index && index.sk === "") {
+        inputCellEle.classList.add("hidden");
+        headerCellEle.classList.add("hidden");
+    }
 
     gebi("examplesHeaderRowQueryLabels").appendChild(headerCellEle);
     gebi("examplesHeaderRowQueryInputs").appendChild(inputCellEle);

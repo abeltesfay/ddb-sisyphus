@@ -40,9 +40,13 @@ January 11
   [x] Filter by index fields
   [x] Redraw document examples by gsi-sk index
   [x] Filter out undefined any document with undefined pk or sk field
-[ ] Allow empty sk in index
+[x] Allow empty sk in index
+  [x] Fix errors when incomplete indices created
+  [x] Fix error when empty sk created
+  [x] Ignore sk field when sk isn't included
+  [x] Hide sk input field
+[ ] Prevent # on empty field keys with multi-part sks
 [?] Get unique indices only by field names (pk/sk/etc)
-[?] Prevent # on empty field keys with multi-part sks
 
 January 10
 [x] Delete index

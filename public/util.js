@@ -140,11 +140,13 @@ function getFieldKeysByIndexName(indexName) {
     const underlyingFacetFieldNameSk = getFacetAndFieldByFullName(index.sk);
     const underlyingFieldSk = getFacetFieldByNames(underlyingFacetFieldNameSk.facetName, underlyingFacetFieldNameSk.fieldName);
 
-    if (underlyingFieldSk.keys) {
-        skFields = [skFields, clone(underlyingFieldSk.keys)].flat();
-    } else {
-        // Non-composite key field
-        skFields.push(underlyingFieldSk.name);
+    if (underlyingFieldSk) {
+        if (underlyingFieldSk.keys) {
+            skFields = [skFields, clone(underlyingFieldSk.keys)].flat();
+        } else {
+            // Non-composite key field
+            skFields.push(underlyingFieldSk.name);
+        }
     }
 
     return { pkFields, skFields };
