@@ -16,6 +16,7 @@ January 12
   [x] Generate no sk if unnecessary
 [x] Fix sk name so it no longer shows undefined in const or aws index name
 [ ] Test generated code
+  [ ] Update pk-sk default index scenario
 [ ] Generate write code
 [ ] Import entire NoSQL Workbench
 

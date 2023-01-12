@@ -92,8 +92,10 @@ function generateQuery(query) {
     const pkCompositeKeyFields = getPkCompositeKeyFieldsCsvFromQuery(query);
     const skCompositeKeyFields = getSkCompositeKeyFieldsCsvFromQuery(query);
     const indexToUse = generateIndexConstName(query.index);
+    const isPkSkIndex = indexToUse === "TABLE_INDEXES.PK_SK_INDEX";
+    const template = isPkSkIndex ? JS_FN_PKSKINDEX_TEMPLATE : JS_FN_ALTINDEX_TEMPLATE;
 
-    let code = JS_FN_TEMPLATE
+    let code = template
         .replaceAll("<<FUNC_NAME>>", query.name)
         .replaceAll("<<PARAM_FIELDS>>", functionParams)
         .replaceAll("<<PK_FIELDS>>", pkCompositeKeyFields)
@@ -183,7 +185,16 @@ let JS_INDEX_CONST_DEFN = `const TABLE_INDEXES = {
 \t<<INDEXES>>
 };`
 
-let JS_FN_TEMPLATE = `
+let JS_FN_PKSKINDEX_TEMPLATE = `
+async function <<FUNC_NAME>>(<<PARAM_FIELDS>>) {
+    const pk = keyCombiner(<<PK_FIELDS>>); // Example PK: EMPLOYEE#01234567
+    const sk = keyCombiner(<<SK_FIELDS>>);
+    const queryInput = getQueryCommandByPkOptionalSk(pk, sk, <<SK_BEGINS_WITH>>, <<ENTITY_TYPE_CONST>>);
+    const results = await getItemsByCommand(queryInput);
+    return results?.items;
+}`;
+
+let JS_FN_ALTINDEX_TEMPLATE = `
 async function <<FUNC_NAME>>(<<PARAM_FIELDS>>) {
     const pk = keyCombiner(<<PK_FIELDS>>); // Example PK: EMPLOYEE#01234567
     const sk = keyCombiner(<<SK_FIELDS>>);
@@ -201,16 +212,15 @@ async function <<FUNC_NAME>>(<<PARAM_FIELDS>>) {
     //     return results?.items;
     // }
 
-let JS_BASELINE = `
+let JS_BASELINE = `// npm i @aws-sdk/lib-dynamodb @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb
 const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { ListTablesCommand } = require("@aws-sdk/client-dynamodb");
 const { QueryCommand } = require("@aws-sdk/lib-dynamodb");
 
 //
 // Constants
 //
-CONSTS = {
+const CONSTS = {
     DATABASE: {
         DELIMITER_DEFAULT: "#",                 // Default delimiter between keys
         ENTITYTYPE: "EntityType",               // Consistent field name on all documents to do type filtering
