@@ -10,6 +10,7 @@ function preparePage() {
     setClick("logState", logState);
     setClick("addFacet", addFacet);
     setClick("addField", addField);
+    setClick("addFields", addFields);
     setClick("editFacetName", editFacetName);
     setClick("editFieldName", editFieldName);
     setClick("deleteFacet", deleteFacet);

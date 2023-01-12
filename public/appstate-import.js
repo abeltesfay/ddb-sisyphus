@@ -1,6 +1,8 @@
 function importNoSqlWBJson() {
     console.debug("IMPORT: Starting import");
     if (!confirm("This will blow away the current data and cannot be undone. Continue?")) { return; }
+
+    resetEverything();
     
     let importedData = prompt("Please copy paste your JSON here:");
     // let importedData = TEMP_IMPORTABLE_JSON;

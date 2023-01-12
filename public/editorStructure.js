@@ -90,6 +90,36 @@ function addField() {
     redrawPage();
 }
 
+function addFields() {
+    try {
+        if (!selectedFacet) { alert("Please select a facet first"); return; }
+
+        const facet = getFacetByName(selectedFacet);
+        let fields = prompt("Please provide a comma-separated list of fields you want added, duplicates will be skipped:");
+        if (!fields) { return; }
+
+        fields = fields.split(",").filter(field => field.length !== 0).map(field => `"${field}"`).join(",");
+        let fieldsAsArrayString = `[${fields}]`;
+        const fieldNamesArr = JSON.parse(fieldsAsArrayString).sort((a, b) => sortComparator(a, b));
+
+        if (!confirm(`Add all of these fields?\n\n${fieldNamesArr.join("\n")}`)) { return; }
+        
+        if (!Array.isArray(facet?.fields)) { facet.fields = []; }
+
+        fieldNamesArr.forEach(fieldName => {
+            if (facet?.fields?.map(field => field.name).includes?.(fieldName)) { return; }
+            
+            facet.fields.push(getNewField(fieldName));
+        })
+
+        facet.fields = facet.fields.sort((a, b) => sortComparator(a.name, b.name));
+        redrawPage();
+    } catch(exception) {
+        alert("Error while trying to parse your fields: " + exception);
+        console.error("Error while trying to parse your fields:", exception);
+    }
+}
+
 function editFieldName() {
     if (!selectedFacet || !selectedField) { return; }
     console.debug(`EDITFIELD: Editing facet and field name from ${selectedFacet}.${selectedField}`);

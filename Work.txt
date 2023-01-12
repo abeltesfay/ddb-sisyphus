@@ -34,9 +34,17 @@ January 12
   - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
   - https://stackoverflow.com/questions/32495138/file-is-not-downloading-blob-link
   - https://stackoverflow.com/questions/70961361/blob-url-not-downloading-and-not-saving-with-the-correct-file-name
-[ ] Line-delimited facet field additions
-  [ ] Popup dialog
-[ ] Mockup data
+[x] Line-delimited facet field additions
+  [x] Prompt for csv of fields
+  [x] Confirm
+[ ] Test data
+  [ ] Test data button
+  [ ] Modal
+  [ ] One line per field shown
+  [ ] Checkbox per field to enable/disable
+  [ ] Button to randomize data
+  [ ] Autopop composite keys
+  [ ] Static field value
 
 January 11
 [o] Do we need to specify pk/sk fields for table?
