@@ -145,3 +145,10 @@
     margin-top: 1em;
     width: 100%;
 }
+
+.codegenieOutput textarea {
+    display: inline-block;
+    margin: 1em;
+    height: 60em;
+    width: 90%;
+}

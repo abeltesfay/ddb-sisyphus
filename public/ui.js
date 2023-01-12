@@ -35,6 +35,7 @@ function preparePage() {
     setClick("deleteExample", deleteExample);
     gebi("compositeKeyFieldsOnly").onchange = toggleExampleAddCkfsOnly;
     gebi("examplesQuerySelect").onchange = selectExamplesQuery;
+    setClick("generateCode", generateCode);
     
     setEditorViewButtons();
     
@@ -66,6 +67,8 @@ function redrawPage() {
         redrawIndexEditArea();
 
         redrawExamplePage();
+
+        redrawGeneratorOptions();
         
         updateFilteredFields();
     } catch (error) {
@@ -905,6 +908,15 @@ function toggleExampleAddCkfsOnly() {
                 ele.classList.remove("hidden")
             });
     }
+}
+
+function redrawGeneratorOptions() {
+    const generatorTypeSelect = gebi("codeType");
+    Object.keys(CONSTS.GENERATORFN).forEach(key => {
+        let option = dce("option");
+        option.innerText = key;
+        generatorTypeSelect.appendChild(option);
+    })
 }
 
 //

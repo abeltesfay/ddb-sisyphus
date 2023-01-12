@@ -5,13 +5,14 @@
         <link rel="shortcut icon" href="#">
         <link href="index.css" rel="stylesheet">
         <script type="text/javascript" src="appstate.js"></script>
-        <script type="text/javascript" src="constants.js"></script>
         <script type="text/javascript" src="util.js"></script>
-        <script type="text/javascript" src="ui.js"></script>
-        <script type="text/javascript" src="ui-keys.js"></script>
         <script type="text/javascript" src="editorStructure.js"></script>
         <script type="text/javascript" src="editorQueries.js"></script>
         <script type="text/javascript" src="editorExamples.js"></script>
+        <script type="text/javascript" src="editorCodegenie.js"></script>
+        <script type="text/javascript" src="constants.js"></script>
+        <script type="text/javascript" src="ui.js"></script>
+        <script type="text/javascript" src="ui-keys.js"></script>
         <script type="text/javascript">
             let APP_STATE = getDefaultAppState();
             let APP_STATE_SAVED = undefined;
@@ -34,6 +35,7 @@
             // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
             // currentEditor = CONSTS.EDITORS.QUERIES;
             // currentEditor = CONSTS.EDITORS.EXAMPLES;
+            currentEditor = CONSTS.EDITORS.CODEGENIE;
 
             // selectedFacet = "Review"
             // selectedField = "GSI1-PK"
@@ -48,6 +50,7 @@
                 <button class="showEditorButton" id="showTableStructureEditor" disabled>Facet / Fields</button>
                 <button class="showEditorButton" id="showQueryEditor" disabled>Queries / Indices</button>
                 <button class="showEditorButton" id="showExamplesEditor" disabled>Examples</button>
+                <button class="showEditorButton" id="showGeneratorEditor" disabled>Gencode</button>
             </fieldset>
             <fieldset>
                 <legend>Application State</legend>
@@ -162,6 +165,16 @@
                     </table>
                 </div>
                 <br/>
+            </div>
+        </div>
+        <div class="codegenieEditor editView hidden">
+            <h2>Code Generator</h2>
+            <div class="codegenieOptions">
+                <select id="codeType"></select>
+                <button id="generateCode" value="Generate">Generate</button>
+            </div>
+            <div class="codegenieOutput">
+                <textarea id="codegenieWishArea"></textarea>
             </div>
         </div>
     </body>

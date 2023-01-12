@@ -1,6 +1,9 @@
 January 12
 [?] Get unique indices only by field names (pk/sk/etc)
 [o] Disable copy if facet list name doesn't match selected
+[ ] Generate query code
+  [x] Generator view
+  [ ] Provide baseline code
 [ ] Import entire NoSQL Workbench
 
 January 11

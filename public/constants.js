@@ -16,5 +16,12 @@ let CONSTS = {
         TABLESTRUCT: "tableStructureEditor",
         QUERIES: "queryEditor",
         EXAMPLES: "examplesEditor",
+        CODEGENIE: "codegenieEditor",
+    },
+    GENERATORFN: {
+        "Javascript Query Code": generateJavascript,
+        "Object List": generateObjectList,
+        "NoSQL Workbench Import": generateNSQLWBI,
+        "Cloud Formation Table": generateCFT,
     },
 };
