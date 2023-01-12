@@ -67,7 +67,7 @@ function getUniquePkSkFieldNameCombos(indices) {
 }
 
 function generateIndexConstant(pkSkCombo) {
-    const indexConstName = `${pkSkCombo.pk}_${pkSkCombo.sk}_INDEX`.toUpperCase();
+    const indexConstName = generateIndexNameFromPkSk(pkSkCombo.pk, pkSkCombo.sk);
     const indexAwsName = `${pkSkCombo.pk}-${pkSkCombo.sk}-index`.toLowerCase();
 
     const code = JS_INDEX_TEMPLATE.replace("<<INDEX_CONST_NAME>>", indexConstName)
@@ -78,14 +78,21 @@ function generateIndexConstant(pkSkCombo) {
     return code;
 }
 
+function generateIndexNameFromPkSk(pk, sk) {
+    if (sk === "") { return `${pk}_INDEX`.toUpperCase(); }
+    return `${pk}_${sk}_INDEX`.toUpperCase();
+}
+
 function generateQuery(query) {
     const functionParams = getParametersCsvFromQuery(query);
     const pkCompositeKeyFields = getPkCompositeKeyFieldsCsvFromQuery(query);
+    const indexToUse = generateIndexConstName(query.index);
 
     let code = JS_FN_TEMPLATE
         .replaceAll("<<FUNC_NAME>>", query.name)
         .replaceAll("<<PARAM_FIELDS>>", functionParams)
         .replaceAll("<<PK_FIELDS>>", pkCompositeKeyFields)
+        .replaceAll("<<INDEX_CONST>>", indexToUse)
         ;
 
     return code;
@@ -115,6 +122,15 @@ function getPkCompositeKeyFieldsCsvFromQuery(query) {
     });
 
     return pkParameters.join(", ");
+}
+
+function generateIndexConstName(indexName) {
+    const index = getIndexByName(indexName);
+    const pk = index.pk.split(".")[1];
+    const sk = index.sk.split(".")[1];     // TODO Handle case where sk doesn't exist/is empty
+    const indexConstName = generateIndexNameFromPkSk(pk, sk);
+    const indexReference = `TABLE_INDEXES.${indexConstName}`;
+    return indexReference;
 }
 
 function generateObjectList() {

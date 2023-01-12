@@ -149,6 +149,7 @@
 .codegenieOutput textarea {
     display: inline-block;
     height: 20em;
+    /* height: 60em; */
     margin: 1em;
     resize: none;
     white-space: pre;
