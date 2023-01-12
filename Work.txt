@@ -1,5 +1,7 @@
 January 12
-[ ] Disable copy if facet list name doesn't match selected
+[?] Get unique indices only by field names (pk/sk/etc)
+[o] Disable copy if facet list name doesn't match selected
+[ ] Import entire NoSQL Workbench
 
 January 11
 [o] Do we need to specify pk/sk fields for table?
@@ -45,8 +47,7 @@ January 11
   [x] Fix error when empty sk created
   [x] Ignore sk field when sk isn't included
   [x] Hide sk input field
-[ ] Prevent # on empty field keys with multi-part sks
-[?] Get unique indices only by field names (pk/sk/etc)
+[x] Prevent # on empty field keys with multi-part sks
 
 January 10
 [x] Delete index

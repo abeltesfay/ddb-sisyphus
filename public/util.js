@@ -24,7 +24,7 @@ function gebi(id) { return document.getElementById(id); }
 function dce(tag) { return document.createElement(tag); }
 
 // Default structure for some fields
-function getDefaultAppState() { return { facets: [], queries: [], indices: {} }; };
+function getDefaultAppState() { return { facets: [], queries: [], indices: [], examples: [] }; };
 
 function getNewFacet(name) { return { name, fields: [] }; }
 

@@ -9,6 +9,7 @@ function processKeys(event) {
         selectedExampleFacetToAdd = null;
         selectedExampleDocumentToEdit = null;
         selectedExampleDocumentIndex = null;
+        selectedExamplesQuery = null;
         examplesFilterValues = {};
         
         // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
