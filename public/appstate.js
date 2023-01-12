@@ -97,3 +97,21 @@ function loadAppState() {
         console.error("LOADAPP: Error while loading app state. Highly recommend you log state and save to a text file!", error);
     }
 }
+
+function downloadState() {
+    const downloadState = gebi("downloadState");
+    const contents = JSON.stringify(APP_STATE);
+    const typeOption = { type: "text/javascript" };
+    const blob = new Blob([contents], typeOption);
+    const href = window.URL.createObjectURL(blob);
+    downloadState.href = href;
+    downloadState.download = generateDownloadFilename();
+}
+
+function generateDownloadFilename() {
+    const FILEEXTENSION = "js";
+    const FILENAME = "DynamoDBTableModel";
+    const datetimeStamp = getCurrentDatetimestampEasternTimeSlimAsString();
+
+    return `${datetimeStamp}-${FILENAME}.${FILEEXTENSION}`;
+}

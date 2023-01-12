@@ -37,6 +37,7 @@ function preparePage() {
     gebi("examplesQuerySelect").onchange = selectExamplesQuery;
     setClick("generateCode", generateCode);
     setClick("importNoSqlWBJson", importNoSqlWBJson);
+    setClick("downloadState", downloadState);
     
     setEditorViewButtons();
     
