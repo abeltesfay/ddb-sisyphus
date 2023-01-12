@@ -31,7 +31,6 @@ function generateDynamicJs() {
     for (query of APP_STATE.queries) {
         const code = generateQuery(query);
         queriesString.push(code);
-        break;
     }
 
     return [indexConstsStrings, queriesString].flat().join("\n");
@@ -86,13 +85,17 @@ function generateIndexNameFromPkSk(pk, sk) {
 function generateQuery(query) {
     const functionParams = getParametersCsvFromQuery(query);
     const pkCompositeKeyFields = getPkCompositeKeyFieldsCsvFromQuery(query);
+    const skCompositeKeyFields = getSkCompositeKeyFieldsCsvFromQuery(query);
     const indexToUse = generateIndexConstName(query.index);
 
     let code = JS_FN_TEMPLATE
         .replaceAll("<<FUNC_NAME>>", query.name)
         .replaceAll("<<PARAM_FIELDS>>", functionParams)
         .replaceAll("<<PK_FIELDS>>", pkCompositeKeyFields)
+        .replaceAll("<<SK_FIELDS>>", skCompositeKeyFields)
         .replaceAll("<<INDEX_CONST>>", indexToUse)
+        .replaceAll("<<SK_BEGINS_WITH>>", query.skBeginsWith ?? true)
+        .replaceAll("<<ENTITY_TYPE_CONST>>", query.entityTypeFilter ?? undefined)
         ;
 
     return code;
@@ -122,6 +125,20 @@ function getPkCompositeKeyFieldsCsvFromQuery(query) {
     });
 
     return pkParameters.join(", ");
+}
+
+function getSkCompositeKeyFieldsCsvFromQuery(query) {
+    const fieldKeys = getFieldKeysByQueryName(query.name);
+    const skParameters = fieldKeys.skFields.map(field => {
+        // Wrap static string values in double quotes
+        if (field.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
+            return `"${field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")}"`;
+        }
+
+        return field; // Return parameter name
+    });
+
+    return skParameters.join(", ");
 }
 
 function generateIndexConstName(indexName) {
@@ -164,24 +181,20 @@ let JS_INDEX_CONST_DEFN = `const TABLE_INDEXES = {
 let JS_FN_TEMPLATE = `
 async function <<FUNC_NAME>>(<<PARAM_FIELDS>>) {
     const pk = keyCombiner(<<PK_FIELDS>>); // Example PK: EMPLOYEE#01234567
-    // const queryInput = getQueryCommandByIndexAndByPkOptionalSk(CONSTS.DB.INDEXES.GSI1PKSK, pk, undefined, true, CONSTS.DB.ENTITIES.APPLICATIONDETAILS);
-    const queryInput = getQueryCommandByIndexAndByPkOptionalSk(<<INDEX_CONST>>, pk, undefined, true, <<ENTITY_TYPE_CONST>>);
+    const sk = keyCombiner(<<SK_FIELDS>>);
+    const queryInput = getQueryCommandByIndexAndByPkOptionalSk(<<INDEX_CONST>>, pk, sk, <<SK_BEGINS_WITH>>, <<ENTITY_TYPE_CONST>>);
     const results = await getItemsByCommand(queryInput);
-
     return results?.items;
-}
-`;
+}`;
 
-// `async function getApplicationByCommitteeApplicant(committeeId, term, applicantEmployeeId) {
-//     // const pk = \`${CONSTS.DB.APPLICATION}#${employeeId}\`;
-//     const pk = \`<<FIELDS>>\`;
-//     const sk = `${committeeId}#${term}#${applicantEmployeeId}`;
-//     const queryInput = getQueryCommandByPkOptionalSk(pk, sk, true, CONSTS.DB.ENTITIES.APPLICATIONDETAILS);
+// Example JS_FN_TEMPLATE output
+// async function getApplicationByApplicantEmployeeId(applicantEmployeeId, committeeId, term) {
+//     const pk = keyCombiner("APPLICANT", applicantEmployeeId); // Example PK: EMPLOYEE#01234567
+//     const sk = keyCombiner("COMMITTEE", committeeId, "TERM", term);
+//     const queryInput = getQueryCommandByIndexAndByPkOptionalSk(TABLE_INDEXES.PK_SK_INDEX, pk, sk, true, undefined);
 //     const results = await getItemsByCommand(queryInput);
-
 //     return results?.items;
 // }
-// `;
 
 let JS_BASELINE = `
 const { DynamoDBDocumentClient } = require("@aws-sdk/lib-dynamodb");
@@ -204,7 +217,7 @@ CONSTS = {
 // Util Fns
 // 
 function keyCombiner(...args) { return keyCombinerWithDelimiter(CONSTS.DATABASE.DELIMITER_DEFAULT, ...args); }
-function keyCombinerWithDelimiter(delimiter, ...args) { return args.join(delimiter); }
+function keyCombinerWithDelimiter(delimiter, ...args) { return args.length === 0 ? undefined : args.join(delimiter); }
 
 //
 // DynamoDB Client

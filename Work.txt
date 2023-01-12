@@ -12,7 +12,7 @@ January 12
   [x] Generate pk combiner for first query
   [x] Generate indices const
   [x] Generate index name for first query
-  [ ] Generate sk combiner for first query
+  [x] Generate sk combiner for first query
   [ ] Generate no sk if unnecessary for first query
 [ ] Generate write code
 [ ] Import entire NoSQL Workbench
