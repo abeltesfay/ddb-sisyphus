@@ -22,7 +22,13 @@ January 12
 [o] Add skBeginsWith checkbox to queries
 [-] Generate write code - May be too complex
 [x] Load NoSQL Workbench JSON button
-[ ] Import facet names 
+[x] Import facet names 
+[x] Replace facet field types
+[x] Try importing it
+[x] Import indices
+[x] Import examples
+[ ] Mockup data
+[ ] Allow for line-delimited field additions
 
 January 11
 [o] Do we need to specify pk/sk fields for table?
