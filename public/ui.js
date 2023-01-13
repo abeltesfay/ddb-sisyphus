@@ -664,36 +664,49 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
     let filters = filterString.split(" ");
 
     // Key prefixes: * == required, - == get rid of these, %B %N %S == show only specified type, &- == show fields without a format, &+ == show fields with a format
-    let excluded = true;
-    const hasOnlyOneFilter = filters.length === 1;
-
+    let excluded = false;
+    
+    // Inclusion-based filtering first
     for (filter of filters) {
         const firstChar = filter.slice(0, 1);
+        if (["*", "-", "%", "&"].includes(firstChar)) { continue; }
+        
+        excluded = true; // Exclude if there are actual things to exclude by
+        
+        if (fieldName.indexOf(filter) !== -1) { excluded = false; break; } // Include on the first one
+    }
+
+    if (excluded) { return excluded; }
+    
+    // Exclusion time
+    // const hasOnlyOneFilter = filters.length === 1;
+    for (filter of filters) {
+        const firstChar = filter.slice(0, 1);
+        if (!["*", "-", "%", "&"].includes(firstChar)) { continue; }
+
         if (firstChar === "*") {
-            excluded = false;
+            // excluded = false;
             if (filter.length === 1) { continue; } // Skip just single character asterisk
             if (fieldName.indexOf(filter.slice(1)) === -1) { return true; }
         } else if (firstChar === "-") {
             if (filter.length === 1) { // Skip just single character dash
-                if (hasOnlyOneFilter) { excluded = false; } // Shouldn't make everything invisible if there are no other filter terms
+                // if (hasOnlyOneFilter) { excluded = false; } // Shouldn't make everything invisible if there are no other filter terms
                 continue; 
             }
             if (fieldName.indexOf(filter.slice(1)) !== -1) { return true; }
-            if (hasOnlyOneFilter) { excluded = false; }
+            // if (hasOnlyOneFilter) { excluded = false; }
         } else if (filter === "&-" || filter === "&+") {
-            excluded = false;
+            // excluded = false;
             if (filter === "&-") {
                 if (fieldFormatType && fieldFormatType !== "") { return true; } // Exclude, it has a format type
             } else {
                 if (!fieldFormatType || fieldFormatType === "") { return true; } // Exclude, it has NO format type
             }
         } else if (firstChar === "%") {
-            excluded = false;
+            // excluded = false;
             if (filter.length !== 2) { continue; } // Skip if just single percent
             const typeSpecified = filter.slice(1);
             if (fieldType?.toLowerCase() !== typeSpecified) { return true; }
-        } else if (fieldName.indexOf(filter) !== -1) {
-            excluded = false;
         }
     }
 

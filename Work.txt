@@ -46,6 +46,8 @@ January 13
 [x] Gen button updates pk/sk fields
 [x] (-) field filter only removes, doesn't cause inclusion
   - .term -termtype
+[o] Figure out a way re-use composite key values on generation
+[x] Multiple (-) field filters doesn't cause full exclusion
 [ ] Field format enum add csv
 [ ] Field format varnum
   [ ] Trim leading 0s

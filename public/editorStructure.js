@@ -389,6 +389,24 @@ function copyFormatValue(fieldFrom, fieldTo) {
             break;
         }
         
+        case "VARCHAR": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format.varcharValue = fieldFrom.format.varcharValue;
+            break;
+        }
+
+        case "VARNUM": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format.varnumValue = fieldFrom.format.varnumValue;
+            break;
+        }
+
+        case "VARWORD": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format.varwordValue = fieldFrom.format.varwordValue;
+            break;
+        }
+        
         default: {
             alert(`Unable to copy format value, type=[${fieldFrom.format.type}] was not found!`);
             return;
@@ -400,11 +418,11 @@ function copyFormatValue(fieldFrom, fieldTo) {
 
 function facetFieldFilterHelp() {
     alert(`FACET FIELD FILTER
-This textbox can be used to filter down to fields. Useful when copying 1 field's format to 20+ others (for test data). Features:
+This textbox can be used to filter visible fields. Useful when copying 1 field's format to 20+ others (for test data). Features:
 
 Mostly inclusive OR filtering
-Case-insensitive
 "hello world" => fields with either "hello" or "world"
+Case-insensitive
 
 Shortcuts:
  - Hit escape to re-focus to this input textbox
