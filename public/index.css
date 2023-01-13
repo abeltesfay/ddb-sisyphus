@@ -145,7 +145,7 @@
     margin-top: 1em;
     width: 100%;
 }
-.formatList, .formatOptions, .formatButtons, .formatEnumList, .formatStaticValue {
+.formatList, .formatOptions, .formatButtons, .formatEnumList, .formatStaticValue, .formatVarcharValue {
     margin-bottom: 1em;
     width: 100%;
 }

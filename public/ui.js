@@ -42,8 +42,16 @@ function preparePage() {
     gebi("formatOptions").onchange = updateFieldFormat;
     setClick("addFormatEnum", addFormatEnum);
     setClick("removeFormatEnum", removeFormatEnum);
-    gebi("formatStaticValue").onkeydown = updateFieldFormatStatic;
-    gebi("formatStaticValue").onchange = updateFieldFormatStatic;
+    
+    // formatType, key, elementId
+    const staticValueFields = { formatType: "updateFieldFormatStatic", key: "staticValue", elementId: "formatStaticValue"}
+    gebi("formatStaticValue").onkeydown = updateFieldFormatDynamic.bind(staticValueFields);
+    gebi("formatStaticValue").onchange = updateFieldFormatDynamic.bind(staticValueFields);
+    
+    const varcharValueFields = { formatType: "updateFieldFormatVarchar", key: "varcharValue", elementId: "formatVarcharValue"}
+    gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
+    gebi("formatVarcharValue").onchange = updateFieldFormatDynamic.bind(varcharValueFields);
+
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
     setClick("generateExamples", generateExamples);
@@ -333,12 +341,13 @@ function fillFormatTypeDropdown() {
 
 function redrawFormatFormElements() {
     // Hide everything first
-    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat"];
+    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat", "formatVarcharValueContainer"];
     addClassTo("hidden", elementsToHide);
 
     // Fill fields with data
     redrawEnumList();
     setFormatStaticValue();
+    setFormatVarcharValue();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -352,6 +361,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.S.STATIC.key: {
             const elementToShow = ["formatStaticValue", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.S.VARCHAR.key: {
+            const elementToShow = ["formatVarcharValueContainer", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -378,6 +393,13 @@ function setFormatStaticValue() {
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.STATIC.key) { return; }
     
     gebi("formatStaticValue").value = field.format.staticValue ?? "";
+}
+
+function setFormatVarcharValue() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARCHAR.key) { return; }
+    
+    gebi("formatVarcharValue").value = field.format.varcharValue ?? 10;
 }
 
 function redrawQueries() {
@@ -581,12 +603,14 @@ function updateFilteredFields() {
     
     if (fieldFilterValue.trim().length === 0) { return; }
     let filterInputValue = fieldFilterValue.toLowerCase();
+    const { facetName: selectedFacetName, fieldName: selectedFieldName } = getSelectedFacetAndFieldNames() ?? {};
 
     fieldElements.forEach(ele => {
             const fieldSpan = ele.getElementsByTagName("span")[0];
             const fieldName = fieldSpan.innerText.toLocaleLowerCase();
             const field = getFacetFieldByNames(fieldSpan.dataset.facet, fieldSpan.dataset.name);
-            if (isFieldExcludedByFilter(fieldName, filterInputValue, field?.type, field?.format?.type)) { ele.classList.add("hidden"); }
+            const isCurrentlySelectedField = fieldSpan.dataset.facet === selectedFacetName && fieldSpan.dataset.name === selectedFieldName;
+            if ( !isCurrentlySelectedField && isFieldExcludedByFilter(fieldName, filterInputValue, field?.type, field?.format?.type) ) { ele.classList.add("hidden"); }
         });
 }
 

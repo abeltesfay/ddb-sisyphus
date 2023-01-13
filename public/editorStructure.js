@@ -317,23 +317,27 @@ function removeFormatEnum() {
     redrawPage();
 }
 
-let timerUpdateFieldFormatStatic = null;
+// let timerUpdateFieldFormatStatic = null, timerUpdateFieldFormatVarchar = null;
+let timers = {
+    "updateFieldFormatStatic": null, 
+    "updateFieldFormatVarchar": null, 
+};
 
-function updateFieldFormatStatic() {
-    clearTimeout(timerUpdateFieldFormatStatic);
-    timerUpdateFieldFormatStatic = setTimeout(delayedUpdateFieldFormatStatic, 200);
+function updateFieldFormatDynamic() {
+    const { formatType, key, elementId } = this;
+    clearTimeout(timers[formatType]);
+    timers[formatType] = setTimeout(delayedUpdateFieldFormatDynamic.bind({ key, elementId }), 200);
 }
 
-function delayedUpdateFieldFormatStatic() {
+function delayedUpdateFieldFormatDynamic() {
     let field = getCurrentFacetField();
     if (!field) { alert("Couldn't find the current facet field."); return; }
 
-    const formatEnumValue = gebi("formatStaticValue").value;
-    field.format.staticValue = formatEnumValue;
+    const value = gebi(this.elementId).value;
+    field.format[this.key] = value;
     redrawPage();
     
-    gebi("formatStaticValue").focus();
-    clearTimeout(timerUpdateFieldFormatStatic);
+    gebi(this.elementId).focus();
 }
 
 function copyFormat() {
