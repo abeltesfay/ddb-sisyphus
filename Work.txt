@@ -1,6 +1,13 @@
 January 13
 [x] Fix code generator -- should only include ones in query selection
 [?] Fix bug -- clicking an example clears pk/sk example filter
+[x] Remember last editor
+[x] Fix escape focus
+  - Really complicated.. Can't hit escape/capture key presses to body if a
+    button has focus for some reason? Have to find the first visible input
+    via offsetHeight > 0 || offsetWidth > 0
+  - https://stackoverflow.com/questions/1343237/how-to-check-elements-visibility-via-javascript
+[x] Filter by pk/sk with empty query/index dropdown
 [ ] Test data
   [ ] Test data button
   [ ] Modal

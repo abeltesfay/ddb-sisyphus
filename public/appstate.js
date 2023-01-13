@@ -9,6 +9,16 @@ function saveAppState() {
     console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
 }
 
+function saveAppStateCurrentEditor() {
+    console.debug("SAVEAPP: Saving current editor to app state");
+    APP_STATE.currentEditor = currentEditor;
+    APP_STATE_SAVED.currentEditor = currentEditor;
+    const dataAsString = JSON.stringify(APP_STATE_SAVED);
+    window.localStorage.setItem(CONSTS.LSKEY, dataAsString);
+    redrawPage();
+    console.log(`SAVEAPP: Data saved to localStorage key=[${CONSTS.LSKEY}]`);
+}
+
 // Do some data shuffling/validating on object structure
 function getValidatedState(state) {
     let newState = clone(state);
@@ -90,6 +100,7 @@ function loadAppState() {
         const data = window.localStorage.getItem(CONSTS.LSKEY);
         APP_STATE = JSON.parse(data) ?? getDefaultAppState();
         APP_STATE_SAVED = clone(APP_STATE);
+        currentEditor = APP_STATE.currentEditor;
         console.debug(`LOADAPP: Application loaded from state, facets loaded: ${APP_STATE?.facets?.length ?? 0}`)
     } catch (error) {
         APP_STATE_SAVED = APP_STATE = { facets: [] };

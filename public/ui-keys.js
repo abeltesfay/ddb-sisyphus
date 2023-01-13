@@ -3,8 +3,9 @@ function processKeys(event) {
     if (event.key === "Escape") {
         resetEverything();
 
-        gebi("fieldFilter").focus();
         redrawPage();
+        resetFocusBasedOnEditor();
+        return false;
     };
 }
 
@@ -22,4 +23,15 @@ function resetEverything() {
     examplesFilterValues = {};
     
     // currentEditor = CONSTS.EDITORS.TABLESTRUCT;
+}
+
+function resetFocusBasedOnEditor() {
+    switch (currentEditor) {
+        case CONSTS.EDITORS.TABLESTRUCT:
+            gebi("fieldFilter").focus();
+            break;
+        case CONSTS.EDITORS.EXAMPLES:
+            gebi("examplesFilterPk").focus();
+            break;
+    }
 }

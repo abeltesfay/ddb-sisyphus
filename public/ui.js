@@ -595,19 +595,20 @@ function redrawExampleDocuments() {
 
     const examplesFilterPk = gebi("examplesFilterPk");
     const examplesFilterSk = gebi("examplesFilterSk");
+    const isGeneralFilter = !examplesFilterPk.readOnly;
 
     createExamplesLabelRow("Included:");
     let excludedExamples = [];
     
     APP_STATE.examples.forEach((example, index) => {
-        let excludedExample = createExampleRow(example, index, examplesFilterPk, examplesFilterSk);
+        let excludedExample = createExampleRow(example, index, examplesFilterPk, examplesFilterSk, isGeneralFilter);
         if (excludedExample) { excludedExamples.push(excludedExample); }
     });
     
     createExamplesLabelRow("Excluded:");
     excludedExamples.forEach(example => {
         let { example: _example, index, examplesFilterPk, examplesFilterSk } = example;
-        createExampleRow(_example, index, examplesFilterPk, examplesFilterSk, false);
+        createExampleRow(_example, index, examplesFilterPk, examplesFilterSk, isGeneralFilter, false);
     });
 }
 
@@ -621,8 +622,11 @@ function createExamplesLabelRow(label) {
     examplesBody.appendChild(row);
 }
 
-function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, filter = true) {
+function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, isGeneralFilter, filter = true) {
     let examplesBody = gebi("examplesBody");
+
+    // TODO Determine if we show this
+    // TODO Create example row
 
     const hasSk = typeof examplesFilterPk?.dataset.fieldname === "string" && typeof examplesFilterSk?.dataset.fieldname === "string";
     const pkKey = examplesFilterPk?.dataset.fieldname ?? "pk";
@@ -636,14 +640,18 @@ function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, fi
     // Filtering by queries/top row input fields
     if (filter
             && examplesFilterPk && examplesFilterPk.value.length !== 0
-            && pkValue !== examplesFilterPk.value) {
+            && ((isGeneralFilter && pkValue.toLowerCase().indexOf(examplesFilterPk.value.toLowerCase()) === -1)
+                || (!isGeneralFilter && pkValue !== examplesFilterPk.value))
+     ) {
         return returnableExcludedRowData;
     }
     
     if (filter && examplesFilterSk
         && examplesFilterSk.value.length !== 0
-        && skValue.indexOf(examplesFilterSk.value) !== 0
-        && hasSk) {
+        && hasSk
+        && ((isGeneralFilter && skValue.toLowerCase().indexOf(examplesFilterSk.value.toLowerCase()) === -1)
+            || (!isGeneralFilter && skValue.indexOf(examplesFilterSk.value) !== 0))
+        ) {
         return returnableExcludedRowData;
     }
 
@@ -772,8 +780,11 @@ function redrawExamplesReadTableInputsRowReset() {
 
     let inputEle = dce("input");
     inputEle.id = "examplesFilterPk";
-    if (index) { inputEle.dataset.fieldname = index.pk.split(".")[1]; }
     inputEle.readOnly = queryOrIndexName.trim().length !== 0;
+    inputEle.onkeyup = redrawExampleDocuments;
+    inputEle.onchange = redrawExampleDocuments;
+    inputEle.dataset.fieldname = "pk";
+    if (index) { inputEle.dataset.fieldname = index.pk.split(".")[1]; }
     
     let inputCellEle = dce("th");
     inputCellEle.appendChild(inputEle);
@@ -786,8 +797,11 @@ function redrawExamplesReadTableInputsRowReset() {
     
     inputEle = dce("input");
     inputEle.id = "examplesFilterSk";
-    if (index && index.sk !== "") { inputEle.dataset.fieldname = index.sk.split(".")[1]; }
+    inputEle.dataset.fieldname = "sk";
+    inputEle.onkeyup = redrawExampleDocuments;
+    inputEle.onchange = redrawExampleDocuments;
     inputEle.readOnly = queryOrIndexName.trim().length !== 0;
+    if (index && index.sk !== "") { inputEle.dataset.fieldname = index.sk.split(".")[1]; }
     
     inputCellEle = dce("th");
     inputCellEle.appendChild(inputEle);
@@ -935,10 +949,17 @@ function redrawGeneratorOptions() {
 //
 // Tabs
 //
-function showTableStructureEditor() { currentEditor = CONSTS.EDITORS.TABLESTRUCT; redrawPage(); }
-function showQueryEditor() { currentEditor = CONSTS.EDITORS.QUERIES; redrawPage(); }
-function showExamplesEditor() { currentEditor = CONSTS.EDITORS.EXAMPLES; redrawPage(); }
-function showCodegenieEditor() { currentEditor = CONSTS.EDITORS.CODEGENIE; redrawPage(); }
+function showTableStructureEditor() { currentEditor = CONSTS.EDITORS.TABLESTRUCT; saveAppStateCurrentEditor(); }
+function showQueryEditor() { currentEditor = CONSTS.EDITORS.QUERIES; saveAppStateCurrentEditor(); }
+function showExamplesEditor() { currentEditor = CONSTS.EDITORS.EXAMPLES; saveAppStateCurrentEditor(); }
+function showCodegenieEditor() { currentEditor = CONSTS.EDITORS.CODEGENIE; saveAppStateCurrentEditor(); }
+
+function resetFocus() {
+    let visibleInputs = Array.from(document.getElementsByTagName("input"))
+    .filter(ele => ele.offsetHeight > 0 || ele.offsetWidth > 0);
+    visibleInputs[0]?.focus();
+    // console.debug("Resetting focus to", document.activeElement);
+}
 
 function showCurrentEditor() {
     const buttons = Array.from(document.getElementsByClassName("showEditorButton"));
@@ -963,4 +984,5 @@ function showCurrentEditor() {
     }
     
     editor.classList.remove("hidden");
+    resetFocus();
 }
