@@ -43,6 +43,17 @@ January 13
   [x] Test gen
 [x] Field format varnum
 [x] Field format varword
+[x] Gen button updates pk/sk fields
+[x] (-) field filter only removes, doesn't cause inclusion
+  - .term -termtype
+[ ] Field format enum add csv
+[ ] Field format varnum
+  [ ] Trim leading 0s
+  [ ] Fill leading 0s
+  [ ] Decimals
+  [ ] Min field
+  [ ] Max field
+[ ] Field format date
 [ ] Export file
   [ ] Button
   [ ] Template

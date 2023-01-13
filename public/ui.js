@@ -665,6 +665,7 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
 
     // Key prefixes: * == required, - == get rid of these, %B %N %S == show only specified type, &- == show fields without a format, &+ == show fields with a format
     let excluded = true;
+    const hasOnlyOneFilter = filters.length === 1;
 
     for (filter of filters) {
         const firstChar = filter.slice(0, 1);
@@ -673,9 +674,12 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
             if (filter.length === 1) { continue; } // Skip just single character asterisk
             if (fieldName.indexOf(filter.slice(1)) === -1) { return true; }
         } else if (firstChar === "-") {
-            excluded = false;
-            if (filter.length === 1) { continue; } // Skip just single character dash
+            if (filter.length === 1) { // Skip just single character dash
+                if (hasOnlyOneFilter) { excluded = false; } // Shouldn't make everything invisible if there are no other filter terms
+                continue; 
+            }
             if (fieldName.indexOf(filter.slice(1)) !== -1) { return true; }
+            if (hasOnlyOneFilter) { excluded = false; }
         } else if (filter === "&-" || filter === "&+") {
             excluded = false;
             if (filter === "&-") {

@@ -178,6 +178,8 @@ function generateExample() {
     generatedFieldAndValues.forEach(fieldAndValue => {
         gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value = fieldAndValue.generatedValue;
     });
+
+    updateNewExampleInputs();
 }
 
 function generateFieldValueByField(field) {
