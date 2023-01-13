@@ -12,7 +12,7 @@ function preparePage() {
     setClick("addField", addField);
     setClick("addFields", addFields);
     setClick("editFacetName", editFacetName);
-    setClick("editFieldName", editFieldName);
+    setClick("editField", editField);
     setClick("deleteFacet", deleteFacet);
     setClick("deleteField", deleteField);
     setClick("addKey", addKey);
@@ -132,8 +132,10 @@ function redrawFacets() {
 function redrawFields() {
     const fieldListEle = gebi("fieldList");
     Array.from(fieldListEle.getElementsByTagName("li")).forEach(o => o.remove())
-    gebi("editFieldName").disabled = !selectedField;
-    gebi("deleteField").disabled = !selectedField;
+    gebi("addField").disabled = !selectedFacet;
+    gebi("addFields").disabled = !selectedFacet;
+    gebi("editField").disabled = !selectedField || !selectedFacet;
+    gebi("deleteField").disabled = !selectedField || !selectedFacet;
 
     if (!selectedFacet) { redrawAllFields(); return; }
     
@@ -742,8 +744,9 @@ function redrawExamplesReadQueryInputs() {
     
     const underlyingFacetFieldName = getFacetAndFieldByFullName(index.pk);
     const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
+    if (!underlyingField) { return; }
     
-    if (underlyingField.keys) {
+    if (underlyingField?.keys) {
         const fieldKeys = `${underlyingField.keys}`.replaceAll(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replaceAll(",", CONSTS.DELIM);
         const queryPkFull = `${index.pk} -> ${fieldKeys}`;
         examplesQueryPkEle.innerText = queryPkFull;
@@ -801,7 +804,9 @@ function redrawExamplesReadTableInputFields() {
     const queryOrIndexName = gebi("examplesQuerySelect").value;
     if (!getQueryByName(queryOrIndexName) && !getIndexByName(queryOrIndexName)) { return; }
 
-    let { pkFields , skFields } = getFieldKeysByQueryName(queryOrIndexName) ?? getFieldKeysByIndexName(queryOrIndexName);
+    const fieldKeys = getFieldKeysByQueryName(queryOrIndexName) ?? getFieldKeysByIndexName(queryOrIndexName);
+    if (!fieldKeys) { return; }
+    let { pkFields , skFields } = fieldKeys;
     
     pkFields.forEach( pkField => {
         if (pkField.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) { return; }

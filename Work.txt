@@ -1,3 +1,18 @@
+January 13
+[x] Fix code generator -- should only include ones in query selection
+[?] Fix bug -- clicking an example clears pk/sk example filter
+[ ] Test data
+  [ ] Test data button
+  [ ] Modal
+  [ ] One line per field shown
+  [ ] Checkbox per field to enable/disable
+  [ ] Button to randomize data
+  [ ] Autopop composite keys
+  [ ] Static field value
+[ ] Generate import file
+  [ ] Button
+  [ ] Template
+
 January 12
 [?] Get unique indices only by field names (pk/sk/etc)
 [o] Disable copy if facet list name doesn't match selected
@@ -40,14 +55,9 @@ January 12
 [x] Fix weird highlighting of facet fields
 [x] Fix edit not deleting old field
   - Super old code dependent on field not being an object lol woops
-[ ] Test data
-  [ ] Test data button
-  [ ] Modal
-  [ ] One line per field shown
-  [ ] Checkbox per field to enable/disable
-  [ ] Button to randomize data
-  [ ] Autopop composite keys
-  [ ] Static field value
+[x] Fix broken index filter
+[x] Fix disabling field buttons
+[x] Delete field also deletes on examples
 
 January 11
 [o] Do we need to specify pk/sk fields for table?

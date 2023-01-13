@@ -126,7 +126,7 @@ function addFields() {
     }
 }
 
-function editFieldName() {
+function editField() {
     if (!selectedFacet || !selectedField) { return; }
     console.debug(`EDITFIELD: Editing facet and field name from ${selectedFacet}.${selectedField}`);
 
@@ -148,12 +148,16 @@ function editFieldName() {
 
 function deleteField() {
     if (!selectedFacet || !selectField) { return; }
-    if (!confirm(`Are you SURE you want to delete field ${selectedFacet}.${selectedField}?`)) { return; }
+    if (!confirm(`Are you SURE you want to delete field ${selectedFacet}.${selectedField}?\nThis will delete the field in examples too!`)) { return; }
 
     let facet = getFacetByName(selectedFacet);
     let name = selectedField;
     const oldCount = facet.fields.length;
     facet.fields = facet.fields.filter(field => field.name !== selectedField);
+    APP_STATE.examples.forEach(example => {
+        if (example.__facetName !== facet.name) { return; }
+        delete example[name];
+    });
     const newCount = facet.fields.length;
     redrawPage();
 

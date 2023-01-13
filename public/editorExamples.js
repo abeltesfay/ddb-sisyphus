@@ -80,8 +80,19 @@ function updateNewExampleInputs() {
 
 function selectExamplesQuery() {
     selectedExamplesQuery = gebi("examplesQuerySelect").value;
+    if (selectedExamplesQuery !== "") { validateExamplesQueryOrIndex(); }
     examplesFilterValues = {};
     redrawPage();
+}
+
+function validateExamplesQueryOrIndex() {
+    const queryOrIndex = selectedExamplesQuery;
+    const fieldKeys = getFieldKeysByQueryName(queryOrIndex) ?? getFieldKeysByIndexName(queryOrIndex);
+    if (!fieldKeys) {
+        selectedExamplesQuery = "";
+        gebi("examplesQuerySelect").value = "";
+        alert("Invalid filter, please make sure the query or index is fully set up.");
+    }
 }
 
 function updateExampleQueryInputs() {

@@ -137,6 +137,7 @@ function getFieldKeysByIndexName(indexName) {
 
     const underlyingFacetFieldNamePk = getFacetAndFieldByFullName(index.pk);
     const underlyingFieldPk = getFacetFieldByNames(underlyingFacetFieldNamePk.facetName, underlyingFacetFieldNamePk.fieldName);
+    if (!underlyingFieldPk) { return; }
 
     if (underlyingFieldPk.keys) {
         pkFields = [pkFields, clone(underlyingFieldPk.keys)].flat();

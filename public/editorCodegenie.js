@@ -142,8 +142,19 @@ function getSkCompositeKeyFieldsCsvFromQuery(query) {
 
         return field; // Return parameter name
     });
+    
+    let finalString = "";
+    let skParametersFiltered = [];
 
-    return skParameters.join(", ");
+    for (skParam of skParameters) {
+        finalString += `${skParam}${CONSTS.DELIM}`;
+        const usableSearchPattern = finalString.slice(0, -1);
+        if (usableSearchPattern.length > query.sk.length) { break; }
+        
+        skParametersFiltered.push(skParam);
+    }
+
+    return skParametersFiltered.join(", ");
 }
 
 function generateIndexConstName(indexName) {
