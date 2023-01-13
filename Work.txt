@@ -34,6 +34,7 @@ January 13
 [x] Fix copying bug - copy wasn't pre-making format object
 [x] Examples gen data button
 [x] Example gen to individual field
+[x] Field filtering: by field format type &- &+
 [ ] Field format varchar
 [ ] Field format varnum
 [ ] Field format varword

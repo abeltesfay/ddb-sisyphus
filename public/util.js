@@ -227,7 +227,7 @@ function generateSEnumList(field) {
     return possibleValues[Math.floor(Math.random() * possibleValues.length)];
 }
 
-function generateSStatic(field) { return ""; }
+function generateSStatic(field) { return field.format.staticValue; }
 
 function generateSVarchar(field) { return ""; }
 

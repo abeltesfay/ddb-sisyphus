@@ -585,23 +585,18 @@ function updateFilteredFields() {
     fieldElements.forEach(ele => {
             const fieldSpan = ele.getElementsByTagName("span")[0];
             const fieldName = fieldSpan.innerText.toLocaleLowerCase();
-            const fieldType = getFieldTypeByName(fieldSpan.dataset.facet, fieldSpan.dataset.name);
-            if (isFieldExcludedByFilter(fieldName, filterInputValue, fieldType)) { ele.classList.add("hidden"); }
+            const field = getFacetFieldByNames(fieldSpan.dataset.facet, fieldSpan.dataset.name);
+            if (isFieldExcludedByFilter(fieldName, filterInputValue, field?.type, field?.format?.type)) { ele.classList.add("hidden"); }
         });
 }
 
-function getFieldTypeByName(facetName, fieldName) {
-    const field = getFacetFieldByNames(facetName, fieldName);
-    return field?.type;
-}
-
-function isFieldExcludedByFilter(fieldName, filterString, fieldType) {
+function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormatType) {
     filterString = filterString.trim();
     if (filterString.length === 0) { return false; }
 
     let filters = filterString.split(" ");
 
-    // Key prefixes: * == required, - == get rid of these, %B %N %S == show only these
+    // Key prefixes: * == required, - == get rid of these, %B %N %S == show only specified type, &- == show fields without a format, &+ == show fields with a format
     let excluded = true;
 
     for (filter of filters) {
@@ -614,8 +609,15 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType) {
             excluded = false;
             if (filter.length === 1) { continue; } // Skip just single character dash
             if (fieldName.indexOf(filter.slice(1)) !== -1) { return true; }
+        } else if (filter === "&-" || filter === "&+") {
+            excluded = false;
+            if (filter === "&-") {
+                if (fieldFormatType && fieldFormatType !== "") { return true; } // Exclude, it has a format type
+            } else {
+                if (!fieldFormatType || fieldFormatType === "") { return true; } // Exclude, it has NO format type
+            }
         } else if (firstChar === "%") {
-            if (filter.length !== 2) { continue; } // Skip if not %C, %B, etc
+            if (filter.length !== 2) { continue; } // Skip if just single percent
             const typeSpecified = filter.slice(1);
             if (fieldType?.toLowerCase() !== typeSpecified) { return true; }
             excluded = false;
