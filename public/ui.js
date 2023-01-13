@@ -307,7 +307,7 @@ function fillFormatTypeDropdown() {
     // let field = getFacetFieldByNames(facetName, fieldName);
     let field = getCurrentFacetField();
     const fieldFormatType = field.format?.type;
-    
+
     let formatTypes = CONSTS.FORMAT_TYPES[field.type];
     if (!formatTypes) {
         alert(`Couldn't find format type for this field type=[${field.type}], exiting fillFormatTypeDropdown`);
@@ -578,12 +578,38 @@ function updateFilteredFields() {
     fieldElements.forEach(ele => { ele.classList.remove("hidden"); }); // Show all
     
     if (fieldFilterValue.trim().length === 0) { return; }
-    let filterValue = fieldFilterValue.toLowerCase();
+    let filterInputValue = fieldFilterValue.toLowerCase();
 
     fieldElements.forEach(ele => {
             const fieldName = ele.getElementsByTagName("span")[0].innerText.toLocaleLowerCase();
-            if (fieldName.indexOf(filterValue) === -1) { ele.classList.add("hidden"); }
+            if (isFieldExcludedByFilter(fieldName, filterInputValue)) { ele.classList.add("hidden"); }
         });
+}
+
+function isFieldExcludedByFilter(fieldName, filterString) {
+    filterString = filterString.trim();
+    if (filterString.length === 0) { return false; }
+
+    let filters = filterString.split(" ");
+
+    // Key prefixes: * == required , - == get rid of these
+    let excluded = true;
+
+    for (filter of filters) {
+        const firstChar = filter.slice(0, 1);
+        if (firstChar === "*") {
+            if (filter.length === 1) { continue; } // Skip just single character asterisk
+            if (fieldName.indexOf(filter.slice(1)) === -1) { return true; }
+            excluded = false;
+        } else if (firstChar === "-") {
+            if (filter.length === 1) { continue; } // Skip just single character dash
+            if (fieldName.indexOf(filter.slice(1)) !== -1) { return true; }
+        } else if (fieldName.indexOf(filter) !== -1) {
+            excluded = false;
+        }
+    }
+
+    return excluded;
 }
 
 function redrawExamplePage() {

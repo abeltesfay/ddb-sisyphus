@@ -23,10 +23,13 @@ January 13
 [x] Field format show enum list
 [x] Field format add enum
 [x] Field format static
-[ ] Field format copy (to all visible filtered)
+[x] Field format copy (to all visible filtered)
   [x] Button
-  [ ] Prompt
-  [ ] Toggle enable/disable
+  [x] Prompt
+  [x] Copy logic for enum+static values
+  [-] Toggle enable/disable
+[x] Field filtering: split on space and filter 'or' by each
+[x] Field filtering: remove field with '-' prefix
 [ ] Generate import file
   [ ] Button
   [ ] Template
