@@ -581,29 +581,42 @@ function updateFilteredFields() {
     let filterInputValue = fieldFilterValue.toLowerCase();
 
     fieldElements.forEach(ele => {
-            const fieldName = ele.getElementsByTagName("span")[0].innerText.toLocaleLowerCase();
-            if (isFieldExcludedByFilter(fieldName, filterInputValue)) { ele.classList.add("hidden"); }
+            const fieldSpan = ele.getElementsByTagName("span")[0];
+            const fieldName = fieldSpan.innerText.toLocaleLowerCase();
+            const fieldType = getFieldTypeByName(fieldSpan.dataset.facet, fieldSpan.dataset.name);
+            if (isFieldExcludedByFilter(fieldName, filterInputValue, fieldType)) { ele.classList.add("hidden"); }
         });
 }
 
-function isFieldExcludedByFilter(fieldName, filterString) {
+function getFieldTypeByName(facetName, fieldName) {
+    const field = getFacetFieldByNames(facetName, fieldName);
+    return field?.type;
+}
+
+function isFieldExcludedByFilter(fieldName, filterString, fieldType) {
     filterString = filterString.trim();
     if (filterString.length === 0) { return false; }
 
     let filters = filterString.split(" ");
 
-    // Key prefixes: * == required , - == get rid of these
+    // Key prefixes: * == required, - == get rid of these, %B %N %S == show only these
     let excluded = true;
 
     for (filter of filters) {
         const firstChar = filter.slice(0, 1);
         if (firstChar === "*") {
+            excluded = false;
             if (filter.length === 1) { continue; } // Skip just single character asterisk
             if (fieldName.indexOf(filter.slice(1)) === -1) { return true; }
-            excluded = false;
         } else if (firstChar === "-") {
+            excluded = false;
             if (filter.length === 1) { continue; } // Skip just single character dash
             if (fieldName.indexOf(filter.slice(1)) !== -1) { return true; }
+        } else if (firstChar === "%") {
+            if (filter.length !== 2) { continue; } // Skip if not %C, %B, etc
+            const typeSpecified = filter.slice(1);
+            if (fieldType?.toLowerCase() !== typeSpecified) { return true; }
+            excluded = false;
         } else if (fieldName.indexOf(filter) !== -1) {
             excluded = false;
         }

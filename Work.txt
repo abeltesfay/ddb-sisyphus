@@ -30,6 +30,8 @@ January 13
   [-] Toggle enable/disable
 [x] Field filtering: split on space and filter 'or' by each
 [x] Field filtering: remove field with '-' prefix
+[x] Field filtering: filter by type of field (C,S,B,etc)
+[ ] Fix copying bug - copy wasn't pre-making format object
 [ ] Generate import file
   [ ] Button
   [ ] Template

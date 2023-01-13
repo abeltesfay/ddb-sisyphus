@@ -364,20 +364,22 @@ function copyFormat() {
     if (!confirm(`This will overwrite ${fieldCount} fields. ${addendum}\n\nAre you sure about this?`)) { return; }
 
     fieldsToCopyTo.forEach(field => {
-        copyFormatValue(field, currentField);
+        copyFormatValue(currentField, field);
     });
 
     redrawPage();
 }
 
-function copyFormatValue(fieldTo, fieldFrom) {
+function copyFormatValue(fieldFrom, fieldTo) {
     switch (fieldFrom.format.type) {
         case "ENUMLIST": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
             fieldTo.format.enumValues = fieldFrom.format.enumValues;
             break;
         }
         
         case "STATIC": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
             fieldTo.format.staticValue = fieldFrom.format.staticValue;
             break;
         }
