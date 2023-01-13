@@ -42,8 +42,8 @@ January 13
   [x] Max varchar number field to 100, min 1
   [x] Test gen
 [x] Field format varnum
-[ ] Field format varword
-[ ] Generate import file
+[x] Field format varword
+[ ] Export file
   [ ] Button
   [ ] Template
 
