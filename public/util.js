@@ -95,8 +95,8 @@ function getSelectedFacetAndFieldNames() {
         return { facetName: selectedFacet, fieldName: selectedField };
     }
 
-    if (selectedField) {
-        fieldNames = selectedField?.split(".");
+    if (selectedFacetAndField) {
+        fieldNames = selectedFacetAndField?.split(".");
         const facetName = fieldNames?.[0], fieldName = fieldNames?.[1];
         return { facetName, fieldName };
     }

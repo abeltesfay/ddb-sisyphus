@@ -62,7 +62,8 @@ function deleteFacet() {
 // Fields
 //
 function selectField() {
-    selectedField = this.innerText;
+    selectedField = this.dataset.name;
+    if (this.innerText.indexOf(".") !== -1) { selectedFacetAndField = this.dataset.facetfieldname; }
     redrawPage();
 }
 
@@ -88,6 +89,11 @@ function addField() {
     facet.fields = facet.fields.sort((a, b) => sortComparator(a.name, b.name));
     
     redrawPage();
+    Array.from(document.getElementsByTagName("span"))
+        .filter(ele => ele.dataset.facet === selectedFacet && ele.dataset.name === name)?.[0]
+        .parentElement
+        .getElementsByClassName("floater")?.[0]
+        .focus();
 }
 
 function addFields() {
@@ -129,9 +135,9 @@ function editFieldName() {
     if (!name ) { return; }
     if (facet?.fields?.includes?.(name)) { alert("Facet already contains this field"); return; }
 
-    let index  = facet.fields.findIndex(field => field == selectField);
-    facet.fields = facet.fields.filter(field => field !== selectedField);
-    facet.fields.push(name);
+    let index = facet.fields.findIndex(field => field.name === selectedField);
+    facet.fields[index].name = name;
+    facet.fields = facet.fields.sort((a, b) => sortComparator(a.name, b.name));
 
     const oldFieldName = selectedField;
     selectedField = name;
@@ -193,11 +199,12 @@ function addKey() {
     }
 
     redrawPage();
+    gebi("compositeKeyOptions").focus();
 }
 
 function addKeyStatic() {
-    let key = gebi("compositeKeyOptions").value;
-    if (key !== CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID) { return; }
+    // let key = gebi("compositeKeyOptions").value;
+    // if (key !== CONSTS.STATIC_COMPOSITE_KEY.DROPDOWN_PROMPT_ID) { return; }
     addKey();
 }
 

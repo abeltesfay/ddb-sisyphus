@@ -37,6 +37,9 @@ January 12
 [x] Line-delimited facet field additions
   [x] Prompt for csv of fields
   [x] Confirm
+[x] Fix weird highlighting of facet fields
+[x] Fix edit not deleting old field
+  - Super old code dependent on field not being an object lol woops
 [ ] Test data
   [ ] Test data button
   [ ] Modal

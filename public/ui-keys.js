@@ -11,6 +11,7 @@ function processKeys(event) {
 function resetEverything() {
     selectedFacet = null;
     selectedField = null;
+    selectedFacetAndField = null;
     selectedKey = null;
     selectedQuery = null;
     selectedIndex = null;

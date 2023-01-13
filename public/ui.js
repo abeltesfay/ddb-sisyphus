@@ -144,9 +144,11 @@ function redrawFields() {
         let fieldLabelEle = dce("span");
         // fieldText = `${field}`;
         // fieldLabelEle.innerText = fieldText;
+        let fieldText = `${selectedFacet}.${field.name}`;
         fieldLabelEle.innerText = field.name;
         fieldLabelEle.dataset.name = field.name;
         fieldLabelEle.dataset.facet = selectedFacet;
+        fieldLabelEle.dataset.facetfieldname = fieldText;
         fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
         fieldEle.appendChild(fieldLabelEle);
         fieldListEle.appendChild(fieldEle);
@@ -167,15 +169,17 @@ function redrawFields() {
 
 function redrawAllFields() {
     const fieldListEle = gebi("fieldList");
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
     
     APP_STATE.facets.forEach(facet => {
         facet.fields.forEach(field => {
             let fieldEle = dce("li");
             let fieldLabelEle = dce("span");
-            fieldText = `${facet.name}.${field.name}`;
+            let fieldText = `${facet.name}.${field.name}`;
             fieldLabelEle.innerText = fieldText;
             fieldLabelEle.dataset.name = field.name;
             fieldLabelEle.dataset.facet = facet.name;
+            fieldLabelEle.dataset.facetfieldname = fieldText;
             fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
             fieldEle.appendChild(fieldLabelEle);
             fieldListEle.appendChild(fieldEle);
@@ -188,7 +192,7 @@ function redrawAllFields() {
             fieldTypeDropdownEleFiller.classList.add("spacefiller");
             fieldEle.appendChild(fieldTypeDropdownEleFiller);
 
-            if (selectedField == fieldText) {
+            if (facetName === facet.name && fieldName === field.name) {
                 fieldEle.classList.add("highlightedfield");
             }
         });
