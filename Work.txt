@@ -36,6 +36,7 @@ January 13
 [x] Example gen to individual field
 [x] Field filtering: by field format type &- &+
 [x] Update README
+[x] Add help alert for filter
 [ ] Field format varchar
   [ ] Default varchar number field to 10
   [ ] Max varchar number field to 100, min 1

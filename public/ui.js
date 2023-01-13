@@ -42,6 +42,7 @@ function preparePage() {
     gebi("formatOptions").onchange = updateFieldFormat;
     setClick("addFormatEnum", addFormatEnum);
     setClick("removeFormatEnum", removeFormatEnum);
+    setClick("facetFieldFilterHelp", facetFieldFilterHelp);
     
     // formatType, key, elementId
     const staticValueFields = { formatType: "updateFieldFormatStatic", key: "staticValue", elementId: "formatStaticValue"}
@@ -641,10 +642,10 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
                 if (!fieldFormatType || fieldFormatType === "") { return true; } // Exclude, it has NO format type
             }
         } else if (firstChar === "%") {
+            excluded = false;
             if (filter.length !== 2) { continue; } // Skip if just single percent
             const typeSpecified = filter.slice(1);
             if (fieldType?.toLowerCase() !== typeSpecified) { return true; }
-            excluded = false;
         } else if (fieldName.indexOf(filter) !== -1) {
             excluded = false;
         }

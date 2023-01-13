@@ -1,5 +1,9 @@
 Simple webapp to design dynamodb tables
 
+# Run the webapp
+
+Just open [index.html](./public/index.html) locally to get started
+
 # Features
 
 - Create facets and their fields
@@ -25,10 +29,6 @@ Simple webapp to design dynamodb tables
 - Import and export your application state to share with teammates
 
 - Re-order your queryable composite key fields, tweak your indexes and queries, and regenerate all of your test data quickly
-
-# Run the webapp
-
-Just open [index.html](./public/index.html) to get started
 
 # Run it as a server
 

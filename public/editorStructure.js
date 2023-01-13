@@ -396,3 +396,23 @@ function copyFormatValue(fieldFrom, fieldTo) {
     
     fieldTo.format.type = fieldFrom.format.type;
 }
+
+function facetFieldFilterHelp() {
+    alert(`FACET FIELD FILTER
+This textbox can be used to filter down to fields. Features:
+
+Mostly inclusive OR filtering based
+Case-insensitive
+"hello world" => fields with either "hello" or "world"
+
+Shortcuts:
+ - Hit escape to re-focus to this input textbox
+ - "*apple bees" => any field with bees in it, fields MUST have apple in it
+ - "-apple bees" => ignore fields with apple in it
+ - "&+" => Has a specified format
+ - "&-" => Missing a specified format
+ - "%b" => Only boolean type
+ - "%n" => Only number type
+ - "%s" => Only string type
+`);
+}
