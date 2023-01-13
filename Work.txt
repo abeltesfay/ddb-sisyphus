@@ -35,6 +35,7 @@ January 13
 [x] Examples gen data button
 [x] Example gen to individual field
 [x] Field filtering: by field format type &- &+
+[x] Update README
 [ ] Field format varchar
   [ ] Default varchar number field to 10
   [ ] Max varchar number field to 100, min 1
