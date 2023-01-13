@@ -162,3 +162,30 @@ function copyExample() {
     inputEles.forEach(ele => ele.value = example[ele.dataset.fieldname]);
     focusFirstNonReadOnlyInput();
 }
+
+function generateExample() {
+    if (!selectedExampleFacetToAdd) { return; }
+    const facet = getFacetByName(selectedExampleFacetToAdd);
+
+    const generatedFieldAndValues = facet.fields
+        .map(field => {
+            const generatedValue = generateFieldValueByField(field);
+            if (!generatedValue) { return; }
+            return { fieldName: field.name, generatedValue};
+        })
+        .filter(field => field);
+
+    generatedFieldAndValues.forEach(fieldAndValue => {
+        gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value = fieldAndValue.generatedValue;
+    });
+}
+
+function generateFieldValueByField(field) {
+    if (!field || !field.format?.type || field.format.type === "") { return ""; };
+
+    return CONSTS.FORMAT_TYPES[field.type][field.format.type].fn(field);
+}
+
+function generateExamples() {
+    alert("2+");
+}

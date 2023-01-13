@@ -218,3 +218,27 @@ function isObject(o) { return !isUndefinedNull(o); }
 
 function isUndefinedNull(o) { return typeof o === "undefined" || o === null; }
 function isString(o) { return typeof o === "string"; }
+
+//
+// Generator functions
+//
+function generateSEnumList(field) {
+    let possibleValues = field.format.enumValues;
+    return possibleValues[Math.floor(Math.random() * possibleValues.length)];
+}
+
+function generateSStatic(field) { return ""; }
+
+function generateSVarchar(field) { return ""; }
+
+function generateSVarnum(field) { return ""; }
+
+function generateSVarword(field) { return ""; }
+
+function generateBStatic(field) { return ""; }
+
+function generateBVarbool(field) { return ""; }
+
+function generateNStatic(field) { return ""; }
+
+function generateNVarnum(field) { return ""; }

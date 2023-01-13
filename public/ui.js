@@ -45,6 +45,8 @@ function preparePage() {
     gebi("formatStaticValue").onkeydown = updateFieldFormatStatic;
     gebi("formatStaticValue").onchange = updateFieldFormatStatic;
     setClick("copyFormat", copyFormat);
+    setClick("generateExample", generateExample);
+    setClick("generateExamples", generateExamples);
     
     setEditorViewButtons();
     
@@ -637,6 +639,8 @@ function redrawExamplePage() {
 }
 
 function redrawExampleButtons() {
+    gebi("generateExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("generateExamples").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("addExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("updateExample").disabled = !selectedExampleDocumentToEdit;
     gebi("cancelExample").disabled = !selectedExampleDocumentToEdit;

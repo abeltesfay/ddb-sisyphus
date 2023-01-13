@@ -26,14 +26,19 @@ let CONSTS = {
     },
     FORMAT_TYPES: {
         "S": {
-            "ENUMLIST": { key: "ENUMLIST", label: "Enum" },
-            "STATIC": { key: "STATIC", label: "Static" },
-            "VARCHAR": { key: "VARCHAR", label: "Varchar" },
-            "VARNUM": { key: "VARNUM", label: "Varnum" },
-            "VARWORD": { key: "VARWORD", label: "Varword" },
+            "ENUMLIST": { key: "ENUMLIST", label: "Enum", fn: generateSEnumList },
+            "STATIC": { key: "STATIC", label: "Static", fn: generateSStatic },
+            "VARCHAR": { key: "VARCHAR", label: "Varchar", fn: generateSVarchar },
+            "VARNUM": { key: "VARNUM", label: "Varnum", fn: generateSVarnum },
+            "VARWORD": { key: "VARWORD", label: "Varword", fn: generateSVarword },
         },
-        "B": [
-            
-        ]
+        "B": {
+            "STATIC": { key: "STATIC", label: "Static", fn: generateBStatic },
+            "VARBOOL": { key: "VARBOOL", label: "Variable", fn: generateBVarbool },
+        },
+        "N": {
+            "STATIC": { key: "STATIC", label: "Static", fn: generateNStatic },
+            "VARNUM": { key: "VARNUM", label: "Variable", fn: generateNVarnum },
+        },
     }
 };

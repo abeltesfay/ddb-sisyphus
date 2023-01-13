@@ -31,7 +31,12 @@ January 13
 [x] Field filtering: split on space and filter 'or' by each
 [x] Field filtering: remove field with '-' prefix
 [x] Field filtering: filter by type of field (C,S,B,etc)
-[ ] Fix copying bug - copy wasn't pre-making format object
+[x] Fix copying bug - copy wasn't pre-making format object
+[x] Examples gen data button
+[x] Example gen to individual field
+[ ] Field format varchar
+[ ] Field format varnum
+[ ] Field format varword
 [ ] Generate import file
   [ ] Button
   [ ] Template
