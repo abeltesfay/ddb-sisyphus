@@ -37,10 +37,11 @@ January 13
 [x] Field filtering: by field format type &- &+
 [x] Update README
 [x] Add help alert for filter
-[ ] Field format varchar
-  [ ] Default varchar number field to 10
-  [ ] Max varchar number field to 100, min 1
-[ ] Field format varnum
+[x] Field format varchar
+  [x] Default varchar number field to 10
+  [x] Max varchar number field to 100, min 1
+  [x] Test gen
+[x] Field format varnum
 [ ] Field format varword
 [ ] Generate import file
   [ ] Button

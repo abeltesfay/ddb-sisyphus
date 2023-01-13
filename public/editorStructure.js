@@ -320,7 +320,8 @@ function removeFormatEnum() {
 // let timerUpdateFieldFormatStatic = null, timerUpdateFieldFormatVarchar = null;
 let timers = {
     "updateFieldFormatStatic": null, 
-    "updateFieldFormatVarchar": null, 
+    "updateFieldFormatVarchar": null,
+    "updateFieldFormatVarnum": null,
 };
 
 function updateFieldFormatDynamic() {
@@ -399,9 +400,9 @@ function copyFormatValue(fieldFrom, fieldTo) {
 
 function facetFieldFilterHelp() {
     alert(`FACET FIELD FILTER
-This textbox can be used to filter down to fields. Features:
+This textbox can be used to filter down to fields. Useful when copying 1 field's format to 20+ others (for test data). Features:
 
-Mostly inclusive OR filtering based
+Mostly inclusive OR filtering
 Case-insensitive
 "hello world" => fields with either "hello" or "world"
 

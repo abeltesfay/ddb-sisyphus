@@ -53,6 +53,10 @@ function preparePage() {
     gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
     gebi("formatVarcharValue").onchange = updateFieldFormatDynamic.bind(varcharValueFields);
 
+    const varnumValueFields = { formatType: "updateFieldFormatVarnum", key: "varnumValue", elementId: "formatVarnumValue"}
+    gebi("formatVarnumValue").onkeydown = updateFieldFormatDynamic.bind(varnumValueFields);
+    gebi("formatVarnumValue").onchange = updateFieldFormatDynamic.bind(varnumValueFields);
+
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
     setClick("generateExamples", generateExamples);
@@ -342,13 +346,14 @@ function fillFormatTypeDropdown() {
 
 function redrawFormatFormElements() {
     // Hide everything first
-    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat", "formatVarcharValueContainer"];
+    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat", "formatVarcharValueContainer", "formatVarnumValueContainer"];
     addClassTo("hidden", elementsToHide);
 
     // Fill fields with data
     redrawEnumList();
     setFormatStaticValue();
     setFormatVarcharValue();
+    setFormatVarnumValue();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -368,6 +373,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.S.VARCHAR.key: {
             const elementToShow = ["formatVarcharValueContainer", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.S.VARNUM.key: {
+            const elementToShow = ["formatVarnumValueContainer", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -400,7 +411,20 @@ function setFormatVarcharValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARCHAR.key) { return; }
     
-    gebi("formatVarcharValue").value = field.format.varcharValue ?? 10;
+    let safeNumber = parseInt(field.format.varcharValue, 10) ?? "";
+    safeNumber = isNaN(safeNumber) ? "" : safeNumber;
+
+    gebi("formatVarcharValue").value = safeNumber;
+}
+
+function setFormatVarnumValue() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARNUM.key) { return; }
+    
+    let safeNumber = parseInt(field.format.varnumValue, 10) ?? "";
+    safeNumber = isNaN(safeNumber) ? "" : safeNumber;
+
+    gebi("formatVarnumValue").value = safeNumber ?? "";
 }
 
 function redrawQueries() {

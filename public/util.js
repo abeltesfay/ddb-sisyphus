@@ -229,11 +229,28 @@ function generateSEnumList(field) {
 
 function generateSStatic(field) { return field.format.staticValue; }
 
-function generateSVarchar(field) { return ""; }
+function generateVarStr(strLength, validChars) {
+    const varcharLength = parseInt(strLength, 10) ?? 10;
+    const validCharCount = validChars.length;
+    let strArr = [];
 
-function generateSVarnum(field) { return ""; }
+    for(let i = 0; i < varcharLength; i++) {
+        strArr.push(validChars[Math.floor(validCharCount * Math.random())]);
+    }
 
-function generateSVarword(field) { return ""; }
+    return strArr.join("");
+}
+
+function generateSVarchar(field) {
+    return generateVarStr(field.format.varcharValue, CONSTS.FORMAT_VALUES.VALID_VARCHAR_CHARS);
+}
+
+function generateSVarnum(field) {
+    console.log(field);
+    return generateVarStr(field.format.varnumValue, CONSTS.FORMAT_VALUES.VALID_VARNUM_CHARS);
+}
+
+function generateSVarword(field) { return generateVarStr(field.format.varwordValue, CONSTS.FORMAT_VALUES.VALID_VARWORD_CHARS); }
 
 function generateBStatic(field) { return ""; }
 
