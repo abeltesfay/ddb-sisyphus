@@ -32,7 +32,7 @@
     min-width: 3em;
 }
 
-.facets, .fields, .composite {
+.facets, .fields, .composite, .format {
     border: 1pt solid grey;
     border-radius: 5px;
     float: left;
@@ -143,6 +143,10 @@
 .compositeKeys, .compositeKeyOptions {
     /* margin-bottom: 1em; */
     margin-top: 1em;
+    width: 100%;
+}
+.formatList, .formatOptions, .formatButtons, .formatEnumList, .formatStaticValue {
+    margin-bottom: 1em;
     width: 100%;
 }
 

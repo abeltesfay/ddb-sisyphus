@@ -33,6 +33,10 @@ function getCurrentDatetimestampEasternTimeSlimAsString(dt = new Date()) {
 
 function gebi(id) { return document.getElementById(id); }
 function dce(tag) { return document.createElement(tag); }
+function addClassTo(clasz, elements) { elements.forEach(eleId => gebi(eleId)?.classList?.add(clasz)); }
+function removeClassFrom(clasz, elements) { elements.forEach(eleId => gebi(eleId)?.classList?.remove(clasz)); }
+function clearOptionElements(selectEle) { Array.from(selectEle?.getElementsByTagName("option"))?.forEach(ele => ele?.remove()); }
+
 
 // Default structure for some fields
 function getDefaultAppState() { return { currentEditor: CONSTS.EDITORS.TABLESTRUCT, facets: [], queries: [], indices: [], examples: [] }; };
@@ -174,6 +178,21 @@ function getCurrentExampleFacetName() {
     }
 
     return;
+}
+
+function getCurrentFieldFormatType() {
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    if (!facetName || !fieldName) { return; }
+    
+    return getFacetFieldByNames(facetName, fieldName)?.format?.type;
+}
+
+function getCurrentFacetField() {
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    if (!facetName || !fieldName) { return; }
+
+    let field = getFacetFieldByNames(facetName, fieldName);
+    return field;
 }
 
 //

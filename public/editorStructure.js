@@ -282,3 +282,111 @@ function updateFieldFilterValue() {
     fieldFilterValue = gebi("fieldFilter").value.trim();
     updateFilteredFields();
 }
+
+function updateFieldFormat() {
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    if (!facetName || !fieldName) { return; }
+
+    let field = getFacetFieldByNames(facetName, fieldName);
+    if (!field?.format) { field.format = {}; }
+    const fieldFormat = gebi("formatOptions").value;
+    field.format.type = fieldFormat;
+    redrawPage();
+}
+
+function addFormatEnum() {
+    let newEnumValue = prompt("Please provide a string to add to list:");
+    if (!newEnumValue) { return; }
+
+    let field = getCurrentFacetField();
+    if (!field) { alert("Couldn't find the current facet field."); return; }
+    if (!Array.isArray(field.format.enumValues)) { field.format.enumValues = []; }
+    if (field.format.enumValues.includes(newEnumValue)) { alert("Value already exists in list."); return; }
+
+    field.format.enumValues.push(newEnumValue);
+    redrawPage();
+}
+
+function removeFormatEnum() {
+    let field = getCurrentFacetField();
+    if (!field) { alert("Couldn't find the current facet field."); return; }
+
+    const formatEnumValue = gebi("formatEnumList").value;
+
+    field.format.enumValues = field.format.enumValues.filter(enumValue => enumValue !== formatEnumValue);
+    redrawPage();
+}
+
+let timerUpdateFieldFormatStatic = null;
+
+function updateFieldFormatStatic() {
+    clearTimeout(timerUpdateFieldFormatStatic);
+    timerUpdateFieldFormatStatic = setTimeout(delayedUpdateFieldFormatStatic, 200);
+}
+
+function delayedUpdateFieldFormatStatic() {
+    let field = getCurrentFacetField();
+    if (!field) { alert("Couldn't find the current facet field."); return; }
+
+    const formatEnumValue = gebi("formatStaticValue").value;
+    field.format.staticValue = formatEnumValue;
+    redrawPage();
+    
+    gebi("formatStaticValue").focus();
+    clearTimeout(timerUpdateFieldFormatStatic);
+}
+
+function copyFormat() {
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    if (!facetName || !fieldName) {
+        alert(`Can't copy if we haven't selected a facet=[${facetName}] and field=[${fieldName}]`);
+        return;
+    }
+
+    let currentField = getFacetFieldByNames(facetName, fieldName);
+    if (!currentField) { return; }
+
+    let fieldsToCopyTo = Array.from(gebi("fieldList")?.getElementsByTagName("li"))
+        .filter(ele => !ele.classList.contains("hidden"))
+        .map(ele => ele.getElementsByTagName("span")[0])
+        .filter(ele => ele.dataset.facet !== facetName || ele.dataset.name !== fieldName)
+        .map(ele => getFacetFieldByNames(ele.dataset.facet, ele.dataset.name));
+    
+    const fieldCount = fieldsToCopyTo.length;
+
+    if (fieldCount === 0) {
+        alert("Found no other fields to copy to in the 'Fields' list.");
+        return;
+    }
+
+    const fieldsWithFormatTypes = fieldsToCopyTo.filter(field => field.format?.type !== "");
+    const addendum = fieldsWithFormatTypes.length === 0 ? "" : `\n\nFields with a type already specified: ${fieldsWithFormatTypes.length}`
+    if (!confirm(`This will overwrite ${fieldCount} fields. ${addendum}\n\nAre you sure about this?`)) { return; }
+
+    fieldsToCopyTo.forEach(field => {
+        copyFormatValue(field, currentField);
+    });
+
+    redrawPage();
+}
+
+function copyFormatValue(fieldTo, fieldFrom) {
+    switch (fieldFrom.format.type) {
+        case "ENUMLIST": {
+            fieldTo.format.enumValues = fieldFrom.format.enumValues;
+            break;
+        }
+        
+        case "STATIC": {
+            fieldTo.format.staticValue = fieldFrom.format.staticValue;
+            break;
+        }
+        
+        default: {
+            alert(`Unable to copy format value, type=[${fieldFrom.format.type}] was not found!`);
+            return;
+        }
+    }
+    
+    fieldTo.format.type = fieldFrom.format.type;
+}

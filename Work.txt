@@ -6,16 +6,27 @@ January 13
   - Really complicated.. Can't hit escape/capture key presses to body if a
     button has focus for some reason? Have to find the first visible input
     via offsetHeight > 0 || offsetWidth > 0
+  - https://stackoverflow.com/questions/36430561/how-can-i-check-if-my-element-id-has-focus
   - https://stackoverflow.com/questions/1343237/how-to-check-elements-visibility-via-javascript
 [x] Filter by pk/sk with empty query/index dropdown
-[ ] Test data
-  [ ] Test data button
-  [ ] Modal
-  [ ] One line per field shown
-  [ ] Checkbox per field to enable/disable
-  [ ] Button to randomize data
-  [ ] Autopop composite keys
-  [ ] Static field value
+[o] Test data
+  [o] Test data button
+  [o] Modal
+  [o] One line per field shown
+  [o] Checkbox per field to enable/disable
+  [o] Button to randomize data
+  [o] Autopop composite keys
+  [o] Static field value
+[x] Field format area
+[x] Field format update
+[x] Field format show add enum
+[x] Field format show enum list
+[x] Field format add enum
+[x] Field format static
+[ ] Field format copy (to all visible filtered)
+  [x] Button
+  [ ] Prompt
+  [ ] Toggle enable/disable
 [ ] Generate import file
   [ ] Button
   [ ] Template

@@ -100,12 +100,28 @@
                 <button id="moveKeyUp" value="up">Up</button>
                 <button id="moveKeyDown" value="down">Down</button>
                 <br/>
-                <select class="compositeKeys" id="compositeKeys" multiple>
-
-                </select>
+                <select class="compositeKeys" id="compositeKeys" multiple></select>
                 <select class="compositeKeyOptions" id="compositeKeyOptions"></select>
                 <br/>
                 <br/>
+            </div>
+            <div class="format hidden" id="formatEditor">
+                <h2>Field Format</h2>
+                <select class="formatOptions" id="formatOptions"></select>
+                <div class="formatButtons">
+                    <button id="copyFormat" value="Copy">Copy</button>
+                    <button id="addFormatEnum" value="Add">Add</button>
+                    <button id="removeFormatEnum" value="Remove">Remove</button>
+                </div>
+                <!-- <button id="copyFormat" value="Copy">Copy</button> -->
+                <!-- <button id="removeFormat" value="remove">Remove</button> -->
+                <!-- <button id="updateFormat" value="update" disabled>Update</button> -->
+                <!-- <button id="moveKeyUp" value="up">Up</button> -->
+                <!-- <button id="moveKeyDown" value="down">Down</button> -->
+                <!-- <div id="format.ENUM"> -->
+                <select class="formatEnumList" id="formatEnumList" multiple></select>
+                <input class="formatStaticValue" id="formatStaticValue" />
+                <!-- </div> -->
             </div>
         </div>
         <div class="queryEditor editView hidden">

@@ -39,6 +39,12 @@ function preparePage() {
     setClick("generateCode", generateCode);
     setClick("importNoSqlWBJson", importNoSqlWBJson);
     setClick("downloadState", downloadState);
+    gebi("formatOptions").onchange = updateFieldFormat;
+    setClick("addFormatEnum", addFormatEnum);
+    setClick("removeFormatEnum", removeFormatEnum);
+    gebi("formatStaticValue").onkeydown = updateFieldFormatStatic;
+    gebi("formatStaticValue").onchange = updateFieldFormatStatic;
+    setClick("copyFormat", copyFormat);
     
     setEditorViewButtons();
     
@@ -63,6 +69,7 @@ function redrawPage() {
         redrawFacets();
         redrawFields();
         redrawCompositeEditor();
+        redrawFormatEditor();
         showCurrentEditor();
 
         redrawQueries();
@@ -266,6 +273,109 @@ function fillCompositeDropdown() {
         selectableKeyEle.innerText = fieldName;
         compositeDropdown.appendChild(selectableKeyEle);
     });
+}
+
+function redrawFormatEditor() {
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    let field = getFacetFieldByNames(facetName, fieldName);
+    
+    // Flip visibility
+    const editorVisible = field?.type && field?.type !== "" && field?.type !== CONSTS.FIELD_TYPES.COMPOSITE;
+    setFormatEditorVisible(editorVisible);
+    if (!editorVisible) { return; }
+
+    fillFormatTypeDropdown();
+    redrawFormatFormElements();
+}
+
+function setFormatEditorVisible(visible) {
+    const editor = gebi("formatEditor");
+    const isVisible = !editor.classList.contains("hidden");
+
+    if (visible && !isVisible) {
+        editor.classList.remove("hidden");
+    } else if (!visible && isVisible) {
+        editor.classList.add("hidden");
+    }
+}
+
+function fillFormatTypeDropdown() {
+    let formatOptionsEle = gebi("formatOptions");
+    Array.from(formatOptionsEle.getElementsByTagName("option")).forEach(ele => ele.remove());
+
+    // let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    // let field = getFacetFieldByNames(facetName, fieldName);
+    let field = getCurrentFacetField();
+    const fieldFormatType = field.format?.type;
+    
+    let formatTypes = CONSTS.FORMAT_TYPES[field.type];
+    if (!formatTypes) {
+        alert(`Couldn't find format type for this field type=[${field.type}], exiting fillFormatTypeDropdown`);
+        return;
+    }
+    
+    const optionEle = dce("option");
+    optionEle.value = "";
+    optionEle.innerText = CONSTS.DROPDOWN_KEY_DEFAULT_LABEL;
+    formatOptionsEle.appendChild(optionEle);
+
+    for (key of Object.keys(formatTypes)) {
+        const formatType = formatTypes[key];
+        const optionEle = dce("option");
+        optionEle.innerText = formatType.label;
+        optionEle.value = formatType.key;
+        formatOptionsEle.appendChild(optionEle);
+        if (fieldFormatType === formatType.key) { optionEle.selected = true; }
+    };
+}
+
+function redrawFormatFormElements() {
+    // Hide everything first
+    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat"];
+    addClassTo("hidden", elementsToHide);
+
+    // Fill fields with data
+    redrawEnumList();
+    setFormatStaticValue();
+
+    // Show the elements that make sense
+    const formatType = getCurrentFieldFormatType();
+
+    switch (formatType) {
+        case CONSTS.FORMAT_TYPES.S.ENUMLIST.key: {
+            const elementToShow = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.S.STATIC.key: {
+            const elementToShow = ["formatStaticValue", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+    }
+}
+
+function redrawEnumList() {
+    const field = getCurrentFacetField();
+    if (!field) { return; }
+
+    const formatEnumListEle = gebi("formatEnumList");
+    clearOptionElements(formatEnumListEle);
+
+    field.format?.enumValues?.forEach(enumValue => {
+        const optionEle = dce("option");
+        optionEle.innerText = enumValue;
+        optionEle.dataset.fieldname = field.name;
+        formatEnumListEle.appendChild(optionEle);
+    });
+}
+
+function setFormatStaticValue() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.S.STATIC.key) { return; }
+    
+    gebi("formatStaticValue").value = field.format.staticValue ?? "";
 }
 
 function redrawQueries() {

@@ -24,4 +24,16 @@ let CONSTS = {
         "NoSQL Workbench Import": generateNSQLWBI,
         "Cloud Formation Table": generateCFT,
     },
+    FORMAT_TYPES: {
+        "S": {
+            "ENUMLIST": { key: "ENUMLIST", label: "Enum" },
+            "STATIC": { key: "STATIC", label: "Static" },
+            "VARCHAR": { key: "VARCHAR", label: "Varchar" },
+            "VARNUM": { key: "VARNUM", label: "Varnum" },
+            "VARWORD": { key: "VARWORD", label: "Varword" },
+        },
+        "B": [
+            
+        ]
+    }
 };
