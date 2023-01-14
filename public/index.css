@@ -18,6 +18,10 @@
     min-width: 6em;
 }
 
+.action-bar button#downloadStateFormatted {
+    min-width: 1em;
+}
+
 .unsaved-container {
     color: red;
     float: right;

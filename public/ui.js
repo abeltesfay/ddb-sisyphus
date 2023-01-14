@@ -39,6 +39,7 @@ function preparePage() {
     setClick("generateCode", generateCode);
     setClick("importNoSqlWBJson", importNoSqlWBJson);
     setClick("downloadState", downloadState);
+    setClick("downloadStateFormatted", downloadStateFormatted);
     gebi("formatOptions").onchange = updateFieldFormat;
     setClick("addFormatEnum", addFormatEnum);
     setClick("removeFormatEnum", removeFormatEnum);

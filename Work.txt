@@ -22,7 +22,8 @@ January 14
   - Make an autoformatter that we can reuse for other fields
 [x] Fix field autoformatters - string varnum
 [x] Fix field autoformatters - string varword
-[ ] Download autoformatted json
+[x] Download autoformatted json
+[ ] Field format num var
 
 January 13
 [x] Fix code generator -- should only include ones in query selection

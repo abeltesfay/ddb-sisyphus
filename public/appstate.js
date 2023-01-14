@@ -109,14 +109,18 @@ function loadAppState() {
     }
 }
 
-function downloadState() {
-    const downloadState = gebi("downloadState");
-    const contents = JSON.stringify(APP_STATE);
+function downloadStateFormatted() { downloadState(event, true); }
+
+function downloadState(event, formatted = false) {
+    const contents = !formatted ? JSON.stringify(APP_STATE) : JSON.stringify(APP_STATE, null, 2);
     const typeOption = { type: "text/javascript" };
     const blob = new Blob([contents], typeOption);
     const href = window.URL.createObjectURL(blob);
-    downloadState.href = href;
+
+    const formattedId = formatted ? "Formatted" : ""
+    const downloadState = gebi(`downloadState${formattedId}`);
     downloadState.download = generateDownloadFilename();
+    downloadState.href = href;
 }
 
 function generateDownloadFilename() {
