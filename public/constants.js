@@ -33,11 +33,11 @@ let CONSTS = {
             "VARWORD": { key: "VARWORD", label: "Varword", fn: generateSVarword },
         },
         "B": {
-            "STATIC": { key: "STATIC", label: "Static", fn: generateBStatic },
+            "STATICBOOL": { key: "STATICBOOL", label: "Static", fn: generateBStatic },
             "VARBOOL": { key: "VARBOOL", label: "Variable", fn: generateBVarbool },
         },
         "N": {
-            "STATIC": { key: "STATIC", label: "Static", fn: generateNStatic },
+            "STATIC": { key: "STATICNUM", label: "Static", fn: generateNStatic },
             "VARNUM": { key: "VARNUM", label: "Variable", fn: generateNVarnum },
         },
     },

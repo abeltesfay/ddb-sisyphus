@@ -48,6 +48,8 @@ January 13
   - .term -termtype
 [o] Figure out a way re-use composite key values on generation
 [x] Multiple (-) field filters doesn't cause full exclusion
+[x] Field format boolean static
+[ ] Field format boolean variable
 [ ] Field format enum add csv
 [ ] Field format varnum
   [ ] Trim leading 0s

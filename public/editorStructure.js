@@ -406,6 +406,12 @@ function copyFormatValue(fieldFrom, fieldTo) {
             fieldTo.format.varwordValue = fieldFrom.format.varwordValue;
             break;
         }
+
+        case "STATICBOOL": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format.staticBoolValue = fieldFrom.format.staticBoolValue;
+            break;
+        }
         
         default: {
             alert(`Unable to copy format value, type=[${fieldFrom.format.type}] was not found!`);

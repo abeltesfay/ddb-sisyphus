@@ -49,6 +49,7 @@ function preparePage() {
     const varcharValueFields = { formatType: "updateFieldFormatVarchar", key: "varcharValue", elementId: "formatVarcharValue"}
     const varnumValueFields = { formatType: "updateFieldFormatVarnum", key: "varnumValue", elementId: "formatVarnumValue"}
     const varwordValueFields = { formatType: "updateFieldFormatVarword", key: "varwordValue", elementId: "formatVarwordValue"}
+    const staticBoolValueFields = { formatType: "updateFieldFormatStaticBool", key: "staticBoolValue", elementId: "formatStaticBoolValue"}
     gebi("formatStaticValue").onkeydown = updateFieldFormatDynamic.bind(staticValueFields); // key presses trigger delayed saves to state to dynamic field
     gebi("formatStaticValue").onchange = updateFieldFormatDynamic.bind(staticValueFields);
     gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
@@ -57,6 +58,8 @@ function preparePage() {
     gebi("formatVarnumValue").onchange = updateFieldFormatDynamic.bind(varnumValueFields);
     gebi("formatVarwordValue").onkeydown = updateFieldFormatDynamic.bind(varwordValueFields);
     gebi("formatVarwordValue").onchange = updateFieldFormatDynamic.bind(varwordValueFields);
+    gebi("formatStaticBoolValue").onkeydown = updateFieldFormatDynamic.bind(staticBoolValueFields);
+    gebi("formatStaticBoolValue").onchange = updateFieldFormatDynamic.bind(staticBoolValueFields);
 
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
@@ -347,7 +350,7 @@ function fillFormatTypeDropdown() {
 
 function redrawFormatFormElements() {
     // Hide everything first
-    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat", "formatVarcharValueContainer", "formatVarnumValueContainer", "formatVarwordValueContainer"];
+    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat", "formatVarcharValueContainer", "formatVarnumValueContainer", "formatVarwordValueContainer", "formatStaticBoolValue"];
     addClassTo("hidden", elementsToHide);
 
     // Fill fields with data
@@ -356,6 +359,7 @@ function redrawFormatFormElements() {
     setFormatVarcharValue();
     setFormatVarnumValue();
     setFormatVarwordValue();
+    setFormatStaticBoolValue();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -387,6 +391,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.S.VARWORD.key: {
             const elementToShow = ["formatVarwordValueContainer", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.B.STATICBOOL.key: {
+            const elementToShow = ["formatStaticBoolValue", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -443,6 +453,13 @@ function setFormatVarwordValue() {
     safeNumber = isNaN(safeNumber) ? "" : safeNumber;
 
     gebi("formatVarwordValue").value = safeNumber ?? "";
+}
+
+function setFormatStaticBoolValue() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.B.STATICBOOL.key) { return; }
+    
+    gebi("formatStaticBoolValue").value = field.format.staticBoolValue ?? "";
 }
 
 function redrawQueries() {

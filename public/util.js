@@ -252,9 +252,9 @@ function generateSVarnum(field) {
 
 function generateSVarword(field) { return generateVarStr(field.format.varwordValue, CONSTS.FORMAT_VALUES.VALID_VARWORD_CHARS); }
 
-function generateBStatic(field) { return ""; }
+function generateBStatic(field) { return field.format.staticBoolValue === "true" ? "true" : "false"; }
 
-function generateBVarbool(field) { return ""; }
+function generateBVarbool(field) { return Math.floor(Math.random() * 2) ? "true" : "false"; }
 
 function generateNStatic(field) { return ""; }
 
