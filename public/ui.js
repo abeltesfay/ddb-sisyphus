@@ -445,31 +445,22 @@ function setFormatStaticValue() {
 function setFormatVarcharValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARCHAR.key) { return; }
-    
-    let safeNumber = parseInt(field.format.varcharValue, 10) ?? "";
-    safeNumber = isNaN(safeNumber) ? "" : safeNumber;
 
-    gebi("formatVarcharValue").value = safeNumber;
+    gebi("formatVarcharValue").value = field.format.varcharValue;
 }
 
 function setFormatVarnumValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARNUM.key) { return; }
-    
-    let safeNumber = parseInt(field.format.varnumValue, 10) ?? "";
-    safeNumber = isNaN(safeNumber) ? "" : safeNumber;
 
-    gebi("formatVarnumValue").value = safeNumber ?? "";
+    gebi("formatVarnumValue").value = field.format.varnumValue ?? "";
 }
 
 function setFormatVarwordValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARWORD.key) { return; }
-    
-    let safeNumber = parseInt(field.format.varwordValue, 10) ?? "";
-    safeNumber = isNaN(safeNumber) ? "" : safeNumber;
 
-    gebi("formatVarwordValue").value = safeNumber ?? "";
+    gebi("formatVarwordValue").value = field.format.varwordValue ?? "";
 }
 
 function setFormatStaticBoolValue() {

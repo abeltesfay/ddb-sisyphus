@@ -343,6 +343,12 @@ function delayedUpdateFieldFormatDynamic() {
     gebi(this.elementId).focus();
 }
 
+function autoformatVarXValue(value) {
+    let safeNumber = parseInt(value, 10) ?? "";
+    safeNumber = isNaN(safeNumber) ? "" : safeNumber;
+    return safeNumber;
+}
+
 function autoformatStaticNumValue(value) {
     const firstCharIsNegative = value.length > 0 && value[0] === "-" ? "-" : "";
     const acceptableChars = "0123456789.,".split("");
@@ -360,6 +366,9 @@ function autoformatStaticNumValue(value) {
 
 function autoformatField(key, value) {
     const FIELD_AUTOFORMATTERS = {
+        "varcharValue": autoformatVarXValue,
+        "varnumValue": autoformatVarXValue,
+        "varwordValue": autoformatVarXValue,
         "staticNumValue": autoformatStaticNumValue,
     };
 
