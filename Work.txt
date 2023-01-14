@@ -35,6 +35,7 @@ January 14
 [o] varnum - commas
 [o] varnum - show +
 [o] varnum - save as string
+[ ] Generate+
 
 January 13
 [x] Fix code generator -- should only include ones in query selection

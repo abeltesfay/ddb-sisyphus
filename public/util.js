@@ -218,6 +218,14 @@ function isObject(o) { return !isUndefinedNull(o); }
 
 function isUndefinedNull(o) { return typeof o === "undefined" || o === null; }
 function isString(o) { return typeof o === "string"; }
+function isNumbersOnly(o) { return isString(o) && o.length > 0 && o === getNumbersOnly(o); }
+
+function getNumbersOnly(o) {
+    const acceptableChars = "0123456789".split("");
+    return o?.split("")
+        .filter(c => acceptableChars.includes(c))
+        .join("");
+}
 
 //
 // Generator functions
@@ -272,3 +280,24 @@ function generateNVarnum(field) {
 
     return "";
 }
+
+// 
+// Time functions
+// 
+function getTimeSinceMSM(startMillis) {
+    let totalTimeMillis = getTimeSinceMs(startMillis);
+    return convertTotalMillisToMSM(totalTimeMillis);
+}
+
+function convertTotalMillisToMSM(totalTimeMillis) {
+    let millis = totalTimeMillis;
+    let seconds = Math.floor(millis / 1000);
+    let minutes = Math.floor(seconds / 60);
+
+    millis = millis - (seconds * 1000);
+    seconds = seconds - (minutes * 60);
+
+    return { minutes, seconds, millis, totalTimeMillis };
+}
+
+function getTimeSinceMs(startMillis) { return new Date().getTime() - startMillis; }

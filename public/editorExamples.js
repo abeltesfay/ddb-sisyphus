@@ -189,5 +189,27 @@ function generateFieldValueByField(field) {
 }
 
 function generateExamples() {
-    alert("2+");
+    const count = prompt("How many rows should we generate?");
+    if (!isNumbersOnly(count)) { return; }
+
+    console.debug(`GENEX: Completed generating ${count} examples`);
+    const startMillis = new Date().getTime();
+
+    for (let i = 0; i < parseInt(count, 10); i++) {
+        generateStatusCheck(startMillis, i + 1, count);
+        generateExample();
+    }
+
+    const { minutes, seconds, millis } = getTimeSinceMSM(startMillis);
+    console.debug(`GENEX: Completed generating ${count} examples in ${minutes}m${seconds}s${millis}ms`);
+}
+
+function generateStatusCheck(startMillis, countCompleted, countTotal) {
+    if (countCompleted % 100 !== 0) { return; } // Only generate a status check every 100 units
+    const { minutes, seconds, millis, totalTimeMillis } = getTimeSinceMSM(startMillis);
+    
+    const leftMillis = Math.max(Math.floor(totalTimeMillis / (countCompleted / countTotal)) - totalTimeMillis, 0);
+    const left = convertTotalMillisToMSM(leftMillis);
+
+    console.debug(`GENEX: Completed generating ${countCompleted} examples in ${minutes}m${seconds}s${millis}ms, estimated time remaining: ${left.minutes}m${left.seconds}s${left.millis}ms`);
 }
