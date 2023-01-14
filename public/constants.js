@@ -37,7 +37,7 @@ let CONSTS = {
             "VARBOOL": { key: "VARBOOL", label: "Variable", fn: generateBVarbool },
         },
         "N": {
-            "STATIC": { key: "STATICNUM", label: "Static", fn: generateNStatic },
+            "STATICNUM": { key: "STATICNUM", label: "Static", fn: generateNStatic },
             "VARNUM": { key: "VARNUM", label: "Variable", fn: generateNVarnum },
         },
     },

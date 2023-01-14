@@ -256,6 +256,6 @@ function generateBStatic(field) { return field.format.staticBoolValue === "true"
 
 function generateBVarbool(field) { return Math.floor(Math.random() * 2) ? "true" : "false"; }
 
-function generateNStatic(field) { return ""; }
+function generateNStatic(field) { return field.format.staticNumValue; }
 
 function generateNVarnum(field) { return ""; }

@@ -317,11 +317,13 @@ function removeFormatEnum() {
     redrawPage();
 }
 
-// let timerUpdateFieldFormatStatic = null, timerUpdateFieldFormatVarchar = null;
 let timers = {
     "updateFieldFormatStatic": null, 
     "updateFieldFormatVarchar": null,
     "updateFieldFormatVarnum": null,
+    "updateFieldFormatVarword": null,
+    "updateFieldFormatStaticBool": null,
+    "updateFieldFormatStaticNum": null,
 };
 
 function updateFieldFormatDynamic() {
@@ -335,10 +337,35 @@ function delayedUpdateFieldFormatDynamic() {
     if (!field) { alert("Couldn't find the current facet field."); return; }
 
     const value = gebi(this.elementId).value;
-    field.format[this.key] = value;
+    field.format[this.key] = autoformatField(this.key, value);
     redrawPage();
     
     gebi(this.elementId).focus();
+}
+
+function autoformatStaticNumValue(value) {
+    const firstCharIsNegative = value.length > 0 && value[0] === "-" ? "-" : "";
+    const acceptableChars = "0123456789.,".split("");
+    const filtered = value.split("")
+        .filter(c => acceptableChars.includes(c))
+        .join("");
+    const multiplePeriods = filtered.indexOf(".") != filtered.lastIndexOf(".");
+ 
+    if (!multiplePeriods) { return `${firstCharIsNegative}${filtered}`; }
+
+    let filteredOnePeriod = filtered.split(".");
+    filteredOnePeriod[0] += ".";
+    return `${firstCharIsNegative}${filteredOnePeriod.join("")}`;
+}
+
+function autoformatField(key, value) {
+    const FIELD_AUTOFORMATTERS = {
+        "staticNumValue": autoformatStaticNumValue,
+    };
+
+    const fn = FIELD_AUTOFORMATTERS[key];
+    if (!fn) { return value; }
+    return fn(value); // Format if the function exists
 }
 
 function copyFormat() {
@@ -410,6 +437,12 @@ function copyFormatValue(fieldFrom, fieldTo) {
         case "STATICBOOL": {
             if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
             fieldTo.format.staticBoolValue = fieldFrom.format.staticBoolValue;
+            break;
+        }
+
+        case "STATICNUM": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format.staticNumValue = fieldFrom.format.staticNumValue;
             break;
         }
         

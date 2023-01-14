@@ -1,3 +1,25 @@
+January 14
+[?] Field format varnum
+  [?] Trim leading 0s
+  [?] Fill leading 0s
+  [?] Decimals
+  [?] Min field
+  [?] Max field
+[?] Field format date
+[o] Export file
+  [o] Button
+  [o] Template
+[?] Field format enum add csv
+[x] Field format num static
+  [x] input
+  [x] delay save
+  [x] autovalidate
+[-] Fix field autoformatters - string static
+[ ] Fix field autoformatters - string varchar
+[ ] Fix field autoformatters - string varnum
+[ ] Fix field autoformatters - string varword
+[ ] Download autoformatted json
+
 January 13
 [x] Fix code generator -- should only include ones in query selection
 [?] Fix bug -- clicking an example clears pk/sk example filter
@@ -49,18 +71,7 @@ January 13
 [o] Figure out a way re-use composite key values on generation
 [x] Multiple (-) field filters doesn't cause full exclusion
 [x] Field format boolean static
-[ ] Field format boolean variable
-[ ] Field format enum add csv
-[ ] Field format varnum
-  [ ] Trim leading 0s
-  [ ] Fill leading 0s
-  [ ] Decimals
-  [ ] Min field
-  [ ] Max field
-[ ] Field format date
-[ ] Export file
-  [ ] Button
-  [ ] Template
+[x] Field format boolean variable
 
 January 12
 [?] Get unique indices only by field names (pk/sk/etc)

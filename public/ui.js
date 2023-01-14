@@ -45,11 +45,12 @@ function preparePage() {
     setClick("facetFieldFilterHelp", facetFieldFilterHelp);
     
     // formatType, key, elementId
-    const staticValueFields = { formatType: "updateFieldFormatStatic", key: "staticValue", elementId: "formatStaticValue"}
-    const varcharValueFields = { formatType: "updateFieldFormatVarchar", key: "varcharValue", elementId: "formatVarcharValue"}
-    const varnumValueFields = { formatType: "updateFieldFormatVarnum", key: "varnumValue", elementId: "formatVarnumValue"}
-    const varwordValueFields = { formatType: "updateFieldFormatVarword", key: "varwordValue", elementId: "formatVarwordValue"}
-    const staticBoolValueFields = { formatType: "updateFieldFormatStaticBool", key: "staticBoolValue", elementId: "formatStaticBoolValue"}
+    const staticValueFields = { formatType: "updateFieldFormatStatic", key: "staticValue", elementId: "formatStaticValue"};
+    const varcharValueFields = { formatType: "updateFieldFormatVarchar", key: "varcharValue", elementId: "formatVarcharValue"};
+    const varnumValueFields = { formatType: "updateFieldFormatVarnum", key: "varnumValue", elementId: "formatVarnumValue"};
+    const varwordValueFields = { formatType: "updateFieldFormatVarword", key: "varwordValue", elementId: "formatVarwordValue"};
+    const staticBoolValueFields = { formatType: "updateFieldFormatStaticBool", key: "staticBoolValue", elementId: "formatStaticBoolValue"};
+    const staticNumValueFields = { formatType: "updateFieldFormatStaticNum", key: "staticNumValue", elementId: "formatStaticNumValue"};
     gebi("formatStaticValue").onkeydown = updateFieldFormatDynamic.bind(staticValueFields); // key presses trigger delayed saves to state to dynamic field
     gebi("formatStaticValue").onchange = updateFieldFormatDynamic.bind(staticValueFields);
     gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
@@ -60,6 +61,8 @@ function preparePage() {
     gebi("formatVarwordValue").onchange = updateFieldFormatDynamic.bind(varwordValueFields);
     gebi("formatStaticBoolValue").onkeydown = updateFieldFormatDynamic.bind(staticBoolValueFields);
     gebi("formatStaticBoolValue").onchange = updateFieldFormatDynamic.bind(staticBoolValueFields);
+    gebi("formatStaticNumValue").onkeydown = updateFieldFormatDynamic.bind(staticNumValueFields);
+    gebi("formatStaticNumValue").onchange = updateFieldFormatDynamic.bind(staticNumValueFields);
 
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
@@ -350,7 +353,14 @@ function fillFormatTypeDropdown() {
 
 function redrawFormatFormElements() {
     // Hide everything first
-    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat", "formatVarcharValueContainer", "formatVarnumValueContainer", "formatVarwordValueContainer", "formatStaticBoolValue"];
+    const elementsToHide = ["addFormatEnum", "removeFormatEnum", "formatEnumList", "formatStaticValue", "copyFormat",
+        "formatVarcharValueContainer",
+        "formatVarnumValueContainer",
+        "formatVarwordValueContainer",
+        "formatStaticBoolValue",
+        "formatStaticNumValueContainer",
+    ];
+
     addClassTo("hidden", elementsToHide);
 
     // Fill fields with data
@@ -360,6 +370,7 @@ function redrawFormatFormElements() {
     setFormatVarnumValue();
     setFormatVarwordValue();
     setFormatStaticBoolValue();
+    setFormatStaticNumValue();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -397,6 +408,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.B.STATICBOOL.key: {
             const elementToShow = ["formatStaticBoolValue", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.N.STATICNUM.key: {
+            const elementToShow = ["formatStaticNumValueContainer", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -460,6 +477,13 @@ function setFormatStaticBoolValue() {
     if (field.format?.type !== CONSTS.FORMAT_TYPES.B.STATICBOOL.key) { return; }
     
     gebi("formatStaticBoolValue").value = field.format.staticBoolValue ?? "";
+}
+
+function setFormatStaticNumValue() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.N.STATICNUM.key) { return; }
+    
+    gebi("formatStaticNumValue").value = field.format.staticNumValue ?? "";
 }
 
 function redrawQueries() {
