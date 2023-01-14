@@ -64,6 +64,7 @@ function preparePage() {
     gebi("formatStaticBoolValue").onchange = updateFieldFormatDynamic.bind(staticBoolValueFields);
     gebi("formatStaticNumValue").onkeydown = updateFieldFormatDynamic.bind(staticNumValueFields);
     gebi("formatStaticNumValue").onchange = updateFieldFormatDynamic.bind(staticNumValueFields);
+    setFieldFormatVarNumV2EventListeners();
 
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
@@ -88,6 +89,7 @@ function setEditorViewButtons() {
 
 function redrawPage() {
     try {
+        let lastFocusedElement = document.activeElement;
         checkSavedState();
         redrawFacets();
         redrawFields();
@@ -105,6 +107,7 @@ function redrawPage() {
         redrawGeneratorOptions();
         
         updateFilteredFields();
+        lastFocusedElement.focus();
     } catch (error) {
         alert("REDRAWPAGE: Redraw page failed, error: " + error);
         console.error("REDRAWPAGE: Redraw page failed, error: ", error);
@@ -322,6 +325,15 @@ function setFormatEditorVisible(visible) {
     }
 }
 
+function setFieldFormatVarNumV2EventListeners() {
+    const elementIdsToWatch = CONSTS.FORMAT_FIELDIDS_VARNUMV2;
+    elementIdsToWatch.forEach(elementId => {
+        const varNumV2ValueFields = { formatType: "updateFieldFormatVarNumV2", key: "varNumV2Value", elementId };
+        gebi(elementId).onkeydown = updateFieldFormatDynamic.bind(varNumV2ValueFields);
+        gebi(elementId).onchange = updateFieldFormatDynamic.bind(varNumV2ValueFields);
+    });
+}
+
 function fillFormatTypeDropdown() {
     let formatOptionsEle = gebi("formatOptions");
     Array.from(formatOptionsEle.getElementsByTagName("option")).forEach(ele => ele.remove());
@@ -360,6 +372,7 @@ function redrawFormatFormElements() {
         "formatVarwordValueContainer",
         "formatStaticBoolValue",
         "formatStaticNumValueContainer",
+        "formatVarnumV2ValueContainer",
     ];
 
     addClassTo("hidden", elementsToHide);
@@ -372,6 +385,7 @@ function redrawFormatFormElements() {
     setFormatVarwordValue();
     setFormatStaticBoolValue();
     setFormatStaticNumValue();
+    setFormatVarNumV2Value();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -415,6 +429,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.N.STATICNUM.key: {
             const elementToShow = ["formatStaticNumValueContainer", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.N.VARNUMV2.key: {
+            const elementToShow = ["formatVarnumV2ValueContainer", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -476,6 +496,25 @@ function setFormatStaticNumValue() {
     if (field.format?.type !== CONSTS.FORMAT_TYPES.N.STATICNUM.key) { return; }
     
     gebi("formatStaticNumValue").value = field.format.staticNumValue ?? "";
+}
+
+function setFormatVarNumV2Value() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.N.VARNUMV2.key) { return; }
+    
+    if (!field.format.varNumV2Value || field.format.varNumV2Value === "") { return; }
+
+    try {
+        const values = JSON.parse(field.format.varNumV2Value);
+        CONSTS.FORMAT_FIELDIDS_VARNUMV2.forEach(fieldId => {
+            const prefix = CONSTS.FORMAT_FIELDIDS_VARNUMV2_PREFIX;
+            const settingsKey = fieldId.replace(prefix, "");
+            const extractedValue = values[settingsKey];
+            gebi(fieldId).value = extractedValue;
+        });
+    } catch (exception) {
+        console.error(`Error while setting varNumV2 values=[${field.format.varNumV2Value}]. Expected if values are not set yet`, exception);
+    }
 }
 
 function redrawQueries() {

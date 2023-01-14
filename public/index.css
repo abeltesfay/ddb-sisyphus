@@ -150,10 +150,21 @@
     width: 100%;
 }
 
-.formatList, .formatOptions, .formatButtons, .formatEnumList, .formatStaticValue, .formatVarcharValue, .formatVarnumValue, .formatVarwordValue, .formatStaticBoolValue, .formatStaticNumValue {
-    margin-bottom: 1em;
-    width: 100%;
-}
+.formatList
+, .formatOptions
+, .formatButtons
+, .formatEnumList
+, .formatStaticValue
+, .formatVarcharValue
+, .formatVarnumValue
+, .formatVarwordValue
+, .formatStaticBoolValue
+, .formatStaticNumValue
+, #formatVarnumV2ValueContainer input
+, #formatVarnumV2ValueContainer label
+{ margin-bottom: 1em; }
+
+.formatEnumList { width: 100%; }
 
 .codegenieOutput textarea {
     display: inline-block;

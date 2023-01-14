@@ -324,9 +324,12 @@ let timers = {
     "updateFieldFormatVarword": null,
     "updateFieldFormatStaticBool": null,
     "updateFieldFormatStaticNum": null,
+    "updateFieldFormatVarNumV2": null,
 };
 
-function updateFieldFormatDynamic() {
+function updateFieldFormatDynamic(event) {
+    if ([9, 16].includes(event.which)) { return; } // ignore shift and tab key & autorefocus to correct spot
+    
     const { formatType, key, elementId } = this;
     clearTimeout(timers[formatType]);
     timers[formatType] = setTimeout(delayedUpdateFieldFormatDynamic.bind({ key, elementId }), 200);
@@ -336,11 +339,30 @@ function delayedUpdateFieldFormatDynamic() {
     let field = getCurrentFacetField();
     if (!field) { alert("Couldn't find the current facet field."); return; }
 
-    const value = gebi(this.elementId).value;
+    const value = getFieldFormatDataByElementId(this.elementId);
     field.format[this.key] = autoformatField(this.key, value);
     redrawPage();
+}
+
+function getFieldFormatDataByElementId(elementId) {
+    if (elementId.indexOf("formatVarNumV2Value") !== -1) {
+        return getFieldFormatVarNumV2();
+    }
+
+    return gebi(elementId).value;
+}
+
+function getFieldFormatVarNumV2() {
+    const fieldIdsToScrape = CONSTS.FORMAT_FIELDIDS_VARNUMV2;
+    const prefix = CONSTS.FORMAT_FIELDIDS_VARNUMV2_PREFIX;
+
+    let values = fieldIdsToScrape.reduce((formatSettings, currentFieldId) => {
+        const settingsKey = currentFieldId.replace(prefix, "");
+        formatSettings[settingsKey] = gebi(currentFieldId).value;
+        return formatSettings;
+    }, {});
     
-    gebi(this.elementId).focus();
+    return values;
 }
 
 function autoformatVarXValue(value) {
@@ -364,12 +386,32 @@ function autoformatStaticNumValue(value) {
     return `${firstCharIsNegative}${filteredOnePeriod.join("")}`;
 }
 
+function autoformatVarNumV2Value(settings) {
+    settings.Min = autoformatVarNumV2Value_MinMax(settings.Min)
+    settings.Max = autoformatVarNumV2Value_MinMax(settings.Max)
+    return JSON.stringify(settings);
+}
+
+function autoformatVarNumV2Value_MinMax(value) {
+    value = value?.trim?.();
+    if (!value || value.length === 0) { return value; }
+
+    const firstCharIsNegative = value.length > 0 && value[0] === "-" ? "-" : "";
+    const acceptableChars = "0123456789".split("");
+    const filtered = value.split("")
+        .filter(c => acceptableChars.includes(c))
+        .join("");
+ 
+    return `${firstCharIsNegative}${filtered}`;
+}
+
 function autoformatField(key, value) {
     const FIELD_AUTOFORMATTERS = {
         "varcharValue": autoformatVarXValue,
         "varnumValue": autoformatVarXValue,
         "varwordValue": autoformatVarXValue,
         "staticNumValue": autoformatStaticNumValue,
+        "varNumV2Value": autoformatVarNumV2Value,
     };
 
     const fn = FIELD_AUTOFORMATTERS[key];

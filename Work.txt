@@ -23,7 +23,18 @@ January 14
 [x] Fix field autoformatters - string varnum
 [x] Fix field autoformatters - string varword
 [x] Download autoformatted json
-[ ] Field format num var
+[x] Field format varnum
+  [x] input - min/max number
+  [x] ignore shift and tab key events
+  [x] delay save
+  [x] autovalidate
+  [x] re-set values
+  [x] generate
+[o] varnum - leading zeroes
+[o] varnum - trailing zeroes
+[o] varnum - commas
+[o] varnum - show +
+[o] varnum - save as string
 
 January 13
 [x] Fix code generator -- should only include ones in query selection

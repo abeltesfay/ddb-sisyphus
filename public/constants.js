@@ -38,12 +38,17 @@ let CONSTS = {
         },
         "N": {
             "STATICNUM": { key: "STATICNUM", label: "Static", fn: generateNStatic },
-            "VARNUM": { key: "VARNUM", label: "Variable", fn: generateNVarnum },
+            "VARNUMV2": { key: "VARNUMV2", label: "Variable", fn: generateNVarnum },
         },
     },
     FORMAT_VALUES: {
         VALID_VARCHAR_CHARS: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890",
         VALID_VARNUM_CHARS: "01234567890",
         VALID_VARWORD_CHARS: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    }
+    },
+    FORMAT_FIELDIDS_VARNUMV2_PREFIX: "formatVarNumV2Value_",
+    FORMAT_FIELDIDS_VARNUMV2: [
+        "formatVarNumV2Value_Min",
+        "formatVarNumV2Value_Max",
+    ],
 };

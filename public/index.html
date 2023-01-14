@@ -47,12 +47,13 @@
                 // window.scrollTo(0, 100000); // TODO Remove this
                 // importNoSqlWBJson();
                 selectedExampleFacetToAdd = "Application";
+                selectedFacet = "Application";
+                selectedField = "bestTest";
+                
+                // selectedFacet = "Review";
+                // selectedKey = undefined;
+                // selectedExamplesQuery = "getApplicationByApplicantEmployeeId";
             }
-
-            // selectedFacet = "Review"
-            // selectedField = "GSI1-PK"
-            // selectedKey = undefined;
-            // selectedExamplesQuery = "getApplicationByApplicantEmployeeId";
         </script>
     </head>
     <body onkeydown="processKeys(event);" onload="preparePage();">
@@ -62,7 +63,6 @@
                 <button class="showEditorButton" id="showTableStructureEditor" disabled>Facet / Fields</button>
                 <button class="showEditorButton" id="showQueryEditor" disabled>Queries / Indices</button>
                 <button class="showEditorButton" id="showExamplesEditor" disabled>Examples</button>
-                <button class="showEditorButton" id="showCodegenieEditor" disabled>Gencode</button>
             </fieldset>
             <fieldset>
                 <legend>Application State</legend>
@@ -73,6 +73,10 @@
                 <a id="downloadState" href=""><button id="downloadState">Download</button></a>
                 <a id="downloadStateFormatted" href="" title="Download Formatted"><button id="downloadStateFormatted" title="Download Formatted">D+</button></a>
                 <button id="logState">Log State</button>
+            </fieldset>
+            <fieldset>
+                <legend>Fancy</legend>
+                <button class="showEditorButton" id="showCodegenieEditor" disabled>Gencode</button>
             </fieldset>
             <div class="hidden unsaved-container" id="unsaved">
                 <label>Unsaved data</label>
@@ -125,15 +129,15 @@
                 <select class="formatEnumList" id="formatEnumList" multiple></select>
                 <input class="formatStaticValue" id="formatStaticValue" />
                 <div id="formatVarcharValueContainer">
-                    <label class="formatVarcharValue">Length</label>
+                    <label class="formatVarcharValue">Length</label> <br/>
                     <input class="formatVarcharValue" id="formatVarcharValue" />
                 </div>
                 <div id="formatVarnumValueContainer">
-                    <label class="formatVarnumValue">Length</label>
+                    <label class="formatVarnumValue">Length</label> <br/>
                     <input class="formatVarnumValue" id="formatVarnumValue" />
                 </div>
                 <div id="formatVarwordValueContainer">
-                    <label class="formatVarwordValue">Length</label>
+                    <label class="formatVarwordValue">Length</label> <br/>
                     <input class="formatVarwordValue" id="formatVarwordValue" />
                 </div>
                 <select class="formatStaticBoolValue" id="formatStaticBoolValue">
@@ -142,8 +146,14 @@
                     <option value="false">False</option>
                 </select>
                 <div id="formatStaticNumValueContainer">
-                    <label class="formatStaticNumValue">Number</label>
+                    <label class="formatStaticNumValue">Number</label> <br/>
                     <input class="formatStaticNumValue" id="formatStaticNumValue" />
+                </div>
+                <div id="formatVarnumV2ValueContainer">
+                    <label class="formatVarNumV2Value_Min">Minimum</label> <br/>
+                    <input class="formatVarNumV2Value_Min" id="formatVarNumV2Value_Min" /> <br/>
+                    <label class="formatVarNumV2Value_Max">Maximum</label> <br/>
+                    <input class="formatVarNumV2Value_Max" id="formatVarNumV2Value_Max" />
                 </div>
             </div>
         </div>

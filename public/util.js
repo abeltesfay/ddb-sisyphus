@@ -246,7 +246,6 @@ function generateSVarchar(field) {
 }
 
 function generateSVarnum(field) {
-    console.log(field);
     return generateVarStr(field.format.varnumValue, CONSTS.FORMAT_VALUES.VALID_VARNUM_CHARS);
 }
 
@@ -258,4 +257,18 @@ function generateBVarbool(field) { return Math.floor(Math.random() * 2) ? "true"
 
 function generateNStatic(field) { return field.format.staticNumValue; }
 
-function generateNVarnum(field) { return ""; }
+function generateNVarnum(field) {
+    try {
+        const settings = JSON.parse(field.format.varNumV2Value);
+        const min = parseInt(settings.Min, 10);
+        const max = parseInt(settings.Max, 10);
+
+        const number = Math.floor(Math.random() * ((max + 1) - min)) + min;
+
+        return `${number}`;
+    } catch (exception) {
+        console.error(`Error in generateNVarnum for value=[${field.format.varNumV2Value}]`, exception);
+    }
+
+    return "";
+}
