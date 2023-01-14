@@ -13,7 +13,9 @@ function selectExampleFacetToAdd() {
     focusFirstNonReadOnlyInput();
 }
 
-function addExample() {
+function addExampleNoRedraw(event) { addExample(event, false); }
+
+function addExample(event, shouldRedrawPage = true) {
     let exampleFields = gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input");
     
     let newExampleDocument = Array.from(exampleFields).reduce((prevValue, curValue) => {
@@ -28,10 +30,13 @@ function addExample() {
     if (!isGoodExampleDocument(newExampleDocument)) { return; }
 
     APP_STATE.examples.push(newExampleDocument);
-    selectedExampleFacetToAdd = null;
-    gebi("exampleFacetList").value = "";
-
-    redrawPage();
+    
+    if (shouldRedrawPage) {
+        selectedExampleFacetToAdd = null;
+        gebi("exampleFacetList").value = "";
+        
+        redrawPage();
+    }
     console.debug("ADDEXAMPLE: New example added");
 }
 
@@ -188,7 +193,7 @@ function generateFieldValueByField(field) {
     return CONSTS.FORMAT_TYPES[field.type][field.format.type].fn(field);
 }
 
-function generateExamples() {
+function generateExamples(event) {
     const count = prompt("How many rows should we generate?");
     if (!isNumbersOnly(count)) { return; }
 
@@ -198,8 +203,11 @@ function generateExamples() {
     for (let i = 0; i < parseInt(count, 10); i++) {
         generateStatusCheck(startMillis, i + 1, count);
         generateExample();
+        addExampleNoRedraw(event);
     }
 
+    redrawPage();
+    
     const { minutes, seconds, millis } = getTimeSinceMSM(startMillis);
     console.debug(`GENEX: Completed generating ${count} examples in ${minutes}m${seconds}s${millis}ms`);
 }
