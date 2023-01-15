@@ -172,7 +172,7 @@ function redrawFields() {
 
     if (!selectedFacet) { redrawAllFields(); return; }
     
-    let fields = getFacetByName(selectedFacet).fields ?? [];
+    let fields = getFacetByName(selectedFacet)?.fields ?? [];
     
     fields?.forEach(field => {
         let fieldEle = dce("li");
@@ -846,6 +846,7 @@ function redrawExampleEditFields() {
 
 function redrawExampleAddOrEditFields(facetName, example) {
     const facet = getFacetByName(facetName);
+    if (!facet) { return; }
     let newTableBody = gebi("examplesNewBody");
     let newRow = dce("tr");
     newRow.id = "examplesNewDocumentToAdd";
