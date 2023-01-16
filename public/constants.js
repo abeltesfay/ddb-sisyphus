@@ -31,6 +31,7 @@ let CONSTS = {
             "VARCHAR": { key: "VARCHAR", label: "Varchar", fn: generateSVarchar },
             "VARNUM": { key: "VARNUM", label: "Varnum", fn: generateSVarnum },
             "VARWORD": { key: "VARWORD", label: "Varword", fn: generateSVarword },
+            "SREF": { key: "SREF", label: "Reference", fn: generateSReference, valueKey: "srefValue" },
         },
         "B": {
             "STATICBOOL": { key: "STATICBOOL", label: "Static", fn: generateBStatic },
@@ -45,6 +46,7 @@ let CONSTS = {
         VALID_VARCHAR_CHARS: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890",
         VALID_VARNUM_CHARS: "01234567890",
         VALID_VARWORD_CHARS: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        VALID_REFERENCE_KEYS: ["SREF"],
     },
     FORMAT_FIELDIDS_VARNUMV2_PREFIX: "formatVarNumV2Value_",
     FORMAT_FIELDIDS_VARNUMV2: [

@@ -1,3 +1,15 @@
+January 16
+[x] Reference-examples format string
+  [x] Dropdown
+  [x] Track changes
+  [x] Hydrate data from state
+  [x] Styling
+  [x] Save
+  [x] Nuke all examples
+  [x] Generate
+    - Currently just uses the first one we find..
+    - Would be nice to randomly choose from the list but whatevs for now.
+
 January 14
 [?] Field format varnum
   [?] Trim leading 0s
@@ -35,7 +47,12 @@ January 14
 [o] varnum - commas
 [o] varnum - show +
 [o] varnum - save as string
-[ ] Generate+
+[x] Generate+
+[?] Speed up examples redraw when 1k+ docs
+[?] Format templates
+  - Set format for a group of documents.. save and reload at will?
+  - Would allow us to generate X people with Y different facet examples
+  [?] Generate groups of documents for pk/sk/gsi combos
 
 January 13
 [x] Fix code generator -- should only include ones in query selection

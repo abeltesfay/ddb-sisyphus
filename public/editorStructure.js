@@ -325,6 +325,7 @@ let timers = {
     "updateFieldFormatStaticBool": null,
     "updateFieldFormatStaticNum": null,
     "updateFieldFormatVarNumV2": null,
+    "updateFieldFormatReference": null,
 };
 
 function updateFieldFormatDynamic(event) {

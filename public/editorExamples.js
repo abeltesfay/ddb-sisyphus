@@ -171,14 +171,15 @@ function copyExample() {
 function generateExample() {
     if (!selectedExampleFacetToAdd) { return; }
     const facet = getFacetByName(selectedExampleFacetToAdd);
+    const referenceValues = getReferenceValuesForExample(facet.fields);
 
     const generatedFieldAndValues = facet.fields
         .map(field => {
-            const generatedValue = generateFieldValueByField(field);
+            const generatedValue = generateFieldValueByField(field, referenceValues);
             if (!generatedValue) { return; }
             return { fieldName: field.name, generatedValue};
         })
-        .filter(field => field);
+        .filter(field => field); // TODO Probably want to make sure we have a pk/sk if they're required
 
     generatedFieldAndValues.forEach(fieldAndValue => {
         gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value = fieldAndValue.generatedValue;
@@ -187,10 +188,58 @@ function generateExample() {
     updateNewExampleInputs();
 }
 
-function generateFieldValueByField(field) {
+function getReferenceValuesForExample(fields) {
+    let uniqueFacets = fields.filter(field => {
+            const isReferenceFormat = CONSTS.FORMAT_VALUES.VALID_REFERENCE_KEYS.includes(field.format?.type);
+            return isReferenceFormat;
+        })
+        .map(field => field.format[CONSTS.FORMAT_TYPES[field.type][field.format.type].valueKey].split("."))
+        .reduce((groupedFacetFields, facetFieldNameCombo) => {
+            if (!groupedFacetFields[facetFieldNameCombo[0]]) { groupedFacetFields[facetFieldNameCombo[0]] = []; }
+            if (groupedFacetFields[facetFieldNameCombo[0]].includes(facetFieldNameCombo[1])) { return groupedFacetFields; } // Uniques only
+
+            groupedFacetFields[facetFieldNameCombo[0]].push(facetFieldNameCombo[1]);
+            return groupedFacetFields;
+        }, {});
+
+    
+    let examplesToReference = {};
+    Object.keys(uniqueFacets).forEach(facetName => {
+        examplesToReference[facetName] = [];
+
+        for (let example of APP_STATE.examples) {
+            if (example.__facetName !== facetName) { continue; }
+            let hasAllFields = true;
+
+            uniqueFacets[facetName].forEach(fieldName => {
+                if (!hasAllFields) { return; }
+                if (example[fieldName] === "") { hasAllFields = false; }
+            });
+            
+            // Field doesn't have a value? skip this example
+            if (!hasAllFields) { continue; }
+            examplesToReference[facetName] = clone(example);
+            return;
+        }
+    });
+
+    let facetsWithNoExample = Object.keys(examplesToReference)
+        .filter(facetName => examplesToReference[facetName].length === 0)
+        .map(facetName => `${facetName}: ${uniqueFacets[facetName].join(", ")}`);
+
+    if (facetsWithNoExample.length !== 0) {
+        const errorMessage = `Found references in facets, but no examples to reference when generating data for:\n\n${facetsWithNoExample.join("\n")}`;
+        alert(errorMessage);
+        throw errorMessage;
+    }
+
+    return examplesToReference;
+}
+
+function generateFieldValueByField(field, references) {
     if (!field || !field.format?.type || field.format.type === "") { return ""; };
 
-    return CONSTS.FORMAT_TYPES[field.type][field.format.type].fn(field);
+    return CONSTS.FORMAT_TYPES[field.type][field.format.type].fn(field, references);
 }
 
 function generateExamples(event) {
@@ -220,4 +269,13 @@ function generateStatusCheck(startMillis, countCompleted, countTotal) {
     const left = convertTotalMillisToMSM(leftMillis);
 
     console.debug(`GENEX: Completed generating ${countCompleted} examples in ${minutes}m${seconds}s${millis}ms, estimated time remaining: ${left.minutes}m${left.seconds}s${left.millis}ms`);
+}
+
+function nukeExamples() {
+    if (APP_STATE.examples.length === 0) { alert("Can't delete examples that don't exist. Stop playin'."); return; }
+
+    if (!confirm("DELETE ALL EXAMPLES? It's recommended you click 'Download' or 'D+' first to download a backup file of your data.")) { return; }
+
+    APP_STATE.examples = [];
+    redrawPage();
 }

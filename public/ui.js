@@ -52,6 +52,7 @@ function preparePage() {
     const varwordValueFields = { formatType: "updateFieldFormatVarword", key: "varwordValue", elementId: "formatVarwordValue"};
     const staticBoolValueFields = { formatType: "updateFieldFormatStaticBool", key: "staticBoolValue", elementId: "formatStaticBoolValue"};
     const staticNumValueFields = { formatType: "updateFieldFormatStaticNum", key: "staticNumValue", elementId: "formatStaticNumValue"};
+    const referenceValueFields = { formatType: "updateFieldFormatReference", key: "srefValue", elementId: "formatReferenceValue"};
     gebi("formatStaticValue").onkeydown = updateFieldFormatDynamic.bind(staticValueFields); // key presses trigger delayed saves to state to dynamic field
     gebi("formatStaticValue").onchange = updateFieldFormatDynamic.bind(staticValueFields);
     gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
@@ -65,10 +66,12 @@ function preparePage() {
     gebi("formatStaticNumValue").onkeydown = updateFieldFormatDynamic.bind(staticNumValueFields);
     gebi("formatStaticNumValue").onchange = updateFieldFormatDynamic.bind(staticNumValueFields);
     setFieldFormatVarNumV2EventListeners();
+    gebi("formatReferenceValue").onchange = updateFieldFormatDynamic.bind(referenceValueFields);
 
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
     setClick("generateExamples", generateExamples);
+    setClick("nukeExamples", nukeExamples);
     
     setEditorViewButtons();
     
@@ -301,6 +304,9 @@ function fillCompositeDropdown() {
     });
 }
 
+//
+// Format values for fields
+//
 function redrawFormatEditor() {
     let { facetName, fieldName } = getSelectedFacetAndFieldNames();
     let field = getFacetFieldByNames(facetName, fieldName);
@@ -373,6 +379,7 @@ function redrawFormatFormElements() {
         "formatStaticBoolValue",
         "formatStaticNumValueContainer",
         "formatVarnumV2ValueContainer",
+        "formatReferenceValueContainer",
     ];
 
     addClassTo("hidden", elementsToHide);
@@ -386,6 +393,8 @@ function redrawFormatFormElements() {
     setFormatStaticBoolValue();
     setFormatStaticNumValue();
     setFormatVarNumV2Value();
+    redrawReferenceList();
+    // setFormatReferenceValue();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -435,6 +444,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.N.VARNUMV2.key: {
             const elementToShow = ["formatVarnumV2ValueContainer", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.S.SREF.key: {
+            const elementToShow = ["formatReferenceValueContainer", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -517,6 +532,29 @@ function setFormatVarNumV2Value() {
     }
 }
 
+function redrawReferenceList() {
+    let dropdownEle = gebi("formatReferenceValue");
+    let fields = APP_STATE.facets
+        .map(facet => facet.fields.map(field => `${facet.name}.${field.name}`))
+        .flat();
+    
+    dropdownEle.appendChild(dce("option"));
+
+    fields.forEach(field => {
+        let option = dce("option");
+        option.innerText = field;
+        dropdownEle.appendChild(option);
+    });
+
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.S.SREF.key) { return; }
+    
+    gebi("formatReferenceValue").value = field.format.srefValue ?? "";
+}
+
+//
+// Query
+//
 function redrawQueries() {
     const queryListEle = gebi("queryList");
     Array.from(queryListEle.getElementsByTagName("li")).forEach(o => o.remove())

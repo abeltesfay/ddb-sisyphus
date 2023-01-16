@@ -31,6 +31,10 @@ function getCurrentDatetimestampEasternTimeSlimAsString(dt = new Date()) {
     return `${year}${month}${day}${hour}${min}${sec}${millis}`;
 }
 
+function getUniqueStringArrayValues(arr) {
+    return arr.filter((field, index, arr) => index == arr.indexOf(field)) // get unique items
+}
+
 function gebi(id) { return document.getElementById(id); }
 function dce(tag) { return document.createElement(tag); }
 function addClassTo(clasz, elements) { elements.forEach(eleId => gebi(eleId)?.classList?.add(clasz)); }
@@ -279,6 +283,12 @@ function generateNVarnum(field) {
     }
 
     return "";
+}
+
+function generateSReference(field, references) {
+    const fieldFacetNameToReference = field.format[CONSTS.FORMAT_TYPES[field.type][field.format.type].valueKey].split(".");
+    const example = references[fieldFacetNameToReference[0]];
+    return example[fieldFacetNameToReference[1]];
 }
 
 // 

@@ -46,9 +46,9 @@
                 // gebi("codegenieWishArea").scrollTop = textarea.scrollHeight; // TODO Remove this
                 // window.scrollTo(0, 100000); // TODO Remove this
                 // importNoSqlWBJson();
-                selectedExampleFacetToAdd = "Application";
-                selectedFacet = "Application";
-                selectedField = "bestTest";
+                // selectedExampleFacetToAdd = "Reader";
+                // selectedFacet = "Reader";
+                // selectedField = "applicantEmployeeId";
                 
                 // selectedFacet = "Review";
                 // selectedKey = undefined;
@@ -120,12 +120,6 @@
                     <button id="addFormatEnum" value="Add">Add</button>
                     <button id="removeFormatEnum" value="Remove">Remove</button>
                 </div>
-                <!-- <button id="copyFormat" value="Copy">Copy</button> -->
-                <!-- <button id="removeFormat" value="remove">Remove</button> -->
-                <!-- <button id="updateFormat" value="update" disabled>Update</button> -->
-                <!-- <button id="moveKeyUp" value="up">Up</button> -->
-                <!-- <button id="moveKeyDown" value="down">Down</button> -->
-                <!-- <div id="format.ENUM"> -->
                 <select class="formatEnumList" id="formatEnumList" multiple></select>
                 <input class="formatStaticValue" id="formatStaticValue" />
                 <div id="formatVarcharValueContainer">
@@ -139,6 +133,9 @@
                 <div id="formatVarwordValueContainer">
                     <label class="formatVarwordValue">Length</label> <br/>
                     <input class="formatVarwordValue" id="formatVarwordValue" />
+                </div>
+                <div id="formatReferenceValueContainer">
+                    <select class="formatReferenceValue" id="formatReferenceValue"></select>
                 </div>
                 <select class="formatStaticBoolValue" id="formatStaticBoolValue">
                     <option value=""></option>
@@ -199,6 +196,7 @@
                     <select id="exampleFacetList"></select>
                     <button disabled id="generateExample" value="Generate">Gen</button>
                     <button disabled id="generateExamples" value="Generate+">Gen+</button>
+                    <button disabled id="nukeExamples" value="Nuke">Nuke</button>
                     <button disabled id="addExample" value="Add">Add</button>
                     <button disabled id="updateExample" value="Update">Update</button>
                     <button disabled id="cancelExample" value="Cancel">Cancel</button>

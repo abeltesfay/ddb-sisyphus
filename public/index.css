@@ -162,6 +162,7 @@
 , .formatStaticNumValue
 , #formatVarnumV2ValueContainer input
 , #formatVarnumV2ValueContainer label
+, .formatReferenceValue
 { margin-bottom: 1em; }
 
 .formatEnumList { width: 100%; }
