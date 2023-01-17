@@ -204,6 +204,7 @@ function getReferenceValuesForExample(fields) {
 
     
     let examplesToReference = {};
+
     Object.keys(uniqueFacets).forEach(facetName => {
         examplesToReference[facetName] = [];
 
@@ -218,8 +219,7 @@ function getReferenceValuesForExample(fields) {
             
             // Field doesn't have a value? skip this example
             if (!hasAllFields) { continue; }
-            examplesToReference[facetName] = clone(example);
-            return;
+            examplesToReference[facetName].push(clone(example));
         }
     });
 
@@ -233,7 +233,25 @@ function getReferenceValuesForExample(fields) {
         throw errorMessage;
     }
 
-    return examplesToReference;
+    let oneExamplePerFacetToReference = getRandomExamplePerFacet(examplesToReference);
+
+    return oneExamplePerFacetToReference;
+}
+
+// function getFacetsWithEmptyExamples(examplesToReference) {} 
+
+function getRandomExamplePerFacet(facetExamples) {
+    return Object.keys(facetExamples)
+        .map(facetName => {
+            const examplesToPullFrom = facetExamples[facetName];
+            const count = examplesToPullFrom.length;
+            const randomIndex = Math.floor(Math.random() * count);
+            return facetExamples[facetName][randomIndex];
+        })
+        .reduce((examplesToReference, example) => {
+            examplesToReference[example.__facetName] = example;
+            return examplesToReference;
+        }, {});
 }
 
 function generateFieldValueByField(field, references) {
