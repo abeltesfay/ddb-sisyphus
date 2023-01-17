@@ -163,6 +163,8 @@
 , #formatVarnumV2ValueContainer input
 , #formatVarnumV2ValueContainer label
 , .formatReferenceValue
+, #formatVarsdateValueContainer label
+, #formatVarsdateValueContainer input
 { margin-bottom: 1em; }
 
 .formatEnumList { width: 100%; }

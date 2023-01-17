@@ -1,5 +1,10 @@
 January 17
-[ ] Reference pull from random example
+[x] Reference pull from random example
+[o] Export as inserts into database
+[x] Implement Date format - simple string
+[x] Copy date field
+[o] Implement Date format - formatted
+[o] Copy reference
 
 January 16
 [x] Reference-examples format string

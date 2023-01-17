@@ -21,7 +21,7 @@ function getDatetimeFormatted() {
 }
 
 function getCurrentDatetimestampEasternTimeSlimAsString(dt = new Date()) {
-    const month = ('0' + dt.getMonth()).slice(-2),
+    const month = ('0' + (dt.getMonth() + 1)).slice(-2),
         day = ('0' + dt.getDate()).slice(-2),
         year = dt.getFullYear(),
         hour = (dt.getHours() % 12) == 0 ? 12 : ('0' + (dt.getHours() % 12)).slice(-2),
@@ -29,6 +29,15 @@ function getCurrentDatetimestampEasternTimeSlimAsString(dt = new Date()) {
         sec = ('0' + dt.getSeconds()).slice(-2),
         millis = ('0000' + dt.getMilliseconds()).slice(-4);
     return `${year}${month}${day}${hour}${min}${sec}${millis}`;
+}
+
+function getDateFormatted(dt = new Date()) {
+    if (!isValidDate(dt)) { return undefined; }
+
+    const month = ('0' + (dt.getMonth() + 1)).slice(-2)
+        day = ('0' + dt.getDate()).slice(-2),
+        year = dt.getFullYear();
+    return `${year}-${month}-${day}`;
 }
 
 function getUniqueStringArrayValues(arr) {
@@ -223,6 +232,7 @@ function isObject(o) { return !isUndefinedNull(o); }
 function isUndefinedNull(o) { return typeof o === "undefined" || o === null; }
 function isString(o) { return typeof o === "string"; }
 function isNumbersOnly(o) { return isString(o) && o.length > 0 && o === getNumbersOnly(o); }
+function isValidDate(o) { return o instanceof Date && !isNaN(o); }
 
 function getNumbersOnly(o) {
     const acceptableChars = "0123456789".split("");
@@ -289,6 +299,32 @@ function generateSReference(field, references) {
     const fieldFacetNameToReference = field.format[CONSTS.FORMAT_TYPES[field.type][field.format.type].valueKey].split(".");
     const example = references[fieldFacetNameToReference[0]];
     return example[fieldFacetNameToReference[1]];
+}
+
+function generateSVarsdate(field) {
+    try {
+        if (!field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey]) { return; }
+        
+        const settings = JSON.parse(field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey]);
+        if (!isObject(settings)) { return; }
+
+        const startDate = new Date(`${settings.Start}T00:00`);
+        let endDate = new Date(`${settings.End}T00:00`);
+        endDate.setDate(endDate.getDate() + 1);
+        const startDateMs = startDate.getTime();
+        const range = endDate.getTime() - startDateMs;
+        const randomMilliseconds = Math.floor(Math.random() * range);
+        const randomDate = new Date(randomMilliseconds + startDateMs);
+
+        const randomDateFormatted = getDateFormatted(randomDate);
+        // console.log(randomMilliseconds + startDateMs, randomDate, randomDateFormatted);
+        if (!randomDate || randomDateFormatted?.split?.("-").length !== 3) { return ""; }
+
+        return randomDateFormatted;
+    } catch (exception) {
+        console.error(`Error in generateSVarsdate for value=[${field.format.varNumV2Value}]`, exception);
+    }
+    return "";
 }
 
 // 

@@ -31,6 +31,7 @@ let CONSTS = {
             "VARCHAR": { key: "VARCHAR", label: "Varchar", fn: generateSVarchar },
             "VARNUM": { key: "VARNUM", label: "Varnum", fn: generateSVarnum },
             "VARWORD": { key: "VARWORD", label: "Varword", fn: generateSVarword },
+            "VARSDATE": { key: "VARSDATE", label: "Date", fn: generateSVarsdate, valueKey: "varsdateValue" },
             "SREF": { key: "SREF", label: "Reference", fn: generateSReference, valueKey: "srefValue" },
         },
         "B": {
@@ -52,5 +53,10 @@ let CONSTS = {
     FORMAT_FIELDIDS_VARNUMV2: [
         "formatVarNumV2Value_Min",
         "formatVarNumV2Value_Max",
+    ],
+    FORMAT_FIELDIDS_VARSDATE_PREFIX: "formatVarsdateValue_",
+    FORMAT_FIELDIDS_VARSDATE: [
+        "formatVarsdateValue_Start",
+        "formatVarsdateValue_End",
     ],
 };

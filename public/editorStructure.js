@@ -326,6 +326,7 @@ let timers = {
     "updateFieldFormatStaticNum": null,
     "updateFieldFormatVarNumV2": null,
     "updateFieldFormatReference": null,
+    "updateFieldFormatVarsdate": null,
 };
 
 function updateFieldFormatDynamic(event) {
@@ -348,6 +349,8 @@ function delayedUpdateFieldFormatDynamic() {
 function getFieldFormatDataByElementId(elementId) {
     if (elementId.indexOf("formatVarNumV2Value") !== -1) {
         return getFieldFormatVarNumV2();
+    } else if (elementId.indexOf("formatVarsdateValue") !== -1) {
+        return getFieldFormatVarsdate();
     }
 
     return gebi(elementId).value;
@@ -356,6 +359,19 @@ function getFieldFormatDataByElementId(elementId) {
 function getFieldFormatVarNumV2() {
     const fieldIdsToScrape = CONSTS.FORMAT_FIELDIDS_VARNUMV2;
     const prefix = CONSTS.FORMAT_FIELDIDS_VARNUMV2_PREFIX;
+
+    let values = fieldIdsToScrape.reduce((formatSettings, currentFieldId) => {
+        const settingsKey = currentFieldId.replace(prefix, "");
+        formatSettings[settingsKey] = gebi(currentFieldId).value;
+        return formatSettings;
+    }, {});
+    
+    return values;
+}
+
+function getFieldFormatVarsdate() {
+    const fieldIdsToScrape = CONSTS.FORMAT_FIELDIDS_VARSDATE;
+    const prefix = CONSTS.FORMAT_FIELDIDS_VARSDATE_PREFIX;
 
     let values = fieldIdsToScrape.reduce((formatSettings, currentFieldId) => {
         const settingsKey = currentFieldId.replace(prefix, "");
@@ -406,6 +422,10 @@ function autoformatVarNumV2Value_MinMax(value) {
     return `${firstCharIsNegative}${filtered}`;
 }
 
+function autoformatVarsdateValue(settings) {
+    return JSON.stringify(settings);
+}
+
 function autoformatField(key, value) {
     const FIELD_AUTOFORMATTERS = {
         "varcharValue": autoformatVarXValue,
@@ -413,6 +433,7 @@ function autoformatField(key, value) {
         "varwordValue": autoformatVarXValue,
         "staticNumValue": autoformatStaticNumValue,
         "varNumV2Value": autoformatVarNumV2Value,
+        "varsdateValue": autoformatVarsdateValue,
     };
 
     const fn = FIELD_AUTOFORMATTERS[key];
@@ -495,6 +516,12 @@ function copyFormatValue(fieldFrom, fieldTo) {
         case "STATICNUM": {
             if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
             fieldTo.format.staticNumValue = fieldFrom.format.staticNumValue;
+            break;
+        }
+
+        case "VARSDATE": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format.varsdateValue = fieldFrom.format.varsdateValue;
             break;
         }
         

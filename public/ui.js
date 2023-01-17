@@ -53,6 +53,7 @@ function preparePage() {
     const staticBoolValueFields = { formatType: "updateFieldFormatStaticBool", key: "staticBoolValue", elementId: "formatStaticBoolValue"};
     const staticNumValueFields = { formatType: "updateFieldFormatStaticNum", key: "staticNumValue", elementId: "formatStaticNumValue"};
     const referenceValueFields = { formatType: "updateFieldFormatReference", key: "srefValue", elementId: "formatReferenceValue"};
+    const varsdateFields = { formatType: "updateFieldFormatVarsdate", key: "varsdateValue", elementId: "formatVarsdateValue"};
     gebi("formatStaticValue").onkeydown = updateFieldFormatDynamic.bind(staticValueFields); // key presses trigger delayed saves to state to dynamic field
     gebi("formatStaticValue").onchange = updateFieldFormatDynamic.bind(staticValueFields);
     gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
@@ -67,6 +68,7 @@ function preparePage() {
     gebi("formatStaticNumValue").onchange = updateFieldFormatDynamic.bind(staticNumValueFields);
     setFieldFormatVarNumV2EventListeners();
     gebi("formatReferenceValue").onchange = updateFieldFormatDynamic.bind(referenceValueFields);
+    setFieldFormatVarsdateEventListeners();
 
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
@@ -340,6 +342,15 @@ function setFieldFormatVarNumV2EventListeners() {
     });
 }
 
+function setFieldFormatVarsdateEventListeners() {
+    const elementIdsToWatch = CONSTS.FORMAT_FIELDIDS_VARSDATE;
+    elementIdsToWatch.forEach(elementId => {
+        const varsdateValueFields = { formatType: "updateFieldFormatVarsdate", key: CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey, elementId };
+        gebi(elementId).onkeydown = updateFieldFormatDynamic.bind(varsdateValueFields);
+        gebi(elementId).onchange = updateFieldFormatDynamic.bind(varsdateValueFields);
+    });
+}
+
 function fillFormatTypeDropdown() {
     let formatOptionsEle = gebi("formatOptions");
     Array.from(formatOptionsEle.getElementsByTagName("option")).forEach(ele => ele.remove());
@@ -380,6 +391,7 @@ function redrawFormatFormElements() {
         "formatStaticNumValueContainer",
         "formatVarnumV2ValueContainer",
         "formatReferenceValueContainer",
+        "formatVarsdateValueContainer",
     ];
 
     addClassTo("hidden", elementsToHide);
@@ -394,7 +406,7 @@ function redrawFormatFormElements() {
     setFormatStaticNumValue();
     setFormatVarNumV2Value();
     redrawReferenceList();
-    // setFormatReferenceValue();
+    redrawVarsdateValue();
 
     // Show the elements that make sense
     const formatType = getCurrentFieldFormatType();
@@ -450,6 +462,12 @@ function redrawFormatFormElements() {
 
         case CONSTS.FORMAT_TYPES.S.SREF.key: {
             const elementToShow = ["formatReferenceValueContainer", "copyFormat"];
+            removeClassFrom("hidden", elementToShow);
+            break;
+        }
+
+        case CONSTS.FORMAT_TYPES.S.VARSDATE.key: {
+            const elementToShow = ["formatVarsdateValueContainer", "copyFormat"];
             removeClassFrom("hidden", elementToShow);
             break;
         }
@@ -528,7 +546,9 @@ function setFormatVarNumV2Value() {
             gebi(fieldId).value = extractedValue;
         });
     } catch (exception) {
-        console.error(`Error while setting varNumV2 values=[${field.format.varNumV2Value}]. Expected if values are not set yet`, exception);
+        const errorMessage = `Error while setting varNumV2 values=[${field.format.varNumV2Value}]. Expected if values are not set yet. See console for more information.`;
+        alert(errorMessage);
+        console.error(errorMessage, exception);
     }
 }
 
@@ -550,6 +570,29 @@ function redrawReferenceList() {
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.SREF.key) { return; }
     
     gebi("formatReferenceValue").value = field.format.srefValue ?? "";
+}
+
+function redrawVarsdateValue() {
+    let field = getCurrentFacetField();
+    if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARSDATE.key) { return; }
+    const valuesStr = field.format?.[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey] ?? "{}";
+    // if (!field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey] || field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey] === "") { return; }
+
+    try {
+        // const values = JSON.parse(field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey]);
+        const values = JSON.parse(valuesStr);
+        CONSTS.FORMAT_FIELDIDS_VARSDATE.forEach(fieldId => {
+            const prefix = CONSTS.FORMAT_FIELDIDS_VARSDATE_PREFIX;
+            const settingsKey = fieldId.replace(prefix, "");
+            const extractedValue = values[settingsKey];
+            console.log(extractedValue);
+            gebi(fieldId).value = extractedValue;
+        });
+    } catch (exception) {
+        const errorMessage = `Error while setting varsdate values=[${field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey]}]. Expected if values are not set yet. See console for more information.`;
+        alert(errorMessage);
+        console.error(errorMessage, exception);
+    }
 }
 
 //
