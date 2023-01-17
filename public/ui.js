@@ -881,6 +881,7 @@ function redrawExamplePage() {
 function redrawExampleButtons() {
     gebi("generateExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("generateExamples").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("nukeExamples").disabled = APP_STATE.examples.length === 0;
     gebi("addExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("updateExample").disabled = !selectedExampleDocumentToEdit;
     gebi("cancelExample").disabled = !selectedExampleDocumentToEdit;
