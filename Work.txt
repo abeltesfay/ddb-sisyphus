@@ -5,6 +5,12 @@ January 17
 [x] Copy date field
 [o] Implement Date format - formatted
 [o] Copy reference
+[x] Export to NoSQL Workbench
+  - Skip exporting examples for now
+[*] While writing NoSQL Workbench export noticed:
+  - You can't have two fields with the same name but different types..
+[o] Add a description for fields
+[ ] Fix nuke examples
 
 January 16
 [x] Reference-examples format string

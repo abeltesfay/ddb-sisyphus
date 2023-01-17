@@ -24,7 +24,7 @@ function getCurrentDatetimestampEasternTimeSlimAsString(dt = new Date()) {
     const month = ('0' + (dt.getMonth() + 1)).slice(-2),
         day = ('0' + dt.getDate()).slice(-2),
         year = dt.getFullYear(),
-        hour = (dt.getHours() % 12) == 0 ? 12 : ('0' + (dt.getHours() % 12)).slice(-2),
+        hour = ('0' + (dt.getHours() % 12)).slice(-2),
         min = ('0' + dt.getMinutes()).slice(-2),
         sec = ('0' + dt.getSeconds()).slice(-2),
         millis = ('0000' + dt.getMilliseconds()).slice(-4);

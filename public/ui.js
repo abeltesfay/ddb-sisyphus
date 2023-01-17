@@ -38,6 +38,7 @@ function preparePage() {
     gebi("examplesQuerySelect").onchange = selectExamplesQuery;
     setClick("generateCode", generateCode);
     setClick("importNoSqlWBJson", importNoSqlWBJson);
+    setClick("exportNoSqlWBJson", exportNoSqlWBJson);
     setClick("downloadState", downloadState);
     setClick("downloadStateFormatted", downloadStateFormatted);
     gebi("formatOptions").onchange = updateFieldFormat;

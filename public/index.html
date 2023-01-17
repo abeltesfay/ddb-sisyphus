@@ -6,6 +6,7 @@
         <link href="index.css" rel="stylesheet">
         <script type="text/javascript" src="appstate.js"></script>
         <script type="text/javascript" src="appstate-import.js"></script>
+        <script type="text/javascript" src="appstate-export.js"></script>
         <!-- <script type="text/javascript" src="appstate-tempimp.js"></script> -->
         <!-- <script type="text/javascript" src="appstate-basicnswb.js"></script> -->
         <script type="text/javascript" src="util.js"></script>
@@ -68,11 +69,12 @@
                 <legend>Application State</legend>
                 <button id="saveState" disabled>Save</button>
                 <button id="loadFromOrbit">Load</button>
-                <button id="importNoSqlWBJson">Import</button>
                 <button id="nukeFromOrbit">Nuke State</button>
                 <a id="downloadState" href=""><button id="downloadState">Download</button></a>
                 <a id="downloadStateFormatted" href="" title="Download Formatted"><button id="downloadStateFormatted" title="Download Formatted">D+</button></a>
                 <button id="logState">Log State</button>
+                <button id="importNoSqlWBJson" title="Import from NoSQLWB Json">Import</button>
+                <a id="exportNoSqlWBJson" href="#" title="Download to NoSQLWB-importable JSON"><button id="exportNoSqlWBJson">Export</button></a>
             </fieldset>
             <fieldset>
                 <legend>Fancy</legend>

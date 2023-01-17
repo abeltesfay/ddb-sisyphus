@@ -7,6 +7,12 @@ let CONSTS = {
         NUMBER: "N",
         COMPOSITE: "C",
     },
+    FIELD_TYPES_NOSQLWBMAP: {
+        "S": "S",
+        "B": "BOOL",
+        "N": "N",
+        "C": "S",
+    },
     DROPDOWN_KEY_DEFAULT_LABEL: " - Please Select a Value - ",
     STATIC_COMPOSITE_KEY: {
         DROPDOWN_PROMPT_ID: "<STATIC_VALUE>",
