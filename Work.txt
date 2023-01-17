@@ -12,6 +12,10 @@ January 17
 [o] Add a description for fields
 [x] Fix nuke examples
 [-] Allow edit to load data if nothing changed
+[x] Fix copy/paste not having new lines
+  - Selecting the entire list of fields and copy/pasting elsewhere had no new lines
+    to break up the text
+  - Added zero-height <br/> element to end
 
 January 16
 [x] Reference-examples format string

@@ -1,4 +1,5 @@
 .hidden { display: none; }
+.zero-height { height: 0em; }
 
 .action-bar {
     /* border: 1pt solid grey; */

@@ -54,7 +54,6 @@ function preparePage() {
     const staticBoolValueFields = { formatType: "updateFieldFormatStaticBool", key: "staticBoolValue", elementId: "formatStaticBoolValue"};
     const staticNumValueFields = { formatType: "updateFieldFormatStaticNum", key: "staticNumValue", elementId: "formatStaticNumValue"};
     const referenceValueFields = { formatType: "updateFieldFormatReference", key: "srefValue", elementId: "formatReferenceValue"};
-    const varsdateFields = { formatType: "updateFieldFormatVarsdate", key: "varsdateValue", elementId: "formatVarsdateValue"};
     gebi("formatStaticValue").onkeydown = updateFieldFormatDynamic.bind(staticValueFields); // key presses trigger delayed saves to state to dynamic field
     gebi("formatStaticValue").onchange = updateFieldFormatDynamic.bind(staticValueFields);
     gebi("formatVarcharValue").onkeydown = updateFieldFormatDynamic.bind(varcharValueFields);
@@ -193,7 +192,7 @@ function redrawFields() {
         fieldLabelEle.onclick = selectField.bind(fieldLabelEle);
         fieldEle.appendChild(fieldLabelEle);
         fieldListEle.appendChild(fieldEle);
-
+        
         let fieldTypeDropdownEle = getNewFieldTypeElement(selectedFacet, field.name);
         let fieldTypeDropdownEleFiller = fieldTypeDropdownEle.cloneNode(true);
         fieldTypeDropdownEle.classList.add("floater");
@@ -201,11 +200,19 @@ function redrawFields() {
         
         fieldTypeDropdownEleFiller.classList.add("spacefiller");
         fieldEle.appendChild(fieldTypeDropdownEleFiller);
-
+        
         if (selectedField == field.name) {
             fieldEle.classList.add("highlightedfield");
         }
+
+        fieldEle.appendChild(getEmptyNewLine()); // Required to allow selected copy/paste to have new lines
     });
+}
+
+function getEmptyNewLine() {
+    let newLine = dce("br");
+    newLine.classList.add("zero-height");
+    return newLine;
 }
 
 function redrawAllFields() {
@@ -236,6 +243,8 @@ function redrawAllFields() {
             if (facetName === facet.name && fieldName === field.name) {
                 fieldEle.classList.add("highlightedfield");
             }
+
+            fieldEle.appendChild(getEmptyNewLine()); // Required to allow selected copy/paste to have new lines
         });
     });
 }
