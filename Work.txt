@@ -1,3 +1,7 @@
+January 18
+[x] Compgen - Export complex generator string
+[x] Compgen - Import complex generator string
+
 January 17
 [x] Reference pull from random example
 [o] Export as inserts into database
@@ -22,7 +26,8 @@ January 17
 [x] Compgen - Doubleclick remove
 [x] Compgen - Clear on Gen~ click
 [x] Compgen - Generate button
-[ ] Compgen - Add examples, hide gen complex area
+[x] Compgen - Add examples, hide gen complex area
+[o] Compgen - Toggle complex generator view
 
 January 16
 [x] Reference-examples format string

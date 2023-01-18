@@ -222,6 +222,8 @@ function getFacetNamesWithReferenceFormats() {
         .map(facet => facet.name);
 }
 
+function getCEGSelectedFacetNames(elementId) { return Array.from(gebi(elementId).getElementsByTagName("option")).map(option => option.value); }
+
 //
 // Validation
 //

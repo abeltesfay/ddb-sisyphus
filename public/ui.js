@@ -1358,9 +1358,20 @@ function redrawGeneratorOptions() {
     })
 }
 
+function setExamplesComplexGenerator() {
+    gebi("cegStartingFacets").onchange = addCEGStartingFacet;
+    gebi("cegDerivedFacets").onchange = addCEGDerivedFacet;
+    gebi("cegStartingFacetsSelected").ondblclick = removeCEGFacet;
+    gebi("cegDerivedFacetsSelected").ondblclick = removeCEGFacet;
+    setClick("cegGenerateAllExamples", cegGenerateAllExamples);
+    gebi("cegSetupTemplate").onchange = updateCEGSetupTemplateDelayed;
+    gebi("cegSetupTemplate").onkeydown = updateCEGSetupTemplateDelayed;
+}
+
 function redrawExampleComplexGenerator() {
     fillCEGStartingFacets();
     fillCEGReferencingFacets();
+    fillCEGTemplateString();
 }
 
 function fillCEGStartingFacets() {
@@ -1368,7 +1379,7 @@ function fillCEGStartingFacets() {
     clearOptionElements(dropdown);
     dropdown.appendChild(dce("option"));
 
-    const alreadyAdded = Array.from(gebi("cegStartingFacetsSelected").getElementsByTagName("option")).map(option => option.value);
+    const alreadyAdded = getCEGSelectedFacetNames("cegStartingFacetsSelected");
     const facetNames = getFacetNamesWithoutReferenceFormats()
         .filter(facetName => !alreadyAdded.includes(facetName));
 
@@ -1386,7 +1397,7 @@ function fillCEGReferencingFacets() {
 
     dropdown.appendChild(dce("option"));
 
-    const alreadyAdded = Array.from(gebi("cegDerivedFacetsSelected").getElementsByTagName("option")).map(option => option.value);
+    const alreadyAdded = getCEGSelectedFacetNames("cegDerivedFacetsSelected");
     const facetNames = getFacetNamesWithReferenceFormats()
         .filter(facetName => !alreadyAdded.includes(facetName));
 
@@ -1398,12 +1409,14 @@ function fillCEGReferencingFacets() {
     });
 }
 
-function setExamplesComplexGenerator() {
-    gebi("cegStartingFacets").onchange = addCEGStartingFacet;
-    gebi("cegDerivedFacets").onchange = addCEGDerivedFacet;
-    gebi("cegStartingFacetsSelected").ondblclick = removeCEGFacet;
-    gebi("cegDerivedFacetsSelected").ondblclick = removeCEGFacet;
-    setClick("cegGenerateAllExamples", cegGenerateAllExamples);
+function fillCEGTemplateString() {
+    const template = {
+        starting: getCEGSelectedFacetNames("cegStartingFacetsSelected"),
+        derived: getCEGSelectedFacetNames("cegDerivedFacetsSelected"),
+    }
+
+    const templateString = template.starting.length === 0 && template.derived.length === 0 ? "" : JSON.stringify(template);
+    gebi("cegSetupTemplate").value = templateString;
 }
 
 //

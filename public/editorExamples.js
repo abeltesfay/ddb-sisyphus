@@ -337,8 +337,8 @@ function generateExamples(event) {
 
 function generateExamplesComplex() {
     gebi("complexExamplesGenerator").classList.remove("hidden");
-    clearOptionElements(gebi("cegStartingFacetsSelected"));
-    clearOptionElements(gebi("cegDerivedFacetsSelected"));
+    clearCEGLists();
+    fillCEGTemplateString();
 }
 
 function generateStatusCheck(startMillis, countCompleted, countTotal) {
@@ -360,10 +360,12 @@ function nukeExamples() {
     redrawPage();
 }
 
-function addCEGStartingFacet() {
-    const dropdown = gebi("cegStartingFacets");
-    const facetName = dropdown.value;
-    dropdown.value = "";
+function addCEGStartingFacet(event, facetName = undefined) {
+    if (!facetName) {
+        const dropdown = gebi("cegStartingFacets");
+        facetName = dropdown.value;
+        dropdown.value = "";
+    }
 
     if (facetName === "" || selectHasOption("cegStartingFacetsSelected", facetName)) { return; }
     let option = dce("option");
@@ -374,10 +376,12 @@ function addCEGStartingFacet() {
     redrawPage();
 }
 
-function addCEGDerivedFacet() {
-    const dropdown = gebi("cegDerivedFacets");
-    const facetName = dropdown.value;
-    dropdown.value = "";
+function addCEGDerivedFacet(event, facetName = undefined) {
+    if (!facetName) {
+        const dropdown = gebi("cegDerivedFacets");
+        facetName = dropdown.value;
+        dropdown.value = "";
+    }
 
     if (facetName === "" || selectHasOption("cegDerivedFacetsSelected", facetName)) { return; }
     let option = dce("option");
@@ -389,7 +393,7 @@ function addCEGDerivedFacet() {
 }
 
 function selectHasOption(elementId, facetName) {
-    return Array.from(gebi(elementId).getElementsByTagName("option")).some(option => option.value === facetName);
+    return getCEGSelectedFacetNames(elementId).some(optionFacetName => optionFacetName === facetName);
 }
 
 function removeCEGFacet() {
@@ -397,6 +401,7 @@ function removeCEGFacet() {
     for (element in options) {
         if (options[element].value === this.value) {
             this.remove(element);
+            fillCEGTemplateString();
             return;
         }
     }
@@ -404,12 +409,60 @@ function removeCEGFacet() {
 
 function cegGenerateAllExamples() {
     // Loop through all of the starting facets
-    const startingFacetExamples = Array.from(gebi("cegStartingFacetsSelected").getElementsByTagName("option"))
-        .map(option => generateExampleObject(option.value));
+    const startingFacetExamples = getCEGSelectedFacetNames("cegStartingFacetsSelected")
+        .map(facetName => generateExampleObject(facetName));
 
-    // TODO Use return of above to generate derived facets
-    const derivedFacetExamples = Array.from(gebi("cegDerivedFacetsSelected").getElementsByTagName("option"))
-        .map(option => generateExampleObject(option.value, startingFacetExamples));
+    // Use return of above to generate derived facets
+    const derivedFacetExamples = getCEGSelectedFacetNames("cegDerivedFacetsSelected")
+        .map(facetName => generateExampleObject(facetName, startingFacetExamples));
     
-    console.log(startingFacetExamples, derivedFacetExamples);
+    APP_STATE.examples.push(...startingFacetExamples, ...derivedFacetExamples);
+    redrawPage();
+}
+
+let cegTimer = null;
+
+function updateCEGSetupTemplateDelayed() {
+    clearTimeout(cegTimer);
+    setTimeout(updateCEGSetupTemplate.bind(this), 500);
+}
+
+function updateCEGSetupTemplate() {
+    try {
+        const templateStr = this.value;
+        if (templateStr.trim() === "") { return; }
+
+        const template = JSON.parse(this.value);
+        if (!isValidCEGTemplate(template)) { return; }
+
+        clearCEGLists();
+        template.starting.forEach(facetName => {
+            addCEGStartingFacet(null, facetName);
+        });
+        
+        template.derived.forEach(facetName => {
+            addCEGDerivedFacet(null, facetName);
+        });
+
+        redrawExampleComplexGenerator();
+    } catch(exception) {
+        console.warn("Invalid template string, ran into error", exception);
+    }
+}
+
+function clearCEGLists() {
+    clearOptionElements(gebi("cegStartingFacetsSelected"));
+    clearOptionElements(gebi("cegDerivedFacetsSelected"));
+    console.debug("CEG: Cleared out lists");
+}
+
+function isValidCEGTemplate(template) {
+    return !(
+        !isObject(template)
+        || !Array.isArray(template.starting)
+        || !Array.isArray(template.derived)
+        // TODO Validate all facet names are valid?
+        // TODO Validate no duplicate facet names.. or just ignore?
+        )
+    ;
 }
