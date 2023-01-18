@@ -208,6 +208,20 @@ function getCurrentFacetField() {
     return field;
 }
 
+function getFacetNamesWithoutReferenceFormats() {
+    return clone(APP_STATE.facets).filter(facet => facet.fields.every(field => {
+        return field?.format?.type !== CONSTS.FORMAT_TYPES.S.SREF.key;
+    }))
+        .map(facet => facet.name);
+}
+
+function getFacetNamesWithReferenceFormats() {
+    return clone(APP_STATE.facets).filter(facet => facet.fields.some(field => {
+        return field?.format?.type === CONSTS.FORMAT_TYPES.S.SREF.key;
+    }))
+        .map(facet => facet.name);
+}
+
 //
 // Validation
 //

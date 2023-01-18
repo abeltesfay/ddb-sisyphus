@@ -222,6 +222,17 @@
                     <label>SK:</label>
                     <span id="examplesQuerySk" title="sk" ></span>
                 </div>
+                <div class="hidden" id="complexExamplesGenerator">
+                    <label for="cegStartingFacets">Starting Facets:</label>
+                    <select id="cegStartingFacets"></select>
+                    <select id="cegStartingFacetsSelected" multiple readonly></select> <br/>
+
+                    <label for="cegDerivedFacets">Derived Facets:</label>
+                    <select id="cegDerivedFacets"></select>
+                    <select id="cegDerivedFacetsSelected" multiple readonly></select> <br/>
+
+                    <button id="cegGenerateAllExamples">Generate All Examples</button>
+                </div>
                 <div>
                     <table id="exampleNewTable">
                         <tbody id="examplesNewBody">

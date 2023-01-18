@@ -170,25 +170,76 @@ function copyExample() {
 
 function generateExample() {
     if (!selectedExampleFacetToAdd) { return; }
-    const facet = getFacetByName(selectedExampleFacetToAdd);
-    const referenceValues = getReferenceValuesForExample(facet.fields);
 
-    const generatedFieldAndValues = facet.fields
-        .map(field => {
-            const generatedValue = generateFieldValueByField(field, referenceValues);
-            if (!generatedValue) { return; }
-            return { fieldName: field.name, generatedValue};
-        })
-        .filter(field => field); // TODO Probably want to make sure we have a pk/sk if they're required
-
-    generatedFieldAndValues.forEach(fieldAndValue => {
+    generateFieldAndValues(selectedExampleFacetToAdd).forEach(fieldAndValue => {
         gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value = fieldAndValue.generatedValue;
     });
 
+    // TODO Likely should calculate composite keys here rather than relying on below function call to populate input field
     updateNewExampleInputs();
 }
 
-function getReferenceValuesForExample(fields) {
+function generateExampleObject(facetName, examplesToPullFrom) {
+    let exampleObject = generateFieldAndValues(facetName, examplesToPullFrom, true).reduce((obj, fieldAndValue) => {
+        // console.log(fieldAndValue);
+        obj[fieldAndValue.fieldName] = fieldAndValue.generatedValue;
+        return obj;
+    }, {
+        __facetName: facetName, // Should probably protect against this field name in other editor
+        __dttm: getDatetimeFormatted()
+    });
+
+    if (!isGoodExampleDocument(exampleObject)) { return; }
+    return exampleObject;
+}
+
+function generateFieldAndValues(facetName, examplesToPullFrom = undefined, includeCompositeKeys = false) {
+    const facet = getFacetByName(facetName);
+    const referenceValues = getReferenceValuesForExample(facet.fields, examplesToPullFrom);
+    
+    let generatedFieldValues = facet.fields
+        .map(field => {
+            const generatedValue = generateFieldValueByField(field, referenceValues);
+            return {
+                fieldName: field.name,
+                generatedValue,
+                field: clone(field),
+            };
+        });
+
+    const generatedFinalFieldValues = generatedFieldValues.map(fieldValue => {
+            if (fieldValue.generatedValue) { // Skip generated ones that are in good
+                return {
+                    fieldName: fieldValue.fieldName,
+                    generatedValue: fieldValue.generatedValue,
+                };
+            }
+
+            if (!includeCompositeKeys || fieldValue.field.type !== "C") { return; } // Skip if we're not doing composite keys
+
+            let calculatedFields = []; // EXAMPLEFIELD
+
+            fieldValue.field.keys.forEach(key => {
+                if (key.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) === 0) {
+                    calculatedFields.push(key.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, ""));
+                } else {
+                    calculatedFields.push(getGeneratedFieldValueByKey(generatedFieldValues, key));
+                }
+            });
+
+            const generatedValue = calculatedFields.join(CONSTS.DELIM);
+
+            return {
+                fieldName: fieldValue.fieldName,
+                generatedValue,
+            };
+        })
+        .filter(field => field); // TODO Probably want to make sure we have a pk/sk if they're required
+    
+    return generatedFinalFieldValues;
+}
+
+function getReferenceValuesForExample(fields, examplesToPullFrom = APP_STATE.examples) {
     let uniqueFacets = fields.filter(field => {
             const isReferenceFormat = CONSTS.FORMAT_VALUES.VALID_REFERENCE_KEYS.includes(field.format?.type);
             return isReferenceFormat;
@@ -208,7 +259,7 @@ function getReferenceValuesForExample(fields) {
     Object.keys(uniqueFacets).forEach(facetName => {
         examplesToReference[facetName] = [];
 
-        for (let example of APP_STATE.examples) {
+        for (let example of examplesToPullFrom) {
             if (example.__facetName !== facetName) { continue; }
             let hasAllFields = true;
 
@@ -254,6 +305,11 @@ function getRandomExamplePerFacet(facetExamples) {
         }, {});
 }
 
+
+function getGeneratedFieldValueByKey(generatedFieldValues, key) {
+    return generatedFieldValues.filter(fieldValue => fieldValue.fieldName === key)[0].generatedValue;
+}
+
 function generateFieldValueByField(field, references) {
     if (!field || !field.format?.type || field.format.type === "") { return ""; };
 
@@ -279,6 +335,12 @@ function generateExamples(event) {
     console.debug(`GENEX: Completed generating ${count} examples in ${minutes}m${seconds}s${millis}ms`);
 }
 
+function generateExamplesComplex() {
+    gebi("complexExamplesGenerator").classList.remove("hidden");
+    clearOptionElements(gebi("cegStartingFacetsSelected"));
+    clearOptionElements(gebi("cegDerivedFacetsSelected"));
+}
+
 function generateStatusCheck(startMillis, countCompleted, countTotal) {
     if (countCompleted % 100 !== 0) { return; } // Only generate a status check every 100 units
     const { minutes, seconds, millis, totalTimeMillis } = getTimeSinceMSM(startMillis);
@@ -296,4 +358,58 @@ function nukeExamples() {
 
     APP_STATE.examples = [];
     redrawPage();
+}
+
+function addCEGStartingFacet() {
+    const dropdown = gebi("cegStartingFacets");
+    const facetName = dropdown.value;
+    dropdown.value = "";
+
+    if (facetName === "" || selectHasOption("cegStartingFacetsSelected", facetName)) { return; }
+    let option = dce("option");
+    option.innerText = facetName;
+    option.value = facetName;
+
+    gebi("cegStartingFacetsSelected").appendChild(option);
+    redrawPage();
+}
+
+function addCEGDerivedFacet() {
+    const dropdown = gebi("cegDerivedFacets");
+    const facetName = dropdown.value;
+    dropdown.value = "";
+
+    if (facetName === "" || selectHasOption("cegDerivedFacetsSelected", facetName)) { return; }
+    let option = dce("option");
+    option.innerText = facetName;
+    option.value = facetName;
+
+    gebi("cegDerivedFacetsSelected").appendChild(option);
+    redrawPage();
+}
+
+function selectHasOption(elementId, facetName) {
+    return Array.from(gebi(elementId).getElementsByTagName("option")).some(option => option.value === facetName);
+}
+
+function removeCEGFacet() {
+    const options = Array.from(this.getElementsByTagName("option"));
+    for (element in options) {
+        if (options[element].value === this.value) {
+            this.remove(element);
+            return;
+        }
+    }
+}
+
+function cegGenerateAllExamples() {
+    // Loop through all of the starting facets
+    const startingFacetExamples = Array.from(gebi("cegStartingFacetsSelected").getElementsByTagName("option"))
+        .map(option => generateExampleObject(option.value));
+
+    // TODO Use return of above to generate derived facets
+    const derivedFacetExamples = Array.from(gebi("cegDerivedFacetsSelected").getElementsByTagName("option"))
+        .map(option => generateExampleObject(option.value, startingFacetExamples));
+    
+    console.log(startingFacetExamples, derivedFacetExamples);
 }

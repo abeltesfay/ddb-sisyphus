@@ -46,6 +46,7 @@ function preparePage() {
     setClick("removeFormatEnum", removeFormatEnum);
     setClick("facetFieldFilterHelp", facetFieldFilterHelp);
     
+    // Format editor handlers
     // formatType, key, elementId
     const staticValueFields = { formatType: "updateFieldFormatStatic", key: "staticValue", elementId: "formatStaticValue"};
     const varcharValueFields = { formatType: "updateFieldFormatVarchar", key: "varcharValue", elementId: "formatVarcharValue"};
@@ -73,11 +74,15 @@ function preparePage() {
     setClick("copyFormat", copyFormat);
     setClick("generateExample", generateExample);
     setClick("generateExamples", generateExamples);
+    setClick("generateExamplesComplex", generateExamplesComplex);
     setClick("nukeExamples", nukeExamples);
+
+    setExamplesComplexGenerator();
     
     setEditorViewButtons();
     
     console.debug("PREP: Finished prep");
+    generateExamplesComplex();
 }
 
 function getInputsOnPageRefresh() {
@@ -110,8 +115,10 @@ function redrawPage() {
         redrawExamplePage();
 
         redrawGeneratorOptions();
+        redrawExampleComplexGenerator();
         
         updateFilteredFields();
+
         lastFocusedElement.focus();
     } catch (error) {
         alert("REDRAWPAGE: Redraw page failed, error: " + error);
@@ -1349,6 +1356,54 @@ function redrawGeneratorOptions() {
         option.innerText = key;
         generatorTypeSelect.appendChild(option);
     })
+}
+
+function redrawExampleComplexGenerator() {
+    fillCEGStartingFacets();
+    fillCEGReferencingFacets();
+}
+
+function fillCEGStartingFacets() {
+    const dropdown = gebi("cegStartingFacets");
+    clearOptionElements(dropdown);
+    dropdown.appendChild(dce("option"));
+
+    const alreadyAdded = Array.from(gebi("cegStartingFacetsSelected").getElementsByTagName("option")).map(option => option.value);
+    const facetNames = getFacetNamesWithoutReferenceFormats()
+        .filter(facetName => !alreadyAdded.includes(facetName));
+
+    facetNames.forEach(facetName => {
+        let option = dce("option");
+        option.innerText = facetName;
+        option.innerValue = facetName;
+        dropdown.appendChild(option);
+    });
+}
+
+function fillCEGReferencingFacets() {
+    const dropdown = gebi("cegDerivedFacets");
+    clearOptionElements(dropdown);
+
+    dropdown.appendChild(dce("option"));
+
+    const alreadyAdded = Array.from(gebi("cegDerivedFacetsSelected").getElementsByTagName("option")).map(option => option.value);
+    const facetNames = getFacetNamesWithReferenceFormats()
+        .filter(facetName => !alreadyAdded.includes(facetName));
+
+    facetNames.forEach(facetName => {
+        let option = dce("option");
+        option.innerText = facetName;
+        option.innerValue = facetName;
+        dropdown.appendChild(option);
+    });
+}
+
+function setExamplesComplexGenerator() {
+    gebi("cegStartingFacets").onchange = addCEGStartingFacet;
+    gebi("cegDerivedFacets").onchange = addCEGDerivedFacet;
+    gebi("cegStartingFacetsSelected").ondblclick = removeCEGFacet;
+    gebi("cegDerivedFacetsSelected").ondblclick = removeCEGFacet;
+    setClick("cegGenerateAllExamples", cegGenerateAllExamples);
 }
 
 //
