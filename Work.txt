@@ -7,8 +7,9 @@ January 18
 [x] Compgen - Facet minimum vs maximum
 [x] Compgen - Style
 [x] NoSQLWB Examples export
-[ ] NoSQLWB Export - Warn if missing type on field
-[ ] Compgen - Facet field exceptions
+[o] NoSQLWB Export - Warn if missing type on field
+[o] Compgen - Facet field exceptions
+[x] 'undefined' varchar length bug
 
 January 17
 [x] Reference pull from random example

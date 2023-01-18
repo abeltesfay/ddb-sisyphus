@@ -509,28 +509,28 @@ function setFormatStaticValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.STATIC.key) { return; }
     
-    gebi("formatStaticValue").value = field.format.staticValue ?? "";
+    gebi("formatStaticValue").value = field.format?.staticValue ?? "";
 }
 
 function setFormatVarcharValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARCHAR.key) { return; }
 
-    gebi("formatVarcharValue").value = field.format.varcharValue;
+    gebi("formatVarcharValue").value = field.format?.varcharValue ?? "";
 }
 
 function setFormatVarnumValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARNUM.key) { return; }
 
-    gebi("formatVarnumValue").value = field.format.varnumValue ?? "";
+    gebi("formatVarnumValue").value = field.format?.varnumValue ?? "";
 }
 
 function setFormatVarwordValue() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.S.VARWORD.key) { return; }
 
-    gebi("formatVarwordValue").value = field.format.varwordValue ?? "";
+    gebi("formatVarwordValue").value = field.format?.varwordValue ?? "";
 }
 
 function setFormatStaticBoolValue() {
