@@ -6,6 +6,8 @@ January 18
 [x] Compgen - Incr/decr buttons
 [x] Compgen - Facet minimum vs maximum
 [x] Compgen - Style
+[x] NoSQLWB Examples export
+[ ] NoSQLWB Export - Warn if missing type on field
 [ ] Compgen - Facet field exceptions
 
 January 17

@@ -1,7 +1,10 @@
 function exportNoSqlWBJson() {
     console.debug("EXPORT: Starting export");
     
-    let convertedAppState = convertAppState(APP_STATE);
+    const TableName = prompt("Please provide a table name:");
+    if (!TableName) { return; }
+
+    let convertedAppState = convertAppState(APP_STATE, TableName);
     
     const nosqlWbJson = JSON.stringify(convertedAppState, null, 2);
     // const nosqlWbJson = JSON.stringify(convertedAppState);
@@ -32,9 +35,9 @@ function generateExportFilename() {
     return `${datetimeStamp}-${FILENAME}.${FILEEXTENSION}`;
 }
 
-function convertAppState(state) {
+function convertAppState(state, TableName) {
     let object = getPrefilledTopPortion();
-    object["DataModel"] = [ getDataModel(state) ];
+    object["DataModel"] = [ getDataModel(state, TableName) ];
 
     return object;
 }
@@ -53,9 +56,8 @@ function getPrefilledTopPortion() {
     };
 }
 
-function getDataModel(state) {
-    const TableName = "RANDOM_TABLE_NAME",
-        KeyAttributes = getKeyAttributes(),
+function getDataModel(state, TableName) {
+    const KeyAttributes = getKeyAttributes(),
         NonKeyAttributes = getNonKeyAttributes(state),
         TableFacets = getTableFacets(state),
         GlobalSecondaryIndexes = getGSIs(state),
@@ -119,7 +121,7 @@ function getTableFacets(state) {
         .map(facet => ({
             FacetName: facet.name,
             KeyAttributeAlias: getTableFacetDefaultPartitionKeyAlias(),
-            TableData: [],
+            TableData: getTableDataFromExamples(state, facet.name),
             NonKeyAttributes: getTableFacetNonKeyAttributes(facet),
             DataAccess: getTableFacetDefaultDataAccess(),
         }));
@@ -127,6 +129,51 @@ function getTableFacets(state) {
 
 function getTableFacetDefaultPartitionKeyAlias() {
     return { PartitionKeyAlias: "pk", SortKeyAlias: "sk" };
+}
+
+function getTableDataFromExamples(state, facetName) {
+    const IGNOREABLE_KEYS = ["__facetName", "__dttm"];
+    const facetFieldsLookup = state.facets
+        .find(facet => facet.name === facetName)
+        .fields
+        .reduce((lookupMapByFieldName, field) => {
+            lookupMapByFieldName[field.name] = field.type;
+            return lookupMapByFieldName;
+        }, {});
+
+    const examplesForFacet = state.examples.filter(example => example.__facetName === facetName);
+    return examplesForFacet.map(example => {
+        const keys = Object.keys(example).filter(key => !IGNOREABLE_KEYS.includes(key));
+        const convertedExample = {};
+
+        for (let key of keys) {
+            const fieldType = CONSTS.FIELD_TYPES_NOSQLWBMAP[facetFieldsLookup[key]];
+            const fieldValue = getSafeFieldValue(fieldType, example[key]);
+            if (fieldValue === "") { continue; } // Skip empty values
+            convertedExample[key] = { [fieldType]: fieldValue };
+        }
+
+        return convertedExample;
+    });
+}
+
+function getSafeFieldValue(type, value) {
+    if (value === "") { return value; }
+
+    switch (type) {
+        case CONSTS.FIELD_TYPES_NOSQLWBMAP.S:
+        case CONSTS.FIELD_TYPES_NOSQLWBMAP.C: { return value; }
+
+        case CONSTS.FIELD_TYPES_NOSQLWBMAP.B: {
+            return value === "true" ? true : false;
+        }
+        
+        case CONSTS.FIELD_TYPES_NOSQLWBMAP.N: {
+            return parseFloat(value);
+        }
+    }
+
+    return "";
 }
 
 function getTableFacetNonKeyAttributes(facet) {
