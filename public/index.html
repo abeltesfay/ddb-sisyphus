@@ -222,23 +222,29 @@
                     <label>SK:</label>
                     <span id="examplesQuerySk" title="sk" ></span>
                 </div>
+                <br/>
                 <div class="hidden" id="complexExamplesGenerator">
-                    <label for="cegStartingFacets">Starting Facets:</label>
-                    <select id="cegStartingFacets"></select>
-                    <select id="cegStartingFacetsSelected" multiple readonly></select>
-
-                    <label for="cegDerivedFacets">Derived Facets:</label>
-                    <select id="cegDerivedFacets"></select>
-                    <select id="cegDerivedFacetsSelected" multiple readonly></select>
-                    <button id="decreaseCEGMinDerivedCount">Min-</button>
-                    <button id="increaseCEGMinDerivedCount">Min+</button>
-                    <button id="decreaseCEGMaxDerivedCount">Max-</button>
-                    <button id="increaseCEGMaxDerivedCount">Max+</button>
+                    <h3>Complex Example Generator</h3>
+                    <div>
+                        <label for="cegStartingFacets">Starting Facets:</label> <br/>
+                        <select id="cegStartingFacets" multiple></select>
+                        <select id="cegStartingFacetsSelected" multiple readonly></select>
+                    </div>
+                    <div>
+                        <label for="cegDerivedFacets">Derived Facets:</label> <br/>
+                        <select id="cegDerivedFacets" multiple></select>
+                        <select id="cegDerivedFacetsSelected" multiple readonly></select>
+                        <button id="decreaseCEGMinDerivedCount">Min-</button>
+                        <button id="increaseCEGMinDerivedCount">Min+</button>
+                        <button id="decreaseCEGMaxDerivedCount">Max-</button>
+                        <button id="increaseCEGMaxDerivedCount">Max+</button>
+                    </div>
                     <br/>
-
-                    <label for="cegSetupTemplate">Template String:</label><input id="cegSetupTemplate" title="JSON String representing this set up"> </br>
-
-                    <button id="cegGenerateAllExamples">Generate Complex Examples</button>
+                    <div>
+                        <button id="cegGenerateAllExamples">Generate Complex Examples</button>
+                        
+                        <label for="cegSetupTemplate">Template String:</label><input id="cegSetupTemplate" title="JSON String representing this set up"> </br>
+                    </div>
                 </div>
                 <div>
                     <table id="exampleNewTable">

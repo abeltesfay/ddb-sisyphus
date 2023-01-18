@@ -1,4 +1,4 @@
-.hidden { display: none; }
+.hidden { display: none !important; }
 .zero-height { height: 0em; }
 
 .action-bar {
@@ -136,6 +136,27 @@
 .examplesBarRead label {
     font-weight: bold;
     margin-left: 1em;
+}
+
+#complexExamplesGenerator {
+    display: inline-block;
+    border: 1pt solid #bbb;
+    padding: .5em;
+    margin: 1em;
+}
+
+#complexExamplesGenerator div {
+    display: inline-block;
+    margin: .5em;
+}
+
+#complexExamplesGenerator h3 {
+    margin: 0.25em;
+    padding: 0;
+}
+
+#complexExamplesGenerator input {
+    width: 30em;
 }
 
 .highlightedfacet, .highlightedfield, .highlightedquery, .highlightedindex, .highlightedexample { font-weight: bold }

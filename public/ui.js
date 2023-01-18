@@ -82,7 +82,6 @@ function preparePage() {
     setEditorViewButtons();
     
     console.debug("PREP: Finished prep");
-    generateExamplesComplex();
 }
 
 function getInputsOnPageRefresh() {
@@ -1381,7 +1380,6 @@ function redrawExampleComplexGenerator() {
 function fillCEGStartingFacets() {
     const dropdown = gebi("cegStartingFacets");
     clearOptionElements(dropdown);
-    dropdown.appendChild(dce("option"));
 
     const alreadyAdded = getCEGSelectedFacetNames("cegStartingFacetsSelected");
     const facetNames = getFacetNamesWithoutReferenceFormats()
@@ -1398,8 +1396,6 @@ function fillCEGStartingFacets() {
 function fillCEGReferencingFacets() {
     const dropdown = gebi("cegDerivedFacets");
     clearOptionElements(dropdown);
-
-    dropdown.appendChild(dce("option"));
 
     const alreadyAdded = getCEGSelectedFacetNames("cegDerivedFacetsSelected");
     const facetNames = getFacetNamesWithReferenceFormats()

@@ -336,7 +336,7 @@ function generateExamples(event) {
 }
 
 function generateExamplesComplex() {
-    gebi("complexExamplesGenerator").classList.remove("hidden");
+    gebi("complexExamplesGenerator").classList.toggle("hidden");
     clearCEGLists();
     fillCEGTemplateString();
 }
