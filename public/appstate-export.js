@@ -10,7 +10,7 @@ function exportNoSqlWBJson() {
     // const nosqlWbJson = JSON.stringify(convertedAppState);
     
     downloadStateAsWBJson(nosqlWbJson);
-    console.log(nosqlWbJson);
+    // console.log(nosqlWbJson);
     
     console.debug("EXPORT: Completed export");
 }
@@ -221,7 +221,6 @@ function getGSIs(state) {
     let allIndicesFiltered = [], uniqueIndexNames = [];
 
     allIndices.forEach(index => {
-        console.log(uniqueIndexNames);
         if (uniqueIndexNames.includes(index.IndexName)) { return; }
         uniqueIndexNames.push(index.IndexName);
         allIndicesFiltered.push(index);

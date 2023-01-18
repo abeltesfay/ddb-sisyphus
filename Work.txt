@@ -10,6 +10,7 @@ January 18
 [o] NoSQLWB Export - Warn if missing type on field
 [o] Compgen - Facet field exceptions
 [x] 'undefined' varchar length bug
+[o] Fix switching field type not updating format type options until after save
 
 January 17
 [x] Reference pull from random example

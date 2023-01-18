@@ -601,7 +601,6 @@ function redrawVarsdateValue() {
             const prefix = CONSTS.FORMAT_FIELDIDS_VARSDATE_PREFIX;
             const settingsKey = fieldId.replace(prefix, "");
             const extractedValue = values[settingsKey];
-            console.log(extractedValue);
             gebi(fieldId).value = extractedValue;
         });
     } catch (exception) {
