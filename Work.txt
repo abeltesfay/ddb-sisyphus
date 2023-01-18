@@ -12,6 +12,10 @@ January 18
 [x] 'undefined' varchar length bug
 [o] Fix switching field type not updating format type options until after save
 [x] Fix number fields not emptying out on switch
+[o] Add check when deleting a field that it's part of a composite key
+[x] Add SREF copyFormat
+[x] Add VARNUMV2 copyFormat
+[x] Fix SREF dropdown not being cleared out, causing performance issues
 
 January 17
 [x] Reference pull from random example

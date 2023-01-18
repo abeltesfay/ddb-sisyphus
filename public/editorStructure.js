@@ -524,6 +524,18 @@ function copyFormatValue(fieldFrom, fieldTo) {
             fieldTo.format.varsdateValue = fieldFrom.format.varsdateValue;
             break;
         }
+
+        case "SREF": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format[CONSTS.FORMAT_TYPES.S.SREF.valueKey] = fieldFrom.format[CONSTS.FORMAT_TYPES.S.SREF.valueKey];
+            break;
+        }
+
+        case "VARNUMV2": {
+            if (typeof fieldTo.format !== "object") { fieldTo.format = {}; }
+            fieldTo.format[CONSTS.FORMAT_TYPES.N.VARNUMV2.valueKey] = fieldFrom.format[CONSTS.FORMAT_TYPES.N.VARNUMV2.valueKey];
+            break;
+        }
         
         default: {
             alert(`Unable to copy format value, type=[${fieldFrom.format.type}] was not found!`);

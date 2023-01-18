@@ -48,7 +48,7 @@ let CONSTS = {
         },
         "N": {
             "STATICNUM": { key: "STATICNUM", label: "Static", fn: generateNStatic },
-            "VARNUMV2": { key: "VARNUMV2", label: "Variable", fn: generateNVarnum },
+            "VARNUMV2": { key: "VARNUMV2", label: "Variable", fn: generateNVarnum, valueKey: "varNumV2Value" },
         },
     },
     FORMAT_VALUES: {

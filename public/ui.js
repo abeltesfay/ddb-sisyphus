@@ -568,6 +568,7 @@ function setFormatVarNumV2Value() {
 
 function redrawReferenceList() {
     let dropdownEle = gebi("formatReferenceValue");
+    clearOptionElements(dropdownEle);
     let fields = APP_STATE.facets
         .map(facet => facet.fields.map(field => `${facet.name}.${field.name}`))
         .flat();
