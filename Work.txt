@@ -16,6 +16,9 @@ January 17
   - Selecting the entire list of fields and copy/pasting elsewhere had no new lines
     to break up the text
   - Added zero-height <br/> element to end
+[?] Create template for formats
+  - This would allow us to more easily create different types.. hmm.
+[ ] Complex generator
 
 January 16
 [x] Reference-examples format string

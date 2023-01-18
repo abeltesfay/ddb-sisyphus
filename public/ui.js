@@ -888,10 +888,11 @@ function redrawExamplePage() {
 }
 
 function redrawExampleButtons() {
-    gebi("generateExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
-    gebi("generateExamples").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("generateExample").disabled = APP_STATE.facets.length === 0 || !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("generateExamples").disabled = APP_STATE.facets.length === 0 || !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("generateExamplesComplex").disabled = APP_STATE.facets.length === 0;
     gebi("nukeExamples").disabled = APP_STATE.examples.length === 0;
-    gebi("addExample").disabled = !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("addExample").disabled = APP_STATE.facets.length === 0 || !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("updateExample").disabled = !selectedExampleDocumentToEdit;
     gebi("cancelExample").disabled = !selectedExampleDocumentToEdit;
     gebi("editExample").disabled = !selectedExampleDocumentIndex;
