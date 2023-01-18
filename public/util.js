@@ -222,7 +222,15 @@ function getFacetNamesWithReferenceFormats() {
         .map(facet => facet.name);
 }
 
-function getCEGSelectedFacetNames(elementId) { return Array.from(gebi(elementId).getElementsByTagName("option")).map(option => option.value); }
+function getCEGSelectedOptions(elementId) { return Array.from(gebi(elementId).getElementsByTagName("option")); }
+function getCEGSelectedFacetNames(elementId) { return getCEGSelectedOptions(elementId).map(option => option.value); }
+function getCEGSelectedFacetMetadata(elementId) {
+    return getCEGSelectedOptions(elementId).map(option => ({
+            facetName: option.dataset.facetname,
+            count: option.dataset.count,
+        })
+    );
+}
 
 //
 // Validation
@@ -255,6 +263,17 @@ function getNumbersOnly(o) {
     return o?.split("")
         .filter(c => acceptableChars.includes(c))
         .join("");
+}
+
+function isValidCEGTemplate(template) {
+    return !(
+        !isObject(template)
+        || !Array.isArray(template.starting)
+        || !Array.isArray(template.derived)
+        // TODO Validate all facet names are valid?
+        // TODO Validate no duplicate facet names.. or just ignore?
+        )
+    ;
 }
 
 //

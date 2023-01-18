@@ -1366,6 +1366,8 @@ function setExamplesComplexGenerator() {
     setClick("cegGenerateAllExamples", cegGenerateAllExamples);
     gebi("cegSetupTemplate").onchange = updateCEGSetupTemplateDelayed;
     gebi("cegSetupTemplate").onkeydown = updateCEGSetupTemplateDelayed;
+    setClick("increaseCEGDerivedCount", increaseCEGDerivedCount);
+    setClick("decreaseCEGDerivedCount", decreaseCEGDerivedCount);
 }
 
 function redrawExampleComplexGenerator() {
@@ -1407,16 +1409,6 @@ function fillCEGReferencingFacets() {
         option.innerValue = facetName;
         dropdown.appendChild(option);
     });
-}
-
-function fillCEGTemplateString() {
-    const template = {
-        starting: getCEGSelectedFacetNames("cegStartingFacetsSelected"),
-        derived: getCEGSelectedFacetNames("cegDerivedFacetsSelected"),
-    }
-
-    const templateString = template.starting.length === 0 && template.derived.length === 0 ? "" : JSON.stringify(template);
-    gebi("cegSetupTemplate").value = templateString;
 }
 
 //

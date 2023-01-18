@@ -360,7 +360,7 @@ function nukeExamples() {
     redrawPage();
 }
 
-function addCEGStartingFacet(event, facetName = undefined) {
+function addCEGStartingFacet(event, facetName = undefined, count = 1) {
     if (!facetName) {
         const dropdown = gebi("cegStartingFacets");
         facetName = dropdown.value;
@@ -369,14 +369,16 @@ function addCEGStartingFacet(event, facetName = undefined) {
 
     if (facetName === "" || selectHasOption("cegStartingFacetsSelected", facetName)) { return; }
     let option = dce("option");
-    option.innerText = facetName;
     option.value = facetName;
+    option.dataset.facetname = facetName;
+    option.dataset.count = count;
+    option.innerText = `${facetName} (x${count})`;
 
     gebi("cegStartingFacetsSelected").appendChild(option);
     redrawPage();
 }
 
-function addCEGDerivedFacet(event, facetName = undefined) {
+function addCEGDerivedFacet(event, facetName = undefined, count = 1) {
     if (!facetName) {
         const dropdown = gebi("cegDerivedFacets");
         facetName = dropdown.value;
@@ -385,8 +387,10 @@ function addCEGDerivedFacet(event, facetName = undefined) {
 
     if (facetName === "" || selectHasOption("cegDerivedFacetsSelected", facetName)) { return; }
     let option = dce("option");
-    option.innerText = facetName;
     option.value = facetName;
+    option.dataset.facetname = facetName;
+    option.dataset.count = count;
+    option.innerText = `${facetName} (x${count})`;
 
     gebi("cegDerivedFacetsSelected").appendChild(option);
     redrawPage();
@@ -413,11 +417,37 @@ function cegGenerateAllExamples() {
         .map(facetName => generateExampleObject(facetName));
 
     // Use return of above to generate derived facets
-    const derivedFacetExamples = getCEGSelectedFacetNames("cegDerivedFacetsSelected")
-        .map(facetName => generateExampleObject(facetName, startingFacetExamples));
+    const derivedFacetExamples = getCEGSelectedFacetMetadata("cegDerivedFacetsSelected")
+        .map(facetMetadata => {
+            let examples = [];
+
+            for (let i = 0; i <= parseInt(facetMetadata.count, 10); i++) {
+                examples.push(generateExampleObject(facetMetadata.facetName, startingFacetExamples));
+            }
+
+            return examples;
+        })
+        .flat();
     
     APP_STATE.examples.push(...startingFacetExamples, ...derivedFacetExamples);
     redrawPage();
+}
+
+function fillCEGTemplateString() {
+    const template = {
+        starting: getCEGSelectedOptions("cegStartingFacetsSelected").map(getCEGTemplateFacetData),
+        derived: getCEGSelectedOptions("cegDerivedFacetsSelected").map(getCEGTemplateFacetData),
+    };
+
+    const templateString = template.starting.length === 0 && template.derived.length === 0 ? "" : JSON.stringify(template);
+    gebi("cegSetupTemplate").value = templateString;
+}
+
+function getCEGTemplateFacetData(optionEle) {
+    return {
+        facetName: optionEle.dataset.facetname,
+        count: optionEle.dataset.count,
+    };
 }
 
 let cegTimer = null;
@@ -436,12 +466,12 @@ function updateCEGSetupTemplate() {
         if (!isValidCEGTemplate(template)) { return; }
 
         clearCEGLists();
-        template.starting.forEach(facetName => {
-            addCEGStartingFacet(null, facetName);
+        template.starting.forEach(facetMetadata => {
+            addCEGStartingFacet(null, facetMetadata.facetName, facetMetadata.count);
         });
         
-        template.derived.forEach(facetName => {
-            addCEGDerivedFacet(null, facetName);
+        template.derived.forEach(facetMetadata => {
+            addCEGDerivedFacet(null, facetMetadata.facetName, facetMetadata.count);
         });
 
         redrawExampleComplexGenerator();
@@ -456,13 +486,26 @@ function clearCEGLists() {
     console.debug("CEG: Cleared out lists");
 }
 
-function isValidCEGTemplate(template) {
-    return !(
-        !isObject(template)
-        || !Array.isArray(template.starting)
-        || !Array.isArray(template.derived)
-        // TODO Validate all facet names are valid?
-        // TODO Validate no duplicate facet names.. or just ignore?
-        )
-    ;
+function increaseCEGDerivedCount() {
+    if (gebi("cegDerivedFacetsSelected").selectedOptions.length === 0) { return; }
+
+    Array.from(gebi("cegDerivedFacetsSelected").selectedOptions).forEach(option => {
+        const currentCount = parseInt(option.dataset.count, 10);
+        option.dataset.count = Math.max(0, currentCount + 1);
+        option.innerText = `${option.dataset.facetname} (x${option.dataset.count})`;
+    });
+
+    fillCEGTemplateString();
+}
+
+function decreaseCEGDerivedCount() {
+    if (gebi("cegDerivedFacetsSelected").selectedOptions.length === 0) { return; }
+
+    Array.from(gebi("cegDerivedFacetsSelected").selectedOptions).forEach(option => {
+        const currentCount = parseInt(option.dataset.count, 10);
+        option.dataset.count = Math.max(0, currentCount - 1);
+        option.innerText = `${option.dataset.facetname} (x${option.dataset.count})`;
+    });
+    
+    fillCEGTemplateString();
 }

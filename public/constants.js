@@ -38,6 +38,8 @@ let CONSTS = {
             "VARNUM": { key: "VARNUM", label: "Varnum", fn: generateSVarnum },
             "VARWORD": { key: "VARWORD", label: "Varword", fn: generateSVarword },
             "VARSDATE": { key: "VARSDATE", label: "Date", fn: generateSVarsdate, valueKey: "varsdateValue" },
+            // "VARSTIME": { key: "VARSTIME", label: "Time", fn: generateSVarstime, valueKey: "vartimeValue" },
+            // "VARSDTTM": { key: "VARSDTTM", label: "Datetime", fn: generateSVarsdttm, valueKey: "vardttmValue" },
             "SREF": { key: "SREF", label: "Reference", fn: generateSReference, valueKey: "srefValue" },
         },
         "B": {
