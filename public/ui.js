@@ -551,14 +551,12 @@ function setFormatVarNumV2Value() {
     let field = getCurrentFacetField();
     if (field.format?.type !== CONSTS.FORMAT_TYPES.N.VARNUMV2.key) { return; }
     
-    if (!field.format.varNumV2Value || field.format.varNumV2Value === "") { return; }
-
     try {
-        const values = JSON.parse(field.format.varNumV2Value);
+        const values = JSON.parse(field.format?.varNumV2Value ?? "{}");
         CONSTS.FORMAT_FIELDIDS_VARNUMV2.forEach(fieldId => {
             const prefix = CONSTS.FORMAT_FIELDIDS_VARNUMV2_PREFIX;
             const settingsKey = fieldId.replace(prefix, "");
-            const extractedValue = values[settingsKey];
+            const extractedValue = values?.[settingsKey] ?? "";
             gebi(fieldId).value = extractedValue;
         });
     } catch (exception) {

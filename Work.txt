@@ -11,6 +11,7 @@ January 18
 [o] Compgen - Facet field exceptions
 [x] 'undefined' varchar length bug
 [o] Fix switching field type not updating format type options until after save
+[x] Fix number fields not emptying out on switch
 
 January 17
 [x] Reference pull from random example
