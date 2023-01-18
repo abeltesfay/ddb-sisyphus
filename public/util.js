@@ -226,8 +226,11 @@ function getCEGSelectedOptions(elementId) { return Array.from(gebi(elementId).ge
 function getCEGSelectedFacetNames(elementId) { return getCEGSelectedOptions(elementId).map(option => option.value); }
 function getCEGSelectedFacetMetadata(elementId) {
     return getCEGSelectedOptions(elementId).map(option => ({
-            facetName: option.dataset.facetname,
-            count: option.dataset.count,
+            facetName: option.dataset.facetName,
+            counts: {
+                min: option.dataset.countMin,
+                max: option.dataset.countMax,
+            },
         })
     );
 }

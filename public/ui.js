@@ -1366,8 +1366,10 @@ function setExamplesComplexGenerator() {
     setClick("cegGenerateAllExamples", cegGenerateAllExamples);
     gebi("cegSetupTemplate").onchange = updateCEGSetupTemplateDelayed;
     gebi("cegSetupTemplate").onkeydown = updateCEGSetupTemplateDelayed;
-    setClick("increaseCEGDerivedCount", increaseCEGDerivedCount);
-    setClick("decreaseCEGDerivedCount", decreaseCEGDerivedCount);
+    setClick("increaseCEGMinDerivedCount", increaseCEGMinDerivedCount);
+    setClick("decreaseCEGMinDerivedCount", decreaseCEGMinDerivedCount);
+    setClick("increaseCEGMaxDerivedCount", increaseCEGMaxDerivedCount);
+    setClick("decreaseCEGMaxDerivedCount", decreaseCEGMaxDerivedCount);
 }
 
 function redrawExampleComplexGenerator() {

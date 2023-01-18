@@ -4,6 +4,8 @@ January 18
 [x] Compgen - Multiple derived documents
   - Happy path multiple derived code for now.. multiple starting could be difficult.
 [x] Compgen - Incr/decr buttons
+[x] Compgen - Facet minimum vs maximum
+[ ] Compgen - Facet field exceptions
 
 January 17
 [x] Reference pull from random example

@@ -360,7 +360,7 @@ function nukeExamples() {
     redrawPage();
 }
 
-function addCEGStartingFacet(event, facetName = undefined, count = 1) {
+function addCEGStartingFacet(event, facetName = undefined, countMin = 1, countMax = 1) {
     if (!facetName) {
         const dropdown = gebi("cegStartingFacets");
         facetName = dropdown.value;
@@ -370,15 +370,16 @@ function addCEGStartingFacet(event, facetName = undefined, count = 1) {
     if (facetName === "" || selectHasOption("cegStartingFacetsSelected", facetName)) { return; }
     let option = dce("option");
     option.value = facetName;
-    option.dataset.facetname = facetName;
-    option.dataset.count = count;
-    option.innerText = `${facetName} (x${count})`;
+    option.dataset.facetName = facetName;
+    option.dataset.countMin = countMin;
+    option.dataset.countMax = countMax;
+    option.innerText = `${facetName} (x${countMin} - x${countMax})`;
 
     gebi("cegStartingFacetsSelected").appendChild(option);
     redrawPage();
 }
 
-function addCEGDerivedFacet(event, facetName = undefined, count = 1) {
+function addCEGDerivedFacet(event, facetName = undefined, countMin = 1, countMax = 1) {
     if (!facetName) {
         const dropdown = gebi("cegDerivedFacets");
         facetName = dropdown.value;
@@ -388,9 +389,10 @@ function addCEGDerivedFacet(event, facetName = undefined, count = 1) {
     if (facetName === "" || selectHasOption("cegDerivedFacetsSelected", facetName)) { return; }
     let option = dce("option");
     option.value = facetName;
-    option.dataset.facetname = facetName;
-    option.dataset.count = count;
-    option.innerText = `${facetName} (x${count})`;
+    option.dataset.facetName = facetName;
+    option.dataset.countMin = countMin;
+    option.dataset.countMax = countMax;
+    option.innerText = `${facetName} (x${countMin} - x${countMax})`;
 
     gebi("cegDerivedFacetsSelected").appendChild(option);
     redrawPage();
@@ -405,7 +407,7 @@ function removeCEGFacet() {
     for (element in options) {
         if (options[element].value === this.value) {
             this.remove(element);
-            fillCEGTemplateString();
+            redrawPage();
             return;
         }
     }
@@ -421,7 +423,11 @@ function cegGenerateAllExamples() {
         .map(facetMetadata => {
             let examples = [];
 
-            for (let i = 0; i <= parseInt(facetMetadata.count, 10); i++) {
+            const min = parseInt(facetMetadata.counts.min, 10);
+            const max = parseInt(facetMetadata.counts.max, 10) + 1;
+            const finalCount = Math.floor(Math.random() * (max - min)) + min;
+
+            for (let i = 0; i < finalCount; i++) {
                 examples.push(generateExampleObject(facetMetadata.facetName, startingFacetExamples));
             }
 
@@ -445,8 +451,11 @@ function fillCEGTemplateString() {
 
 function getCEGTemplateFacetData(optionEle) {
     return {
-        facetName: optionEle.dataset.facetname,
-        count: optionEle.dataset.count,
+        facetName: optionEle.dataset.facetName,
+        counts: {
+            min: optionEle.dataset.countMin,
+            max: optionEle.dataset.countMax,
+        }
     };
 }
 
@@ -467,13 +476,16 @@ function updateCEGSetupTemplate() {
 
         clearCEGLists();
         template.starting.forEach(facetMetadata => {
-            addCEGStartingFacet(null, facetMetadata.facetName, facetMetadata.count);
+            addCEGStartingFacet(null, facetMetadata.facetName, facetMetadata.counts.min, facetMetadata.counts.max);
         });
         
         template.derived.forEach(facetMetadata => {
-            addCEGDerivedFacet(null, facetMetadata.facetName, facetMetadata.count);
+            addCEGDerivedFacet(null, facetMetadata.facetName, facetMetadata.counts.min, facetMetadata.counts.max);
         });
 
+        autocorrectCEGOptionMinMaxCounts(false);
+        autocorrectCEGOptionMinMaxCounts(true);
+        updateCEGOptionTexts();
         redrawExampleComplexGenerator();
     } catch(exception) {
         console.warn("Invalid template string, ran into error", exception);
@@ -483,29 +495,60 @@ function updateCEGSetupTemplate() {
 function clearCEGLists() {
     clearOptionElements(gebi("cegStartingFacetsSelected"));
     clearOptionElements(gebi("cegDerivedFacetsSelected"));
-    console.debug("CEG: Cleared out lists");
 }
 
-function increaseCEGDerivedCount() {
+function increaseCEGMinDerivedCount() { increaseCEGDerivedCount(false); }
+function decreaseCEGMinDerivedCount() { decreaseCEGDerivedCount(false); }
+function increaseCEGMaxDerivedCount() { increaseCEGDerivedCount(true); }
+function decreaseCEGMaxDerivedCount() { decreaseCEGDerivedCount(true); }
+
+function increaseCEGDerivedCount(modifyMaxValue) {
     if (gebi("cegDerivedFacetsSelected").selectedOptions.length === 0) { return; }
 
+    const countField = modifyMaxValue ? "countMax" : "countMin";
+
     Array.from(gebi("cegDerivedFacetsSelected").selectedOptions).forEach(option => {
-        const currentCount = parseInt(option.dataset.count, 10);
-        option.dataset.count = Math.max(0, currentCount + 1);
-        option.innerText = `${option.dataset.facetname} (x${option.dataset.count})`;
+        const currentCount = parseInt(option.dataset[countField], 10);
+        option.dataset[countField] = Math.max(0, currentCount + 1);
     });
 
+    autocorrectCEGOptionMinMaxCounts(modifyMaxValue);
+    updateCEGOptionTexts();
     fillCEGTemplateString();
 }
 
-function decreaseCEGDerivedCount() {
+function decreaseCEGDerivedCount(modifyMaxValue) {
     if (gebi("cegDerivedFacetsSelected").selectedOptions.length === 0) { return; }
-
-    Array.from(gebi("cegDerivedFacetsSelected").selectedOptions).forEach(option => {
-        const currentCount = parseInt(option.dataset.count, 10);
-        option.dataset.count = Math.max(0, currentCount - 1);
-        option.innerText = `${option.dataset.facetname} (x${option.dataset.count})`;
-    });
     
+    const countField = modifyMaxValue ? "countMax" : "countMin";
+
+    Array.from(gebi("cegDerivedFacetsSelected").selectedOptions).forEach(option => {
+        const currentCount = parseInt(option.dataset[countField], 10);
+        option.dataset[countField] = Math.max(0, currentCount - 1);
+    });
+
+    autocorrectCEGOptionMinMaxCounts(modifyMaxValue);
+    updateCEGOptionTexts();
     fillCEGTemplateString();
+}
+
+function autocorrectCEGOptionMinMaxCounts(modifyMaxValue) {
+    let options = [Array.from(getCEGSelectedOptions("cegDerivedFacetsSelected")), Array.from(getCEGSelectedOptions("cegStartingFacetsSelected"))].flat();
+    options.forEach(option => {
+        const min = Math.max(0, parseInt(option.dataset.countMin, 10));
+        const max = Math.max(0, parseInt(option.dataset.countMax, 10));
+
+        if (modifyMaxValue) {
+            option.dataset.countMin = min > max ? max : min;
+        } else {
+            option.dataset.countMax = min > max ? min : max;
+        }
+    });
+}
+
+function updateCEGOptionTexts() {
+    let options = [Array.from(getCEGSelectedOptions("cegDerivedFacetsSelected")), Array.from(getCEGSelectedOptions("cegStartingFacetsSelected"))].flat();
+    options.forEach(option => {
+        option.innerText = `${option.dataset.facetName} (x${option.dataset.countMin} - x${option.dataset.countMax})`;
+    });
 }
