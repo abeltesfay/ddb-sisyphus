@@ -124,7 +124,7 @@ function downloadState(event, formatted = false) {
 }
 
 function generateDownloadFilename() {
-    const FILEEXTENSION = "js";
+    const FILEEXTENSION = "json";
     const FILENAME = "DynamoDBTableModel";
     const datetimeStamp = getCurrentDatetimestampEasternTimeSlimAsString();
 

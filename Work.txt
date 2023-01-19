@@ -1,3 +1,34 @@
+OOOOOOOOOOOOO
+OO Backlog OO
+OOOOOOOOOOOOO
+[ ] Guard against duplicate pk/sk examples
+[ ] Warn if pk/sk format isn't set up correctly when generating (OnYYYId format empty enum)
+[ ] Fix silent failures when generating a field type fails:
+  Uncaught TypeError: CONSTS.FORMAT_TYPES[field.type][field.format.type] is undefined
+    generateFieldValueByField http://localhost:3000/editorExamples.js:316
+    generatedFieldValues http://localhost:3000/editorExamples.js:202
+    generateFieldAndValues http://localhost:3000/editorExamples.js:201
+[ ] Easier time picking dates for formats
+[ ] Edit query name
+[ ] Edit index name + update queries to reflect this
+[ ] Autosort format enum
+[ ] Autosort ceg facets
+[ ] Update .js file extension export to be .json
+[ ] Filter composite field types on &- (pk, sk, data, gsi, etc)
+[ ] Auto-detect bad examples compared to schema
+  [ ] composite field order change
+  [ ] composite field subfield type changes (depends on unique id for composite field but unique id changes)
+  [ ] composite field subfield format changes
+  [?] Warn to blow away all current data if changing composite fields
+[ ] Show differences in schema + example data on change
+[ ] Show which facets have changed state
+[ ] Show which fields have changed state
+[ ] Add description to fields
+[ ] Show physical partitions / breakdown when a partition is getting hot
+
+//////////////
+// Work Log //
+//////////////
 January 18
 [x] Compgen - Export complex generator string
 [x] Compgen - Import complex generator string
@@ -16,6 +47,7 @@ January 18
 [x] Add SREF copyFormat
 [x] Add VARNUMV2 copyFormat
 [x] Fix SREF dropdown not being cleared out, causing performance issues
+[x] Fix exported nosqlwb timestamp being wrong (time is 12 hours off)
 
 January 17
 [x] Reference pull from random example
