@@ -31,10 +31,19 @@ OOOOOOOOOOOOO
 //////////////
 January 23
 [x] Update UI to horizontal fields
-[ ] Autoupdate fields on change
-[ ] Edit field save
-[ ] Edit field addcopy
-[ ] Edit field cancel
+[x] Example editor - show on add
+[x] Example editor - show on edit
+[x] Autoupdate fields on change
+[x] Example editor - ckfs
+[x] Example editor - escape
+[x] Example editor - cancel
+[x] Edit field cancel
+[x] Edit field save new
+[x] Edit field save changes
+[o] Show current facet type in modal
+[o] Don't reset filter on selecting an example
+[o] Example button disable toggles
+[o] Filter examples by facet dropdown
 
 January 18
 [x] Compgen - Export complex generator string

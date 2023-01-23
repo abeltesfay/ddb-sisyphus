@@ -29,7 +29,7 @@ function preparePage() {
     gebi("fieldFilter").onkeyup = updateFieldFilterValue;
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
     gebi("exampleFacetList").onchange = selectExampleFacetToAdd;
-    setClick("addExample", addExample);
+    setClick("addExample", showExampleEditor);
     setClick("editExample", editExample);
     setClick("updateExample", updateExample);
     setClick("copyExample", copyExample);
@@ -45,6 +45,9 @@ function preparePage() {
     setClick("addFormatEnum", addFormatEnum);
     setClick("removeFormatEnum", removeFormatEnum);
     setClick("facetFieldFilterHelp", facetFieldFilterHelp);
+    setClick("cancelExampleChanges", hideExampleEditor);
+    setClick("saveExampleChanges", saveExampleChanges);
+    setClick("saveExampleChangesAsCopy", saveExampleChangesAsCopy);
     
     // Format editor handlers
     // formatType, key, elementId
@@ -883,9 +886,6 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
 function redrawExamplePage() {
     redrawExampleButtons();
     redrawExampleFacetList();
-    redrawExampleAddOrEditFieldsReset();
-    redrawExampleAddFields();
-    redrawExampleEditFields();
     redrawNewExampleForm();
     
     redrawExamplesReadBar();
@@ -899,7 +899,6 @@ function redrawExampleButtons() {
     gebi("nukeExamples").disabled = APP_STATE.examples.length === 0;
     gebi("addExample").disabled = APP_STATE.facets.length === 0 || !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("updateExample").disabled = !selectedExampleDocumentToEdit;
-    gebi("cancelExample").disabled = !selectedExampleDocumentToEdit;
     gebi("editExample").disabled = !selectedExampleDocumentIndex;
     gebi("copyExample").disabled = !selectedExampleDocumentIndex;
     gebi("deleteExample").disabled = !selectedExampleDocumentIndex;
@@ -923,29 +922,16 @@ function redrawExampleFacetList() {
     });
 }
 
-function redrawExampleAddOrEditFieldsReset() {
-    Array.from(gebi("examplesNewBody").getElementsByTagName("tr"))
-        .filter(ele => ele.id !== "examplesNewHeaderRow")
-        .forEach(ele => ele.remove());
-    
-    let newTableHeaderRow = gebi("examplesNewHeaderRow");
-    Array.from(newTableHeaderRow.getElementsByTagName("th")).forEach(headerCell => headerCell.remove());
-}
-
-function redrawExampleAddFields() {    
-    if (!selectedExampleFacetToAdd || selectedExampleFacetToAdd.trim().length === 0) { return; }
-    redrawExampleAddOrEditFields(selectedExampleFacetToAdd);
-}
-
-function redrawExampleEditFields() {    
-    if (!selectedExampleDocumentToEdit || selectedExampleDocumentToEdit?.__facetName?.length === 0) { return; }
-    redrawExampleAddOrEditFields(selectedExampleDocumentToEdit.__facetName, selectedExampleDocumentToEdit);
-}
-
 function redrawNewExampleForm() {
     resetNewExampleFormFields();
     
-    redrawNewExampleFormFieldsAndLabels();
+    if (selectedExampleDocumentToEdit && selectedExampleDocumentToEdit?.__facetName?.length > 0) {
+        redrawNewExampleFormFieldsAndLabels(selectedExampleDocumentToEdit.__facetName, selectedExampleDocumentToEdit);
+    } else if (selectedExampleFacetToAdd && selectedExampleFacetToAdd.trim().length > 0) {
+        redrawNewExampleFormFieldsAndLabels(selectedExampleFacetToAdd);
+    } else {
+        hideExampleEditor();
+    }
 }
 
 function resetNewExampleFormFields() {
@@ -954,9 +940,9 @@ function resetNewExampleFormFields() {
     Array.from(form.getElementsByTagName("input")).forEach(o => o.remove());
 }
 
-function redrawNewExampleFormFieldsAndLabels(example) {
-    if (!selectedExampleFacetToAdd || selectedExampleFacetToAdd.trim().length === 0) { return; }
-    const facet = getFacetByName(selectedExampleFacetToAdd);
+function redrawNewExampleFormFieldsAndLabels(facetName, example) {
+    if (!facetName || facetName.trim().length === 0) { return; }
+    const facet = getFacetByName(facetName);
     if (!facet) { return; }
     
     const editForm = gebi("exampleNewForm");
@@ -1000,61 +986,6 @@ function redrawNewExampleFormFieldsAndLabels(example) {
         }
 
         editForm.appendChild(newInput);
-    });
-}
-
-function redrawExampleAddOrEditFields(facetName, example) {
-    const facet = getFacetByName(facetName);
-    if (!facet) { return; }
-    let newTableBody = gebi("examplesNewBody");
-    let newRow = dce("tr");
-    newRow.id = "examplesNewDocumentToAdd";
-    newTableBody.appendChild(newRow);
-
-    let customizedFacetFields = clone(facet.fields)
-    let pk = customizedFacetFields.filter(field => field.name === "pk")[0];
-    let sk = customizedFacetFields.filter(field => field.name === "sk")[0];
-    customizedFacetFields = customizedFacetFields.filter(field => field.name !== "pk" && field.name !== "sk");
-    customizedFacetFields.unshift(sk);
-    customizedFacetFields.unshift(pk);
-
-    const compositeKeyFields = facet.fields.map(field => field.keys).flat();
-    let newTableHeaderRow = gebi("examplesNewHeaderRow");
-
-    customizedFacetFields.forEach(field => {
-        const isPartOfACompositeKeyField = compositeKeyFields.includes(field.name);
-        let newTh = dce("th");
-        newTh.innerText = field.name;
-        if (isPartOfACompositeKeyField) { newTh.classList.add("composite-key-field-colorlabel"); }
-        if (isPartOfACompositeKeyField || field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newTh.classList.add("composite-key-field-toggleckfs"); }
-        newTableHeaderRow.appendChild(newTh);
-        
-        // Input field
-        let newInput = dce("input");
-        newInput.id = `EXAMPLEFIELD#${field.name}`;
-        newInput.dataset.fieldname = `${field.name}`;
-        if (example) { newInput.value = example[field.name] ?? ""; }
-        if (field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newInput.readOnly = true; } // Must fill in other fields to fill these
-        
-        let newTd = dce("td");
-        
-        if (isPartOfACompositeKeyField) {
-            newInput.onkeyup = updateNewExampleInputs;
-            newInput.onchange = updateNewExampleInputs;
-        }
-
-        if (isPartOfACompositeKeyField || field.type === CONSTS.FIELD_TYPES.COMPOSITE) {
-            newTd.classList.add("composite-key-field-toggleckfs");
-        }
-        
-        if (!isPartOfACompositeKeyField && field.type !== CONSTS.FIELD_TYPES.COMPOSITE && gebi("compositeKeyFieldsOnly").checked) {
-            newTh.classList.add("hidden");
-            newTd.classList.add("hidden");
-        }
-
-        newTd.appendChild(newInput);
-        
-        newRow.appendChild(newTd);
     });
 }
 
@@ -1390,16 +1321,16 @@ function toggleExampleAddCkfsOnly() {
     const showOnlyCkfs = this.checked;
 
     if (showOnlyCkfs) {
-        [Array.from(gebi("examplesNewBody").getElementsByTagName("th")),
-            Array.from(gebi("examplesNewBody").getElementsByTagName("td"))]
+        [Array.from(gebi("exampleNewForm").getElementsByTagName("label")),
+            Array.from(gebi("exampleNewForm").getElementsByTagName("input"))]
             .flat()
             .filter(ele => !ele.classList.contains("composite-key-field-toggleckfs"))
             .forEach(ele => {
                 ele.classList.add("hidden")
             });
     } else {
-        [Array.from(gebi("examplesNewBody").getElementsByTagName("th")),
-            Array.from(gebi("examplesNewBody").getElementsByTagName("td"))]
+        [Array.from(gebi("exampleNewForm").getElementsByTagName("label")),
+            Array.from(gebi("exampleNewForm").getElementsByTagName("input"))]
             .flat()
             .filter(ele => !ele.classList.contains("composite-key-field-toggleckfs"))
             .forEach(ele => {

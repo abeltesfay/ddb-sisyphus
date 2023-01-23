@@ -47,7 +47,7 @@
                 // gebi("codegenieWishArea").scrollTop = textarea.scrollHeight; // TODO Remove this
                 // window.scrollTo(0, 100000); // TODO Remove this
                 // importNoSqlWBJson();
-                // selectedExampleFacetToAdd = "Reader";
+                selectedExampleFacetToAdd = "Reader";
                 // selectedFacet = "Reader";
                 // selectedField = "applicantEmployeeId";
                 
@@ -209,11 +209,9 @@
                     <button disabled id="nukeExamples" title="Delete all examples" value="Nuke">Nuke</button>
                     <button disabled id="addExample" title="Add example using below input area values" value="Add">Add</button>
                     <button disabled id="updateExample" title="Update the currently selected example with values from below input area" value="Update">Update</button>
-                    <button disabled id="cancelExample" value="Cancel">Cancel</button>
                     <button disabled id="copyExample" title="Copy selected example into below input area values" value="Copy">Copy</button>
                     <button disabled id="editExample" title="Edit selected example using below input areas" value="Edit">Edit</button>
                     <button disabled id="deleteExample" value="Delete">Delete</button>
-                    <input id="compositeKeyFieldsOnly" value="compositeKeyFieldsOnly" title="Show only the composite key fields in below input areas" type="checkbox"><label for="compositeKeyFieldsOnly"  title="Show only the composite key fields in below input areas">CKFs</label></input>
                 </div>
                 <div class="examplesBarRead">
                     <select id="examplesQuerySelect"></select>
@@ -246,13 +244,13 @@
                         <label for="cegSetupTemplate">Template String:</label><input id="cegSetupTemplate" title="JSON String representing this set up"> </br>
                     </div>
                 </div>
-                <div class="exampleNewContainer">
-                    <form id="exampleNewForm">
-                        <h3>Add / Update Example</h3>
-                        <button value="SaveEdit">Save Edit</button>
-                        <button value="AddCopy">Add Copy</button>
-                        <button value="Cancel">Cancel</button>
-                    </form>
+                <div id="exampleNewContainer" class="exampleNewContainer hidden">
+                    <h3>Add / Update Example</h3>
+                    <button id="saveExampleChanges" value="SaveEdit">Save Changes</button>
+                    <button id="saveExampleChangesAsCopy" value="AddCopy">Save New</button>
+                    <button id="cancelExampleChanges" value="Cancel">Cancel</button>
+                    <input id="compositeKeyFieldsOnly" value="compositeKeyFieldsOnly" title="Show only the composite key fields in below input areas" type="checkbox"><label for="compositeKeyFieldsOnly"  title="Show only the composite key fields in below input areas">CKFs</label></input>
+                    <form id="exampleNewForm"></form>
                 </div>
                 <div>
                     <table id="exampleNewTable">

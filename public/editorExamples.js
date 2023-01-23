@@ -15,8 +15,20 @@ function selectExampleFacetToAdd() {
 
 function addExampleNoRedraw(event) { addExample(event, false); }
 
+function hideExampleEditor() { gebi("exampleNewContainer").classList.add("hidden"); }
+function showExampleEditor() { gebi("exampleNewContainer").classList.remove("hidden"); }
+// function cancelExampleChanges() { hideExampleEditor(); }
+
+function saveExampleChanges() {
+    updateExample();
+}
+
+function saveExampleChangesAsCopy() {
+    addExample();
+}
+
 function addExample(event, shouldRedrawPage = true) {
-    let exampleFields = gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input");
+    let exampleFields = gebi("exampleNewForm")?.getElementsByTagName("input");
     
     let newExampleDocument = Array.from(exampleFields).reduce((prevValue, curValue) => {
         const fieldName = curValue.dataset.fieldname;
@@ -37,6 +49,7 @@ function addExample(event, shouldRedrawPage = true) {
         
         redrawPage();
     }
+
     console.debug("ADDEXAMPLE: New example added");
 }
 
@@ -65,7 +78,7 @@ function deleteExample() {
 
 // While adding an example, update all the composite key fields that are read only when another field is changed
 function updateNewExampleInputs() {
-    let exampleInputFields = Array.from(gebi("examplesNewDocumentToAdd").getElementsByTagName("input")).filter(ele => ele.readOnly);
+    let exampleInputFields = Array.from(gebi("exampleNewForm").getElementsByTagName("input")).filter(ele => ele.readOnly);
     const facetName = getCurrentExampleFacetName();
 
     exampleInputFields.forEach(ele => {
@@ -109,18 +122,20 @@ function updateExampleQueryInputs() {
 
     redrawExampleQueryInputs();
 }
+function isExampleEditorVisible() { return !gebi("exampleNewContainer").classList.contains("hidden"); }
 
 function editExample() {
-    if (selectedExampleFacetToAdd && !confirm("Looks like you are adding an example, editing an existing one will lose any unsaved changes. Are you sure?")) { return; }
+    if (isExampleEditorVisible() && !confirm("Looks like you are adding an example, editing an existing one will lose any unsaved changes. Are you sure?")) { return; }
     const example = APP_STATE.examples[selectedExampleDocumentIndex];
     selectedExampleFacetToAdd = null;
     selectedExampleDocumentToEdit = example;
+    showExampleEditor();
     redrawPage();
     focusFirstNonReadOnlyInput();
 }
 
 function updateExample() {
-    let exampleFields = gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input");
+    let exampleFields = gebi("exampleNewForm")?.getElementsByTagName("input");
     
     let newExampleDocument = Array.from(exampleFields).reduce((prevValue, curValue) => {
         const fieldName = curValue.dataset.fieldname;
@@ -143,26 +158,22 @@ function updateExample() {
 function copyExample() {
     if (!selectedExampleDocumentIndex) { return; }
 
+    // Validate that current add doesn't already have data
+    let inputEles = Array.from(gebi("exampleNewForm")?.getElementsByTagName("input") ?? []);
+    const alreadyHasInputValues = inputEles.some(ele => ele.value !== "");
+
+    if (alreadyHasInputValues && !confirm("Looks like you are adding/editing an example, copying an existing one in will lose any unsaved changes. Are you sure?")) { return; }
+
+    showExampleEditor();
+
     const example = APP_STATE.examples[selectedExampleDocumentIndex]
 
     const currentFacetName = example.__facetName;
+    selectedExampleFacetToAdd = currentFacetName;
+    gebi("exampleFacetList").value = selectedExampleFacetToAdd;
+    selectExampleFacetToAdd();
 
-    if (!selectedExampleFacetToAdd) {
-        selectedExampleFacetToAdd = currentFacetName;
-        gebi("exampleFacetList").value = selectedExampleFacetToAdd;
-        selectExampleFacetToAdd();
-    }
-
-    if (currentFacetName !== selectedExampleFacetToAdd) {
-        alert("Cannot copy values in from an different facet");
-        return;
-    }
-
-    // Validate that current add doesn't already have data
-    const inputEles = Array.from(gebi("examplesNewDocumentToAdd")?.getElementsByTagName("input") ?? []);
-    const alreadyHasInputValues = inputEles.some(ele => ele.value !== "");
-
-    if (alreadyHasInputValues && !confirm("Looks like you are adding an example, copying an existing one in will lose any unsaved changes. Are you sure?")) { return; }
+    inputEles = Array.from(gebi("exampleNewForm")?.getElementsByTagName("input") ?? []);
 
     inputEles.forEach(ele => ele.value = example[ele.dataset.fieldname]);
     focusFirstNonReadOnlyInput();
