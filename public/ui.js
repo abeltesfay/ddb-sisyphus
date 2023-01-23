@@ -886,6 +886,7 @@ function redrawExamplePage() {
     redrawExampleAddOrEditFieldsReset();
     redrawExampleAddFields();
     redrawExampleEditFields();
+    redrawNewExampleForm();
     
     redrawExamplesReadBar();
     redrawExampleDocuments();
@@ -939,6 +940,67 @@ function redrawExampleAddFields() {
 function redrawExampleEditFields() {    
     if (!selectedExampleDocumentToEdit || selectedExampleDocumentToEdit?.__facetName?.length === 0) { return; }
     redrawExampleAddOrEditFields(selectedExampleDocumentToEdit.__facetName, selectedExampleDocumentToEdit);
+}
+
+function redrawNewExampleForm() {
+    resetNewExampleFormFields();
+    
+    redrawNewExampleFormFieldsAndLabels();
+}
+
+function resetNewExampleFormFields() {
+    const form = gebi("exampleNewForm");
+    Array.from(form.getElementsByTagName("label")).forEach(o => o.remove());
+    Array.from(form.getElementsByTagName("input")).forEach(o => o.remove());
+}
+
+function redrawNewExampleFormFieldsAndLabels(example) {
+    if (!selectedExampleFacetToAdd || selectedExampleFacetToAdd.trim().length === 0) { return; }
+    const facet = getFacetByName(selectedExampleFacetToAdd);
+    if (!facet) { return; }
+    
+    const editForm = gebi("exampleNewForm");
+
+    let customizedFacetFields = clone(facet.fields)
+    let pk = customizedFacetFields.filter(field => field.name === "pk")[0];
+    let sk = customizedFacetFields.filter(field => field.name === "sk")[0];
+    customizedFacetFields = customizedFacetFields.filter(field => field.name !== "pk" && field.name !== "sk");
+    customizedFacetFields.unshift(pk);
+    customizedFacetFields.unshift(sk);
+
+    const compositeKeyFields = facet.fields.map(field => field.keys).flat();
+    customizedFacetFields.forEach(field => {
+        const isPartOfACompositeKeyField = compositeKeyFields.includes(field.name);
+        let newLabel = dce("label");
+        newLabel.innerText = field.name;
+        if (isPartOfACompositeKeyField) { newLabel.classList.add("composite-key-field-colorlabel"); }
+        if (isPartOfACompositeKeyField || field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newLabel.classList.add("composite-key-field-toggleckfs"); }
+        editForm.appendChild(newLabel);
+        
+        // Input field
+        let newInput = dce("input");
+        newInput.id = `EXAMPLEFIELD#${field.name}`;
+        newInput.dataset.fieldname = `${field.name}`;
+        if (example) { newInput.value = example[field.name] ?? ""; }
+        if (field.type === CONSTS.FIELD_TYPES.COMPOSITE) { newInput.readOnly = true; } // Must fill in other fields to fill these
+        
+        if (isPartOfACompositeKeyField) {
+            newInput.onkeyup = updateNewExampleInputs;
+            newInput.onchange = updateNewExampleInputs;
+        }
+
+        if (isPartOfACompositeKeyField || field.type === CONSTS.FIELD_TYPES.COMPOSITE) {
+            newLabel.classList.add("composite-key-field-toggleckfs");
+            newInput.classList.add("composite-key-field-toggleckfs");
+        }
+        
+        if (!isPartOfACompositeKeyField && field.type !== CONSTS.FIELD_TYPES.COMPOSITE && gebi("compositeKeyFieldsOnly").checked) {
+            newLabel.classList.add("hidden");
+            newInput.classList.add("hidden");
+        }
+
+        editForm.appendChild(newInput);
+    });
 }
 
 function redrawExampleAddOrEditFields(facetName, example) {

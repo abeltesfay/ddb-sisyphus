@@ -29,6 +29,13 @@ OOOOOOOOOOOOO
 //////////////
 // Work Log //
 //////////////
+January 23
+[x] Update UI to horizontal fields
+[ ] Autoupdate fields on change
+[ ] Edit field save
+[ ] Edit field addcopy
+[ ] Edit field cancel
+
 January 18
 [x] Compgen - Export complex generator string
 [x] Compgen - Import complex generator string

@@ -106,12 +106,48 @@
     margin-top: .5em;
     border-collapse: collapse;
 }
+
 .examples table td {
     padding: .25em .5em;
 }
 
-.examples table th.composite-key-field-colorlabel {
+.examples table th.composite-key-field-colorlabel, .exampleNewContainer label.composite-key-field-colorlabel {
     color: red;
+}
+
+.exampleNewContainer {
+    background-color: white;
+    border: 1pt solid gray;
+    max-height: 100%;
+    opacity: .85;
+    overflow-y:scroll;
+    padding: 0 1em;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 30em;
+}
+
+.exampleNewContainerScrollable {
+    position: relative;
+}
+
+.exampleNewContainer h3 { margin: .25em 0 .5em; }
+
+.exampleNewContainer input {
+    margin-bottom: .5em;
+    width: 100%;
+}
+
+.exampleNewContainer input:read-only {
+    background-color: #ddd;
+    border: 1pt solid gray;
+}
+
+.exampleNewContainer label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: .25em;
 }
 
 .examples table td input:read-only, .examplesBarRead input:read-only, #examplesBody input:read-only {
