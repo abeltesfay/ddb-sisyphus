@@ -35,8 +35,7 @@ OOOOOOOOOOOOO
 // Work Log //
 //////////////
 January 30
-[ ] Class-ified code generator - checkbox
-[ ] Class-ified code generator - stubcode
+[x] Class-ified code generator - code fn
 
 January 26
 [x] Filter examples by selected facet

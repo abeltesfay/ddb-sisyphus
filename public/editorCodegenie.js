@@ -13,8 +13,37 @@ function generateCode() {
     generatorFunction();
 }
 
+//
+// Class-only functions + indexes
+//
+function generateJavascriptClassFns() {
+    const dynamicCode = generateDynamicJsClassFns();
+
+    const code = `${dynamicCode}`;
+    const textarea = gebi("codegenieWishArea");
+    textarea.value = code.trim();
+}
+
+function generateDynamicJsClassFns() {
+    let queriesString = [];
+    let indexConstsStrings = generateIndices(APP_STATE.indices, true);
+
+    for (query of APP_STATE.queries) {
+        const code = generateQuery(query, true);
+        queriesString.push(code);
+    }
+
+    return [indexConstsStrings, queriesString].flat().join("\n");
+}
+
+function generateQueryClassFns() {
+
+}
+
+//
+// Full, standalone module that allows you to query with 1 npm i call + 1 generated database function call
+//
 function generateJavascript() {   
-    // TODO Generate query based off 
     const dynamicCode = generateDynamicJs();
 
     const code = `${JS_BASELINE}\n\n${dynamicCode}`;
@@ -36,7 +65,7 @@ function generateDynamicJs() {
 
 // function replaceFunctionName(code, str) { return code.replace("<<FUNC_NAME>>", str); }
 
-function generateIndices(indices) {
+function generateIndices(indices, isClassFns = false) {
     const uniquePkSkCombos = getUniquePkSkFieldNameCombos(indices);
     let constants = [];
 
@@ -47,6 +76,7 @@ function generateIndices(indices) {
 
     let indexes = constants.join("\n\t");
     let indexConstDefnObject = JS_INDEX_CONST_DEFN.replace("<<INDEXES>>", indexes);
+    if (isClassFns) { indexConstDefnObject = indexConstDefnObject.substring("const ".length); }
     return indexConstDefnObject;
 }
 
@@ -85,13 +115,14 @@ function generateIndexAwsNameFromPkSk(pk, sk) {
     return `${pkSkCombo.pk}-${pkSkCombo.sk}-index`.toLowerCase()
 }
 
-function generateQuery(query) {
+function generateQuery(query, isClassFns = false) {
     const functionParams = getParametersCsvFromQuery(query);
     const pkCompositeKeyFields = getPkCompositeKeyFieldsCsvFromQuery(query);
     const skCompositeKeyFields = getSkCompositeKeyFieldsCsvFromQuery(query);
     const indexToUse = generateIndexConstName(query.index);
     const isPkSkIndex = indexToUse === "TABLE_INDEXES.PK_SK_INDEX";
-    const template = isPkSkIndex ? JS_FN_PKSKINDEX_TEMPLATE : JS_FN_ALTINDEX_TEMPLATE;
+    let template = isPkSkIndex ? JS_FN_PKSKINDEX_TEMPLATE : JS_FN_ALTINDEX_TEMPLATE;
+    // if (isClassFns) { template = isPkSkIndex ? JS_CLS_FN_PKSKINDEX_TEMPLATE : JS_CLS_FN_ALTINDEX_TEMPLATE; }
 
     let code = template
         .replaceAll("<<FUNC_NAME>>", query.name)
@@ -102,6 +133,16 @@ function generateQuery(query) {
         .replaceAll("<<SK_BEGINS_WITH>>", query.skBeginsWith ?? true)
         .replaceAll("<<ENTITY_TYPE_CONST>>", query.entityTypeFilter ?? undefined)
         ;
+
+    if (isClassFns) {
+        // Remove first function in line
+        code = "\nasync" + code.substring("\nasync function".length);
+
+        // Add this to internal calls
+        code = code.replace("getItemsByCommand", "this.getItemsByCommand");
+        code = code.replace("getQueryCommandByPkOptionalSk", "this.getQueryCommandByPkOptionalSk");
+        code = code.replace("getQueryCommandByIndexAndByPkOptionalSk(", "this.getQueryCommandByIndexAndByPkOptionalSk(this."); // Also replaces index reference
+    }
 
     return code;
 }

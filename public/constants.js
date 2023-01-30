@@ -25,7 +25,8 @@ let CONSTS = {
         CODEGENIE: "codegenieEditor",
     },
     GENERATORFN: {
-        "Javascript Query Code": generateJavascript,
+        "Javascript Query Code Class Fns": generateJavascriptClassFns,
+        "Javascript Query Code Standalone": generateJavascript,
         "Object List": generateObjectList,
         "NoSQL Workbench Import": generateNSQLWBI,
         "Cloud Formation Table": generateCFT,
