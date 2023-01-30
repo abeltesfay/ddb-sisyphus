@@ -52,6 +52,21 @@ function updateQuery() {
     redrawPage();
 }
 
+function editQueryName() {
+    if (!selectedQuery) { return; }
+    const newName = prompt(`Please provide a new, unique query name for "${selectedQuery}":`);
+    if (!newName) { return; }
+
+    const oldName = selectedQuery;
+    const queryObj = APP_STATE.queries.find(query => query.name === selectedQuery);
+    queryObj.name = newName;
+    selectedQuery = newName;
+    APP_STATE.queries = APP_STATE.queries.sort((a, b) => sortComparator(a.name, b.name));
+    redrawPage();
+
+    console.info(`EDITQUERY: Renamed a query: ${oldName} to ${newName}`);
+}
+
 //
 // Indices
 //

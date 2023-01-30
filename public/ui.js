@@ -21,6 +21,7 @@ function preparePage() {
     setClick("moveKeyUp", moveKeyUp);
     setClick("moveKeyDown", moveKeyDown);
     setClick("addQuery", addQuery);
+    setClick("editQueryName", editQueryName);
     setClick("addIndex", addIndex);
     setClick("deleteQuery", deleteQuery);
     setClick("deleteIndex", deleteIndex);
@@ -1001,7 +1002,7 @@ function redrawExampleDocuments() {
 
     createExamplesLabelRow("Included:");
     let excludedExamples = [];
-    
+
     APP_STATE.examples.forEach((example, index) => {
         let excludedExample = createExampleRow(example, index, examplesFilterPk, examplesFilterSk, isGeneralFilter);
         if (excludedExample) { excludedExamples.push(excludedExample); }
@@ -1040,6 +1041,10 @@ function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, is
     if (filter && hasSk && skValue === undefined) { return returnableExcludedRowData; }
 
     // Filtering by queries/top row input fields
+    if (filter
+            && (selectedExampleFacetToAdd ?? "") !== ""
+            && example.__facetName !== selectedExampleFacetToAdd) { return returnableExcludedRowData; }
+
     if (filter
             && examplesFilterPk && examplesFilterPk.value.length !== 0
             && ((isGeneralFilter && pkValue.toLowerCase().indexOf(examplesFilterPk.value.toLowerCase()) === -1)
@@ -1093,6 +1098,15 @@ function createExampleRow(example, index, examplesFilterPk, examplesFilterSk, is
 
     examplesBody.append(exampleRow);
     return;
+}
+
+function redrawExamplesSelectedRow() {
+    let rows = Array.from(gebi("examplesBody").getElementsByTagName("tr"));
+    rows.forEach(row => {
+        row.classList.remove("highlightedexample");
+        // console.log(row.dataset.id);
+        if (row.dataset.id === selectedExampleDocumentIndex) { row.classList.add("highlightedexample"); }
+    });
 }
 
 function redrawExamplesReadBar() {

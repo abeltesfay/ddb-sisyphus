@@ -1,8 +1,10 @@
 function exportNoSqlWBJson() {
     console.debug("EXPORT: Starting export");
     
-    const TableName = prompt("Please provide a table name:");
+    const TableName = APP_STATE.NSWBTableName ?? prompt("Please provide a table name:");
     if (!TableName) { return; }
+    
+    APP_STATE.NSWBTableName = TableName;
 
     let convertedAppState = convertAppState(APP_STATE, TableName);
     

@@ -62,7 +62,10 @@ function selectExampleDocument() {
     if (selectedExampleDocumentToEdit && !confirm("Looks like you are editing an example, selecting a different example will lose any unsaved changes. Are you sure?")) { return; }
     selectedExampleDocumentIndex = selectedExampleDocumentIndex == this.dataset.id ? null : this.dataset.id;
     selectedExampleDocumentToEdit = null;
-    redrawPage();
+    // redrawPage();
+    redrawNewExampleForm()
+    redrawExampleButtons();
+    redrawExamplesSelectedRow();
 }
 
 function deleteExample() {

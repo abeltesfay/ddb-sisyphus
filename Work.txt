@@ -25,10 +25,26 @@ OOOOOOOOOOOOO
 [ ] Show which fields have changed state
 [ ] Add description to fields
 [ ] Show physical partitions / breakdown when a partition is getting hot
+[ ] Gencode dropdown duplicate bug
+[ ] Prompt to update examples on facet name changes
+[ ] Prompt to update on entitytype updates
+[ ] Prompt to update on field format updates
+[ ] Fix select reset on examples page
 
 //////////////
 // Work Log //
 //////////////
+January 30
+[ ] Class-ified code generator - checkbox
+[ ] Class-ified code generator - stubcode
+
+January 26
+[x] Filter examples by selected facet
+
+January 25
+[x] Prompt only once for a table name
+[x] Edit query name
+
 January 23
 [x] Update UI to horizontal fields
 [x] Example editor - show on add
