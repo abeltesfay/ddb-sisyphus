@@ -34,6 +34,9 @@ OOOOOOOOOOOOO
 //////////////
 // Work Log //
 //////////////
+February 3
+[x] Fix queries by pk to not be an index
+
 January 30
 [x] Class-ified code generator - code fn
 

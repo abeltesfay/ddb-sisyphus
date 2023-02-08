@@ -84,6 +84,7 @@ function getUniquePkSkFieldNameCombos(indices) {
     let uniqueKeys = [];
     let uniquePkSkCombos = indices.map(index => ({ pk: index.pk.split(".")[1], sk: index.sk.split(".")[1] }))
         .filter(combo => {
+            if (combo.pk === "pk" && typeof combo.sk === "undefined") { return false; }
             const key = `${combo.pk}___$#$___${combo.sk}`;
             if (uniqueKeys.includes(key)) { return false; }
             uniqueKeys.push(key);
@@ -106,7 +107,12 @@ function generateIndexConstant(pkSkCombo) {
 }
 
 function generateIndexConstNameFromPkSk(pk, sk) {
-    if (!sk || sk === "") { return `${pk}_INDEX`.toUpperCase(); }
+    if (!sk || sk === "") {
+        if (pk === "pk") {
+            return "PK_SK_INDEX";
+        }
+        return `${pk}_INDEX`.toUpperCase();
+    }
     return `${pk}_${sk}_INDEX`.toUpperCase();
 }
 
