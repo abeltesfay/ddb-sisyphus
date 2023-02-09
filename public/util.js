@@ -45,6 +45,7 @@ function getUniqueStringArrayValues(arr) {
 }
 
 function gebi(id) { return document.getElementById(id); }
+function gebc(clasz) { return document.getElementsByClassName(clasz); }
 function dce(tag) { return document.createElement(tag); }
 function addClassTo(clasz, elements) { elements.forEach(eleId => gebi(eleId)?.classList?.add(clasz)); }
 function removeClassFrom(clasz, elements) { elements.forEach(eleId => gebi(eleId)?.classList?.remove(clasz)); }

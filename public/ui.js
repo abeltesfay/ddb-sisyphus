@@ -49,6 +49,7 @@ function preparePage() {
     setClick("cancelExampleChanges", hideExampleEditor);
     setClick("saveExampleChanges", saveExampleChanges);
     setClick("saveExampleChangesAsCopy", saveExampleChangesAsCopy);
+    setClick("toggleFieldDescriptions", toggleFieldDescriptions);
     
     // Format editor handlers
     // formatType, key, elementId
@@ -215,7 +216,22 @@ function redrawFields() {
             fieldEle.classList.add("highlightedfield");
         }
 
-        fieldEle.appendChild(getEmptyNewLine()); // Required to allow selected copy/paste to have new lines
+        let fieldDescription = dce("span");
+        fieldDescription.classList.add("fieldDescription");
+        fieldDescription.innerText = field.description ?? "";
+        let fieldDescriptionEditor = dce("input");
+        fieldDescriptionEditor.classList.add("fieldDescriptionEditor");
+        fieldDescriptionEditor.value = field.description ?? "";
+        fieldDescriptionEditor.dataset.facetname = selectedFacet;
+        fieldDescriptionEditor.dataset.fieldname = field.name;
+        fieldDescriptionEditor.onchange = updateFieldDescription;
+        fieldDescriptionEditor.onkeyup = updateFieldDescription;
+        let fieldDescriptionWrapper = dce("div");
+        fieldDescriptionWrapper.classList.add("fieldDescriptionWrapper");
+        fieldDescriptionWrapper.classList.add("hidden");
+        fieldDescriptionWrapper.appendChild(fieldDescription);
+        fieldDescriptionWrapper.appendChild(fieldDescriptionEditor);
+        fieldEle.appendChild(fieldDescriptionWrapper);
     });
 }
 
@@ -254,7 +270,22 @@ function redrawAllFields() {
                 fieldEle.classList.add("highlightedfield");
             }
 
-            fieldEle.appendChild(getEmptyNewLine()); // Required to allow selected copy/paste to have new lines
+            let fieldDescription = dce("span");
+            fieldDescription.classList.add("fieldDescription");
+            fieldDescription.innerText = field.description ?? "";
+            let fieldDescriptionEditor = dce("input");
+            fieldDescriptionEditor.classList.add("fieldDescriptionEditor");
+            fieldDescriptionEditor.value = field.description ?? "";
+            fieldDescriptionEditor.dataset.facetname = facet.name;
+            fieldDescriptionEditor.dataset.fieldname = field.name;
+            fieldDescriptionEditor.onchange = updateFieldDescription;
+            fieldDescriptionEditor.onkeyup = updateFieldDescription;
+            let fieldDescriptionWrapper = dce("div");
+            fieldDescriptionWrapper.classList.add("fieldDescriptionWrapper");
+            fieldDescriptionWrapper.classList.add("hidden");
+            fieldDescriptionWrapper.appendChild(fieldDescription);
+            fieldDescriptionWrapper.appendChild(fieldDescriptionEditor);
+            fieldEle.appendChild(fieldDescriptionWrapper);
         });
     });
 }

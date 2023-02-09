@@ -164,6 +164,77 @@ function deleteField() {
     console.warn(`DELETEFIELD: Removed a field: ${selectedField}.${name}. Old count=[${oldCount}], new count=[${newCount}]`);
 }
 
+function toggleFieldDescriptions() {
+    const elements = Array.from(gebc("fieldDescriptionWrapper"));
+    let nextmode = elements?.[0]?.dataset.nextmode ?? "display";
+    // Skip straight to edit if nothing to display
+    if (nextmode === "display" && !(Array.from(gebc("fieldDescription")).some(ele => ele.innerText.length > 0))) { nextmode = "edit"; }
+    console.log("Empty all", Array.from(gebc("fieldDescription")).some(ele => ele.innerText.length > 0));
+
+    switch (nextmode) {
+        case "edit": {
+            elements.forEach(ele => {
+                ele.dataset.mode = "edit";
+                ele.dataset.nextmode = "hidden"
+
+                ele.classList.remove("display");
+                ele.classList.add("edit");
+                ele.classList.remove("hidden");
+            });
+            break;
+        };
+        case "hidden": {
+            elements.forEach(ele => {
+                ele.dataset.mode = "hidden";
+                ele.dataset.nextmode = "display"
+
+                ele.classList.remove("display");
+                ele.classList.remove("edit");
+                ele.classList.add("hidden");
+            });
+            break;
+        };
+        case "display": {
+            elements.forEach(ele => {
+                ele.dataset.mode = "display";
+                ele.dataset.nextmode = "edit"
+
+                ele.classList.add("display");
+                ele.classList.remove("edit");
+                ele.classList.remove("hidden");
+            });
+            break;
+        };
+        default: {
+            elements.forEach(ele => {
+                ele.dataset.mode = "display";
+                ele.dataset.nextmode = "edit"
+
+                ele.classList.add("display");
+                ele.classList.remove("edit");
+                ele.classList.remove("hidden");
+            });
+            break;
+        };
+    }
+}
+
+let fieldDescriptionTimeout = null;
+
+function updateFieldDescription() {
+    clearTimeout(fieldDescriptionTimeout);
+    fieldDescriptionTimeout = setTimeout(updateFieldDescriptionDelayed.bind(this), 300);
+}
+
+function updateFieldDescriptionDelayed() {
+    const facetName = this.dataset.facetname;
+    const fieldName = this.dataset.fieldname;
+    const newDescription = this.value;
+    let field = getFacetFieldByNames(facetName, fieldName);
+    field.description = newDescription;
+    checkSavedState();
+}
+
 
 //
 // Keys

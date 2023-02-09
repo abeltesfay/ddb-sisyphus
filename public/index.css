@@ -1,5 +1,5 @@
 .hidden { display: none !important; }
-.zero-height { height: 0em; }
+.zero-height { height: 0em; } /* Deprecated, no longer needed to create new lines when copy-pasting fields */
 
 .action-bar {
     /* border: 1pt solid grey; */
@@ -94,6 +94,29 @@
     display: inline-block;
     margin-right: 1em;
 }
+
+.fields .fieldDescriptionWrapper { max-width: 20em; }
+.fields span.fieldDescription {
+    font-size: .8em;
+    color: #ccc;
+    display: block;
+    line-height: 1em;
+    max-height: 1em;
+    overflow: hidden;
+    position: relative;
+    text-overflow: ellipsis;
+    top: -0.15em;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.fields span.fieldDescription:hover {
+    overflow: visible;
+    max-height: 3em;
+}
+
+.fields .fieldDescriptionWrapper.edit span.fieldDescription { display: none; }
+.fields .fieldDescriptionWrapper.display input.fieldDescriptionEditor { display: none; }
 
 .fields select.spacefiller { visibility: hidden; }
 

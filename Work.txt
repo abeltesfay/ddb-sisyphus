@@ -1,6 +1,7 @@
 OOOOOOOOOOOOO
 OO Backlog OO
 OOOOOOOOOOOOO
+[ ] Hotspot detector with keys
 [ ] Guard against duplicate pk/sk examples
 [ ] Warn if pk/sk format isn't set up correctly when generating (OnYYYId format empty enum)
 [ ] Fix silent failures when generating a field type fails:
@@ -34,6 +35,11 @@ OOOOOOOOOOOOO
 //////////////
 // Work Log //
 //////////////
+February 9
+[x] Field descriptions
+[x] Description toggle
+[x] Description toggle straight to edit if none exist
+
 February 3
 [x] Fix queries by pk to not be an index
 
