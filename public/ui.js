@@ -219,6 +219,7 @@ function redrawFields() {
         let fieldDescription = dce("span");
         fieldDescription.classList.add("fieldDescription");
         fieldDescription.innerText = field.description ?? "";
+        fieldDescription.title = field.description ?? "";
         let fieldDescriptionEditor = dce("input");
         fieldDescriptionEditor.classList.add("fieldDescriptionEditor");
         fieldDescriptionEditor.value = field.description ?? "";
@@ -273,6 +274,7 @@ function redrawAllFields() {
             let fieldDescription = dce("span");
             fieldDescription.classList.add("fieldDescription");
             fieldDescription.innerText = field.description ?? "";
+            fieldDescription.title = field.description ?? "";
             let fieldDescriptionEditor = dce("input");
             fieldDescriptionEditor.classList.add("fieldDescriptionEditor");
             fieldDescriptionEditor.value = field.description ?? "";
@@ -635,13 +637,22 @@ function redrawVarsdateValue() {
             const prefix = CONSTS.FORMAT_FIELDIDS_VARSDATE_PREFIX;
             const settingsKey = fieldId.replace(prefix, "");
             const extractedValue = values[settingsKey];
-            gebi(fieldId).value = extractedValue;
+            gebi(fieldId).value = extractedValue ?? "";
         });
+
+        gebi("formatVarsdateExample").innerText = getExampleFieldFormatValueForVarsdate(values);
     } catch (exception) {
         const errorMessage = `Error while setting varsdate values=[${field.format[CONSTS.FORMAT_TYPES.S.VARSDATE.valueKey]}]. Expected if values are not set yet. See console for more information.`;
         alert(errorMessage);
         console.error(errorMessage, exception);
     }
+}
+
+function getExampleFieldFormatValueForVarsdate(values) {
+    const date = new Date("1999-12-31T14:28:09.123");
+    let format = values?.Format ?? CONSTS.FORMAT_FIELDIDS_VARSDATE_DEFAULT;
+    format = format.length > 0 ? format : CONSTS.FORMAT_FIELDIDS_VARSDATE_DEFAULT;
+    return getFormattedDatetime(date, format);
 }
 
 //

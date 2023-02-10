@@ -67,5 +67,7 @@ let CONSTS = {
     FORMAT_FIELDIDS_VARSDATE: [
         "formatVarsdateValue_Start",
         "formatVarsdateValue_End",
+        "formatVarsdateValue_Format",
     ],
+    FORMAT_FIELDIDS_VARSDATE_DEFAULT: "[y]-[m]-[d] [H]:[M]:[S].[Z] [PAM]",
 };

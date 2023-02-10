@@ -40,6 +40,68 @@ function getDateFormatted(dt = new Date()) {
     return `${year}-${month}-${day}`;
 }
 
+function getFormattedDatetime(date, format) {
+    let keyCharacters = {
+        "\\[y\\]": DateFormatters.getYearPadded,
+        "\\[yh\\]": DateFormatters.getYearHalf,
+        "\\[m\\]": DateFormatters.getMonthPadded,
+        "\\[d\\]": DateFormatters.getDayPadded,
+        "\\[yu\\]": DateFormatters.getYear,
+        "\\[mu\\]": DateFormatters.getMonth,
+        "\\[du\\]": DateFormatters.getDay,
+        "\\[mw\\]": DateFormatters.getMonthWord,
+        "\\[H\\]": DateFormatters.getHourPadded,
+        "\\[HM\\]": DateFormatters.getHourMilitaryPadded,
+        "\\[M\\]": DateFormatters.getMinutePadded,
+        "\\[S\\]": DateFormatters.getSecondPadded,
+        "\\[Z\\]": DateFormatters.getMillisecondPadded,
+        "\\[HU\\]": DateFormatters.getHour,
+        "\\[HMU\\]": DateFormatters.getHourMilitary,
+        "\\[MU\\]": DateFormatters.getMinute,
+        "\\[SU\\]": DateFormatters.getSecond,
+        "\\[ZU\\]": DateFormatters.getMillisecond,
+        "\\[pam\\]": DateFormatters.getAmPmLower,
+        "\\[PAM\\]": DateFormatters.getAmPmUpper,
+    };
+
+    let str = format;
+    try {
+        Object.entries(keyCharacters).forEach(entry => {
+            const regex = new RegExp(`${entry[0]}`);
+            str = str.replace(regex, entry[1](date));
+        });
+    } catch(exception) {
+        console.error(`Error while attempting to getFormattedDatetime for ${date}, format ${format}`, exception);
+    }
+
+    return str;
+}
+
+class DateFormatters {
+    static months = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+    static getYearPadded(date) { return date.getFullYear(); }
+    static getYearHalf(date) { return DateFormatters.pad(date.getFullYear(), 4); }
+    static getMonthPadded(date) { return DateFormatters.pad(date.getMonth() + 1); }
+    static getDayPadded(date) { return DateFormatters.pad(date.getDate()); }
+    static getYear(date) { return date.getYear(); }
+    static getMonth(date) { return date.getMonth(); }
+    static getDay(date) { return date.getDate(); }
+    static getMonthWord(date) { return DateFormatters.months[date.getMonth()]; }
+    static getHourPadded(date) { return DateFormatters.pad(date.getHours() % 12 === 0 ? 12 : date.getHours() % 12); }
+    static getHourMilitaryPadded(date) { return DateFormatters.pad(date.getHours()); }
+    static getMinutePadded(date) { return DateFormatters.pad(date.getMinutes()); }
+    static getSecondPadded(date) { return DateFormatters.pad(date.getSeconds()); }
+    static getMillisecondPadded(date) { return DateFormatters.pad(date.getMilliseconds(), 3); }
+    static getHour(date) { return date.getHours() % 12 === 0 ? 12 : date.getHours() % 12; }
+    static getHourMilitary(date) { return date.getHours(); }
+    static getMinute(date) { return date.getMinutes(); }
+    static getSecond(date) { return date.getSeconds(); }
+    static getMillisecond(date) { return date.getMilliseconds(); }
+    static getAmPmLower(date) { return date.getHours() >= 12 ? "pm" : "am"; }
+    static getAmPmUpper(date) { return date.getHours() >= 12 ? "PM" : "AM"; }
+    static pad(s, c = 2, char = "0") { return `${char.repeat(c)}${s}`.slice(-1 * c); }
+};
+
 function getUniqueStringArrayValues(arr) {
     return arr.filter((field, index, arr) => index == arr.indexOf(field)) // get unique items
 }
@@ -355,9 +417,12 @@ function generateSVarsdate(field) {
         const randomMilliseconds = Math.floor(Math.random() * range);
         const randomDate = new Date(randomMilliseconds + startDateMs);
 
-        const randomDateFormatted = getDateFormatted(randomDate);
+        // const randomDateFormatted = getDateFormatted(randomDate);
+        let format = settings.Format ?? CONSTS.FORMAT_FIELDIDS_VARSDATE_DEFAULT;
+        format = format?.trim().length > 0 ? format : CONSTS.FORMAT_FIELDIDS_VARSDATE_DEFAULT;
+        const randomDateFormatted = getFormattedDatetime(randomDate, format);
         // console.log(randomMilliseconds + startDateMs, randomDate, randomDateFormatted);
-        if (!randomDate || randomDateFormatted?.split?.("-").length !== 3) { return ""; }
+        // if (!randomDate || randomDateFormatted?.split?.("-").length !== 3) { return ""; }
 
         return randomDateFormatted;
     } catch (exception) {

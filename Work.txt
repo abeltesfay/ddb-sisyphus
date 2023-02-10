@@ -1,7 +1,6 @@
 OOOOOOOOOOOOO
 OO Backlog OO
 OOOOOOOOOOOOO
-[ ] Hotspot detector with keys
 [ ] Guard against duplicate pk/sk examples
 [ ] Warn if pk/sk format isn't set up correctly when generating (OnYYYId format empty enum)
 [ ] Fix silent failures when generating a field type fails:
@@ -14,7 +13,6 @@ OOOOOOOOOOOOO
 [ ] Edit index name + update queries to reflect this
 [ ] Autosort format enum
 [ ] Autosort ceg facets
-[ ] Update .js file extension export to be .json
 [ ] Filter composite field types on &- (pk, sk, data, gsi, etc)
 [ ] Auto-detect bad examples compared to schema
   [ ] composite field order change
@@ -31,14 +29,27 @@ OOOOOOOOOOOOO
 [ ] Prompt to update on entitytype updates
 [ ] Prompt to update on field format updates
 [ ] Fix select reset on examples page
+[ ] Hotspot detector with keys
+[ ] Linked field templating (if this field has this, then that)
 
 //////////////
 // Work Log //
 //////////////
+February 13
+[ ] Down arrow from fields selects the "next" field
+
+February 10
+[x] Date template format for yyyy-mm-ddThh;mm;SS;zzz-07;00
+  [x] Replace undefined with empty string
+  [x] Default format if empty string
+  [x] Show example based on format
+  [x] Generate values
+
 February 9
 [x] Field descriptions
 [x] Description toggle
 [x] Description toggle straight to edit if none exist
+[-] Update .js file extension export to be .json - Already done
 
 February 3
 [x] Fix queries by pk to not be an index
