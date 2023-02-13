@@ -37,7 +37,12 @@ OOOOOOOOOOOOO
 //////////////
 February 13
 [x] Up/down arrows from fields selects the "next" field
-[ ] Rename example fields on field rename
+[x] Rename examples on facet field rename
+[x] Update composite keys on field rename
+[x] Update examples so that field alphanumeric sort order is preserved
+[ ] Update indices on field rename
+[ ] Update queries on field rename
+[ ] Generate missing fields only (maybe if example already exists?)
 
 February 10
 [x] Date template format for yyyy-mm-ddThh;mm;SS;zzz-07;00

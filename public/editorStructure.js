@@ -131,9 +131,35 @@ function editField() {
     console.debug(`EDITFIELD: Editing facet and field name from ${selectedFacet}.${selectedField}`);
 
     const name = prompt("Please provide a new field name")?.trim();
-    let facet = getFacetByName(selectedFacet);
     if (!name ) { return; }
+
+    let facet = getFacetByName(selectedFacet);
     if (facet?.fields?.includes?.(name)) { alert("Facet already contains this field"); return; }
+
+    // Rename all examples' that use have this field populated
+    APP_STATE.examples
+        .filter(example => example.__facetName === facet.name)
+        .forEach(example => {
+            if (!Object.keys(example).includes(selectedField)) { return; }
+            let value = example[selectedField];
+            delete example[selectedField];
+            example[name] = value;
+
+            // Re-order all fields to preserve alphanumeric sorting within examples
+            Object.keys(example)
+                .filter(key => !["__facetName", "__dttm", "pk", "sk"].includes(key))
+                .sort()
+                .forEach(key => {
+                    const currentValue = example[key];
+                    delete example[key];
+                    example[key] = currentValue;
+                });
+        });
+
+    // Rename all fields using this as a composite key
+    facet.fields
+        .filter(field => field.type === "C" && field?.keys.includes(selectedField))
+        .forEach(field => field.keys[field.keys.findIndex(key => key === selectedField)] = name);
 
     let index = facet.fields.findIndex(field => field.name === selectedField);
     facet.fields[index].name = name;
@@ -143,7 +169,7 @@ function editField() {
     selectedField = name;
     redrawPage();
     
-    console.debug(`EDITFACET: Field name updated from ${selectedFacet}.${oldFieldName} to ${selectedFacet}.${name}`);
+    console.debug(`EDITFACET: Field name and examples updated from ${selectedFacet}.${oldFieldName} to ${selectedFacet}.${name}`);
 }
 
 function deleteField() {
