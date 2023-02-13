@@ -349,7 +349,7 @@ function removeKey() {
     redrawPage();
 }
 
-function updateFieldFilterValue() {
+function updateFieldFilterValue(e) {
     fieldFilterValue = gebi("fieldFilter").value.trim();
     updateFilteredFields();
 }
@@ -635,4 +635,29 @@ Shortcuts:
  - "%n" => Only number type
  - "%s" => Only string type
 `);
+}
+
+function selectNextFacetField() {
+    let listItems = Array.from(gebi("fieldList")?.childNodes)?.filter(ele => !ele.classList.contains("hidden")) ?? [];
+    if (listItems.length === 0) { return; }
+
+    let listItemSelected = listItems.findIndex(ele => ele.classList.contains("highlightedfield"));
+    if (listItemSelected === -1 || listItemSelected === listItems.length - 1) {
+        // listItems.slice(-1)[0].childNodes[0].click();
+        listItems[0].childNodes[0].click();
+    } else {
+        listItems[listItemSelected + 1].childNodes[0].click();
+    }
+}
+
+function selectPreviousFacetField() {
+    let listItems = Array.from(gebi("fieldList")?.childNodes)?.filter(ele => !ele.classList.contains("hidden")) ?? [];
+    if (listItems.length === 0) { return; }
+
+    let listItemSelected = listItems.findIndex(ele => ele.classList.contains("highlightedfield"));
+    if (listItemSelected === -1 || listItemSelected === 0) {
+        listItems.slice(-1)[0].childNodes[0].click();
+    } else {
+        listItems[listItemSelected - 1].childNodes[0].click();
+    }
 }

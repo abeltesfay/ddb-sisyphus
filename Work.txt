@@ -36,7 +36,8 @@ OOOOOOOOOOOOO
 // Work Log //
 //////////////
 February 13
-[ ] Down arrow from fields selects the "next" field
+[x] Up/down arrows from fields selects the "next" field
+[ ] Rename example fields on field rename
 
 February 10
 [x] Date template format for yyyy-mm-ddThh;mm;SS;zzz-07;00

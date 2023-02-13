@@ -7,6 +7,13 @@ function processKeys(event) {
         resetFocusBasedOnEditor();
         return false;
     };
+
+    if (currentEditor === CONSTS.EDITORS.TABLESTRUCT) {
+        switch (event.key) {
+            case ("ArrowDown"): { selectNextFacetField(); break; }
+            case ("ArrowUp"): { selectPreviousFacetField(); break; }
+        }
+    }
 }
 
 function resetEverything() {
@@ -35,3 +42,9 @@ function resetFocusBasedOnEditor() {
             break;
     }
 }
+
+// Field specific fn
+//
+function handleFieldFilterKey(event) {
+    updateFieldFilterValue();
+} 

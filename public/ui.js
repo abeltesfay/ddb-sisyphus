@@ -27,7 +27,7 @@ function preparePage() {
     setClick("deleteIndex", deleteIndex);
     setClick("updateIndex", updateIndex);
     setClick("updateQuery", updateQuery);
-    gebi("fieldFilter").onkeyup = updateFieldFilterValue;
+    gebi("fieldFilter").onkeyup = handleFieldFilterKey;
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
     gebi("exampleFacetList").onchange = selectExampleFacetToAdd;
     setClick("addExample", showExampleEditor);
