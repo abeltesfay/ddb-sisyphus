@@ -140,11 +140,9 @@ function editExample() {
     if (isExampleEditorVisible() && !confirm("Looks like you are adding an example, editing an existing one will lose any unsaved changes. Are you sure?")) { return; }
     gebi("saveExampleChanges").classList.remove("hidden");
     const example = APP_STATE.examples[selectedExampleDocumentIndex];
-    // selectedExampleFacetToAdd = null;
     selectedExampleDocumentToEdit = example;
     showExampleEditor();
     redrawPage();
-    // redrawExamplePage(true);
     focusFirstNonReadOnlyInput();
 }
 
@@ -208,7 +206,19 @@ function copyExample() {
 }
 
 function generateExample() {
-    if (!selectedExampleFacetToAdd) { return; }
+    if (!selectedExampleFacetToAdd) {
+        const facetName = selectedExampleDocumentToEdit?.__facetName;
+        
+        // Skip if all fields are filled
+        if (generateFieldAndValues(facetName).every(fieldAndValue => gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value !== "")) { return; }
+
+        generateFieldAndValues(facetName).forEach(fieldAndValue => {
+            if (gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value !== "") { return; } // Skip non-empty fields
+            gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value = fieldAndValue.generatedValue;
+        });
+
+        return;
+    }
 
     generateFieldAndValues(selectedExampleFacetToAdd).forEach(fieldAndValue => {
         gebi(`EXAMPLEFIELD#${fieldAndValue.fieldName}`).value = fieldAndValue.generatedValue;

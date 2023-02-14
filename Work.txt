@@ -9,8 +9,6 @@ OOOOOOOOOOOOO
     generatedFieldValues http://localhost:3000/editorExamples.js:202
     generateFieldAndValues http://localhost:3000/editorExamples.js:201
 [ ] Easier time picking dates for formats
-[ ] Edit query name
-[ ] Edit index name + update queries to reflect this
 [ ] Autosort format enum
 [ ] Autosort ceg facets
 [ ] Filter composite field types on &- (pk, sk, data, gsi, etc)
@@ -32,10 +30,14 @@ OOOOOOOOOOOOO
 [ ] Hotspot detector with keys
 [ ] Linked field templating (if this field has this, then that)
 [ ] Construct facets+fields from a real JSON object, in non-Dynamo-doc format
+[ ] Detect when deleting a Facet/Field breaks another facet field's format that's dependent on it
 
 //////////////
 // Work Log //
 //////////////
+February 15
+[ ] Edit index name + update queries to reflect this
+
 February 14
 [x] Update indices on field rename
 [x] Update queries on field rename
@@ -48,7 +50,8 @@ February 14
 [-] Escape not disabling add button
 [x] Save with correct facet name
 [x] Prevent duplicate pk/sk on save changes
-[ ] Generate missing fields only (maybe if example already exists?)
+[x] Generate missing fields only (maybe if example already exists?)
+[-] Edit query name - Already done
 
 February 13
 [x] Up/down arrows from fields selects the "next" field
