@@ -40,7 +40,14 @@ February 14
 [x] Update indices on field rename
 [x] Update queries on field rename
 [x] Click diff example doesn't remove side panel
-[ ] Filter for facet + click edit doesn't remove filter
+[x] Filter for facet + click edit doesn't remove filter
+[x] Generate not disabled if editor up
+[x] Fix add example button not enabling generate
+[x] Fix add example button to reset entire form
+[x] Save new keeps window open + re-shows save changes button
+[-] Escape not disabling add button
+[x] Save with correct facet name
+[x] Prevent duplicate pk/sk on save changes
 [ ] Generate missing fields only (maybe if example already exists?)
 
 February 13

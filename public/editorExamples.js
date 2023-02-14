@@ -16,7 +16,17 @@ function selectExampleFacetToAdd() {
 function addExampleNoRedraw(event) { addExample(event, false); }
 
 function hideExampleEditor() { gebi("exampleNewContainer").classList.add("hidden"); selectedExampleDocumentToEdit = null; }
-function showExampleEditor() { gebi("exampleNewContainer").classList.remove("hidden"); }
+function showExampleEditor() { gebi("exampleNewContainer").classList.remove("hidden"); redrawExampleButtons(); }
+
+function showExampleEditorForAdding() {
+    gebi("saveExampleChanges").classList.add("hidden");
+    Array.from(gebi("exampleNewForm").getElementsByTagName("input"))
+        .forEach(element => {
+            element.value = "";
+        });
+    selectedExampleDocumentToEdit = null;
+    showExampleEditor();
+}
 // function cancelExampleChanges() { hideExampleEditor(); }
 
 function saveExampleChanges() {
@@ -30,12 +40,13 @@ function saveExampleChangesAsCopy() {
 function addExample(event, shouldRedrawPage = true) {
     let exampleFields = gebi("exampleNewForm")?.getElementsByTagName("input");
     
+    const facetToAdd = selectedExampleDocumentToEdit?.__facetName ?? selectedExampleFacetToAdd;
     let newExampleDocument = Array.from(exampleFields).reduce((prevValue, curValue) => {
         const fieldName = curValue.dataset.fieldname;
         prevValue[fieldName] = curValue.value;
         return prevValue;
     }, {
-        __facetName: selectedExampleFacetToAdd, // Should probably protect against this field name in other editor
+        __facetName: facetToAdd, // Should probably protect against this field name in other editor
         __dttm: getDatetimeFormatted()
     });
 
@@ -43,12 +54,10 @@ function addExample(event, shouldRedrawPage = true) {
 
     APP_STATE.examples.push(newExampleDocument);
     
-    if (shouldRedrawPage) {
-        selectedExampleFacetToAdd = null;
-        gebi("exampleFacetList").value = "";
-        
-        redrawPage();
-    }
+    selectedExampleDocumentIndex = APP_STATE.examples.length - 1;
+    selectedExampleDocumentToEdit = APP_STATE.examples[selectedExampleDocumentIndex];
+    gebi("saveExampleChanges").classList.remove("hidden");
+    redrawPage();
 
     console.debug("ADDEXAMPLE: New example added");
 }
@@ -129,33 +138,49 @@ function isExampleEditorVisible() { return !gebi("exampleNewContainer").classLis
 
 function editExample() {
     if (isExampleEditorVisible() && !confirm("Looks like you are adding an example, editing an existing one will lose any unsaved changes. Are you sure?")) { return; }
+    gebi("saveExampleChanges").classList.remove("hidden");
     const example = APP_STATE.examples[selectedExampleDocumentIndex];
-    selectedExampleFacetToAdd = null;
+    // selectedExampleFacetToAdd = null;
     selectedExampleDocumentToEdit = example;
     showExampleEditor();
     redrawPage();
+    // redrawExamplePage(true);
     focusFirstNonReadOnlyInput();
 }
 
 function updateExample() {
     let exampleFields = gebi("exampleNewForm")?.getElementsByTagName("input");
     
-    let newExampleDocument = Array.from(exampleFields).reduce((prevValue, curValue) => {
-        const fieldName = curValue.dataset.fieldname;
-        prevValue[fieldName] = curValue.value;
-        return prevValue;
-    }, {
-        __facetName: selectedExampleDocumentToEdit.__facetName, // Should probably protect against this field name in other editor
-        __dttm: getDatetimeFormatted()
-    });
+    let newExampleDocument = Array.from(exampleFields)
+        .reduce((prevValue, curValue) => {
+            const fieldName = curValue.dataset.fieldname;
+            prevValue[fieldName] = curValue.value;
+            return prevValue;
+        }, {
+            __facetName: selectedExampleDocumentToEdit.__facetName, // Should probably protect against this field name in other editor
+            __dttm: getDatetimeFormatted()
+        });
 
     if (!isGoodExampleDocument(newExampleDocument, true)) { return; }
+    if (isDuplicatePkSk(newExampleDocument, selectedExampleDocumentIndex)) {
+        alert("Duplicate pk/sk detected, cannot save");
+        return;
+    }
 
     APP_STATE.examples[selectedExampleDocumentIndex] = newExampleDocument;
-    selectedExampleDocumentToEdit = null;
+    selectedExampleDocumentToEdit = newExampleDocument;
 
     redrawPage();
     console.debug("ADDEXAMPLE: New example added");   
+}
+
+function isDuplicatePkSk(newExample, selectedExampleDocumentIndex) {
+    return APP_STATE.examples
+        .filter((example, index) => {
+            return index != selectedExampleDocumentIndex
+                && example.pk === newExample.pk
+                && example.sk === newExample.sk;
+    }).length > 0;
 }
 
 function copyExample() {

@@ -30,7 +30,7 @@ function preparePage() {
     gebi("fieldFilter").onkeyup = handleFieldFilterKey;
     gebi("queryIndex").onchange = redrawQueryEditIndexArea;
     gebi("exampleFacetList").onchange = selectExampleFacetToAdd;
-    setClick("addExample", showExampleEditor);
+    setClick("addExample", showExampleEditorForAdding);
     setClick("editExample", editExample);
     setClick("updateExample", updateExample);
     setClick("copyExample", copyExample);
@@ -926,8 +926,10 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
     return excluded;
 }
 
+// function redrawExamplePage(skipFacetList = false) {
 function redrawExamplePage() {
     redrawExampleButtons();
+    // if (!skipFacetList) { redrawExampleFacetList(); }
     redrawExampleFacetList();
     redrawNewExampleForm();
     
@@ -936,7 +938,7 @@ function redrawExamplePage() {
 }
 
 function redrawExampleButtons() {
-    gebi("generateExample").disabled = APP_STATE.facets.length === 0 || !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
+    gebi("generateExample").disabled = APP_STATE.facets.length === 0 || !isExampleEditorVisible();
     gebi("generateExamples").disabled = APP_STATE.facets.length === 0 || !selectedExampleFacetToAdd || selectedExampleFacetToAdd?.trim().length === 0;
     gebi("generateExamplesComplex").disabled = APP_STATE.facets.length === 0;
     gebi("nukeExamples").disabled = APP_STATE.examples.length === 0;
