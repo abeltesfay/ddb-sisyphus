@@ -15,7 +15,7 @@ function selectExampleFacetToAdd() {
 
 function addExampleNoRedraw(event) { addExample(event, false); }
 
-function hideExampleEditor() { gebi("exampleNewContainer").classList.add("hidden"); }
+function hideExampleEditor() { gebi("exampleNewContainer").classList.add("hidden"); selectedExampleDocumentToEdit = null; }
 function showExampleEditor() { gebi("exampleNewContainer").classList.remove("hidden"); }
 // function cancelExampleChanges() { hideExampleEditor(); }
 
@@ -61,7 +61,7 @@ function focusFirstNonReadOnlyInput() {
 function selectExampleDocument() {
     if (selectedExampleDocumentToEdit && !confirm("Looks like you are editing an example, selecting a different example will lose any unsaved changes. Are you sure?")) { return; }
     selectedExampleDocumentIndex = selectedExampleDocumentIndex == this.dataset.id ? null : this.dataset.id;
-    selectedExampleDocumentToEdit = null;
+    selectedExampleDocumentToEdit = selectedExampleDocumentToEdit ? APP_STATE.examples[selectedExampleDocumentIndex] : null;
     // redrawPage();
     redrawNewExampleForm()
     redrawExampleButtons();

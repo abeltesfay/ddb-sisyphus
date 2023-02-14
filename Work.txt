@@ -39,6 +39,8 @@ OOOOOOOOOOOOO
 February 14
 [x] Update indices on field rename
 [x] Update queries on field rename
+[x] Click diff example doesn't remove side panel
+[ ] Filter for facet + click edit doesn't remove filter
 [ ] Generate missing fields only (maybe if example already exists?)
 
 February 13
