@@ -31,18 +31,21 @@ OOOOOOOOOOOOO
 [ ] Fix select reset on examples page
 [ ] Hotspot detector with keys
 [ ] Linked field templating (if this field has this, then that)
+[ ] Construct facets+fields from a real JSON object, in non-Dynamo-doc format
 
 //////////////
 // Work Log //
 //////////////
+February 14
+[x] Update indices on field rename
+[x] Update queries on field rename
+[ ] Generate missing fields only (maybe if example already exists?)
+
 February 13
 [x] Up/down arrows from fields selects the "next" field
 [x] Rename examples on facet field rename
 [x] Update composite keys on field rename
 [x] Update examples so that field alphanumeric sort order is preserved
-[ ] Update indices on field rename
-[ ] Update queries on field rename
-[ ] Generate missing fields only (maybe if example already exists?)
 
 February 10
 [x] Date template format for yyyy-mm-ddThh;mm;SS;zzz-07;00

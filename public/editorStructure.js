@@ -161,6 +161,34 @@ function editField() {
         .filter(field => field.type === "C" && field?.keys.includes(selectedField))
         .forEach(field => field.keys[field.keys.findIndex(key => key === selectedField)] = name);
 
+    // Update indices pk/sk fields that match
+    const fullIndexName = `${facet.name}.${selectedField}`;
+    const fullIndexNameNew = `${facet.name}.${name}`;
+    APP_STATE.indices
+        .filter(index => index.pk === fullIndexName || index.sk === fullIndexName)
+        .forEach(index => {
+            indicesNames.push(index.name);
+            if (index.pk === fullIndexName) { index.pk = fullIndexNameNew; }
+            if (index.sk === fullIndexName) { index.sk = fullIndexNameNew; }
+        });
+
+    // Update any queries that have sks using the old name
+    const indicesWithSameFacet = APP_STATE.indices
+        .filter(index => index.pk.indexOf(`${facet.name}.`) === 0)
+        .map(index => index.name);
+    APP_STATE.queries
+        .filter(query => indicesWithSameFacet.includes(query.index))
+        .forEach(query => {
+            if (query.sk.length === 0) { return; }
+            let terms = query.sk.split("#");
+            terms.forEach((term, idx) => {
+                if (term !== selectedField) { return; }
+                terms[idx] = name;
+            });
+            query.sk = terms.join("#");
+        });
+
+    // Rename the actual field itself
     let index = facet.fields.findIndex(field => field.name === selectedField);
     facet.fields[index].name = name;
     facet.fields = facet.fields.sort((a, b) => sortComparator(a.name, b.name));
