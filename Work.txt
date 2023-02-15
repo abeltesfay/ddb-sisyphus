@@ -36,7 +36,8 @@ OOOOOOOOOOOOO
 // Work Log //
 //////////////
 February 15
-[ ] Edit index name + update queries to reflect this
+[x] Edit index name + update queries to reflect this
+[ ] Prevent index name duplicates on rename
 
 February 14
 [x] Update indices on field rename

@@ -86,6 +86,36 @@ function addIndex() {
     console.debug("ADDINDEX: New index added:", name);
 }
 
+function editIndexName() {
+    if (!selectedIndex) { return; }
+    const newName = prompt(`Please provide a new, unique index name for "${selectedIndex}":`);
+    if (!newName) { return; }
+
+    if (APP_STATE.indices.map(o => o.name).includes(newName)) {
+        alert("This name already exists, please choose another");
+        return;
+    }
+
+    const oldName = selectedIndex;
+    const indexObj = APP_STATE.indices.find(index => index.name === selectedIndex);
+    indexObj.name = newName;
+    selectedIndex = newName;
+    APP_STATE.indices = APP_STATE.indices.sort((a, b) => sortComparator(a.name, b.name));
+    
+    // Update queries using this index
+    APP_STATE.queries.forEach(
+        query => {
+            if (query.index !== oldName) { return; }
+            query.index = newName;
+        }
+    );
+    
+    redrawPage();
+
+    console.info(`EDITINDEX: Renamed an index: ${oldName} to ${newName}`);
+
+}
+
 function deleteIndex() {
     if (!selectedIndex) { return; }
     if (!confirm(`Are you SURE you want to delete index ${selectedIndex}?`)) { return; }

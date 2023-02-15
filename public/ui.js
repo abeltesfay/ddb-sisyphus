@@ -23,6 +23,7 @@ function preparePage() {
     setClick("addQuery", addQuery);
     setClick("editQueryName", editQueryName);
     setClick("addIndex", addIndex);
+    setClick("editIndexName", editIndexName);
     setClick("deleteQuery", deleteQuery);
     setClick("deleteIndex", deleteIndex);
     setClick("updateIndex", updateIndex);
