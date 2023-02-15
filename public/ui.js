@@ -998,8 +998,8 @@ function redrawNewExampleFormFieldsAndLabels(facetName, example) {
     let pk = customizedFacetFields.filter(field => field.name === "pk")[0];
     let sk = customizedFacetFields.filter(field => field.name === "sk")[0];
     customizedFacetFields = customizedFacetFields.filter(field => field.name !== "pk" && field.name !== "sk");
-    customizedFacetFields.unshift(pk);
     customizedFacetFields.unshift(sk);
+    customizedFacetFields.unshift(pk);
 
     const compositeKeyFields = facet.fields.map(field => field.keys).flat();
     customizedFacetFields.forEach(field => {
