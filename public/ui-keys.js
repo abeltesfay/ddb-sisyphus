@@ -16,10 +16,9 @@ function processKeys(event) {
         }
     }
 }
-
 function hideExampleEditor() {
     const exampleEditorContainer = gebi("exampleNewContainer");
-    let wasVisible = !exampleEditorContainer.classList.contains("hidden");
+    let wasVisible = isExampleEditorVisible();
     exampleEditorContainer.classList.add("hidden");
     return wasVisible;
 }

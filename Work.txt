@@ -40,6 +40,7 @@ February 15
 [x] Fix select reset on examples page
 [x] Fix edit button clearing the sk field
 [x] Hide example editor instead of clearing everything on first escape
+[x] Prevent dropdown from causing confirmation if editor isn't visible
 
 February 14
 [x] Update indices on field rename

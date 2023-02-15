@@ -1,11 +1,15 @@
 //
 // Examples
 //
+function isExampleEditorVisible() { return !gebi("exampleNewContainer").classList.contains("hidden"); }
+
 function selectExampleFacetToAdd() {
-    if (selectedExampleDocumentToEdit && !confirm("Looks like you are editing an example, adding a new one will lose any unsaved changes. Are you sure?")) {
-        gebi("exampleFacetList").value = "";
-        return;
-    }
+    if (isExampleEditorVisible()
+        && selectedExampleDocumentToEdit
+        && !confirm("Looks like you are editing an example, adding a new one will lose any unsaved changes. Are you sure?")) {
+            gebi("exampleFacetList").value = "";
+            return;
+        }
 
     selectedExampleDocumentToEdit = null;
     selectedExampleFacetToAdd = gebi("exampleFacetList").value;
