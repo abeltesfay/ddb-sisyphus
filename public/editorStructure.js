@@ -337,6 +337,28 @@ function addKeyStatic() {
     addKey();
 }
 
+function compositeKeyCurrentDatetime() {
+    let { facetName, fieldName } = getSelectedFacetAndFieldNames();
+    
+    let facet = getFacetByName(facetName);
+    let field = getFacetFieldByNames(facetName, fieldName);
+    
+    let fields = field?.keys
+        ?.filter(key => key.indexOf("STATIC: ") === -1)
+        ?.map(field => facet?.fields?.find(parentField => field === parentField.name)) ?? [];
+    
+        let hasDateFormattedField = fields?.some(field => field?.format?.type === CONSTS.FORMAT_TYPES.S.VARSDATE.key);
+
+    if (!hasDateFormattedField) {
+        alert("Can't let you do that pal, one of your keys must be formatted as a date string");
+        return false;
+    }
+
+    // Save checkbox value to state
+    field.keysIncludeCurrentDttm = !field?.keysIncludeCurrentDttm ?? true;
+    redrawPage();
+}
+
 function moveKeyUp() {
     let { facetName, fieldName } = getSelectedFacetAndFieldNames();
     if (!facetName || !fieldName || !selectedKey) { return; }
@@ -429,6 +451,7 @@ function addFormatEnum() {
     if (field.format.enumValues.includes(newEnumValue)) { alert("Value already exists in list."); return; }
 
     field.format.enumValues.push(newEnumValue);
+    field.format.enumValues.sort();
     redrawPage();
 }
 
@@ -439,6 +462,7 @@ function removeFormatEnum() {
     const formatEnumValue = gebi("formatEnumList").value;
 
     field.format.enumValues = field.format.enumValues.filter(enumValue => enumValue !== formatEnumValue);
+    field.format.enumValues.sort();
     redrawPage();
 }
 

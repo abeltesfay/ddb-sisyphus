@@ -105,7 +105,9 @@ function updateNewExampleInputs() {
             if (key.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) === 0) {
                 calculatedFields.push(key.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, ""));
             } else {
-                calculatedFields.push(gebi(`EXAMPLEFIELD#${key}`)?.value);
+                let valueToUse = gebi(`EXAMPLEFIELD#${key}`)?.value ?? "";
+                if (valueToUse.trim().length === 0 && field?.keysIncludeCurrentDttm) { valueToUse = "CURRENT"; }
+                calculatedFields.push(valueToUse);
             }
         });
         ele.value = calculatedFields.join(CONSTS.DELIM);

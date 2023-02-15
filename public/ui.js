@@ -51,6 +51,7 @@ function preparePage() {
     setClick("saveExampleChanges", saveExampleChanges);
     setClick("saveExampleChangesAsCopy", saveExampleChangesAsCopy);
     setClick("toggleFieldDescriptions", toggleFieldDescriptions);
+    setClick("compositeKeyCurrentDatetime", compositeKeyCurrentDatetime);
     
     // Format editor handlers
     // formatType, key, elementId
@@ -327,6 +328,7 @@ function fillCompositeDropdown() {
 
     const compositeKey = gebi("compositeKeys");
     let field = getFacetFieldByNames(facetName, fieldName);
+    gebi("compositeKeyCurrentDatetime").checked = field?.keysIncludeCurrentDttm ?? false;
     field.keys.forEach(key => {
         let selectableKeyEle = dce("option");
         selectableKeyEle.innerText = key;

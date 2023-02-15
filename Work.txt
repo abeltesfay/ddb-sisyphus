@@ -26,6 +26,8 @@ OOOOOOOOOOOOO
 [ ] Linked field templating (if this field has this, then that)
 [ ] Construct facets+fields from a real JSON object, in non-Dynamo-doc format
 [ ] Detect when deleting a Facet/Field breaks another facet field's format that's dependent on it
+[ ] Handle large text better.. hide? Ellipsis?
+[ ] Make examples page more understandable (show columns+generating flow)
 
 //////////////
 // Work Log //
@@ -40,8 +42,15 @@ February 15
 [x] Prevent dropdown from causing confirmation if editor isn't visible
 [x] Flip sk/pk fields on example editor
 [-] Add description to fields - Already Done
-[ ] Autosort format enum
-[ ] Autosort ceg facets
+[x] Autosort format enum
+[x] Autosort ceg facets
+[x] Checkbox for current vs timestamped documents format
+  [x] Checkbox on field's composite key editor
+  [x] Missing date field = #CURRENT value when generating
+  [-] Queries.. nothing to do, they can jsut pass CURRENT as datetime val
+[ ] Autosort ceg facets (contin)
+[ ] Hover icon to show different date format keys
+[ ] Hit escape + add example redraws correct fields in editor
 
 February 14
 [x] Update indices on field rename
