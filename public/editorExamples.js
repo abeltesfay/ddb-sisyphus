@@ -142,7 +142,7 @@ function editExample() {
     const example = APP_STATE.examples[selectedExampleDocumentIndex];
     selectedExampleDocumentToEdit = example;
     showExampleEditor();
-    redrawPage();
+    redrawExamplePage(true);
     focusFirstNonReadOnlyInput();
 }
 

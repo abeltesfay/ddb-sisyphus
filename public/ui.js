@@ -928,13 +928,14 @@ function isFieldExcludedByFilter(fieldName, filterString, fieldType, fieldFormat
 }
 
 // function redrawExamplePage(skipFacetList = false) {
-function redrawExamplePage() {
+function redrawExamplePage(skipReadBar = false) {
+// function redrawExamplePage() {
     redrawExampleButtons();
     // if (!skipFacetList) { redrawExampleFacetList(); }
     redrawExampleFacetList();
     redrawNewExampleForm();
     
-    redrawExamplesReadBar();
+    if (!skipReadBar) { redrawExamplesReadBar(); }
     redrawExampleDocuments();
 }
 
@@ -1400,6 +1401,7 @@ function toggleExampleAddCkfsOnly() {
 
 function redrawGeneratorOptions() {
     const generatorTypeSelect = gebi("codeType");
+    generatorTypeSelect.innerHTML = "";
     Object.keys(CONSTS.GENERATORFN).forEach(key => {
         let option = dce("option");
         option.innerText = key;

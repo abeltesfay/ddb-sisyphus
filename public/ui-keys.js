@@ -1,6 +1,7 @@
 function processKeys(event) {
     // Deselect facet
     if (event.key === "Escape") {
+        if (hideExampleEditor()) { return; }
         resetEverything();
 
         redrawPage();
@@ -14,6 +15,13 @@ function processKeys(event) {
             case ("ArrowUp"): { selectPreviousFacetField(); break; }
         }
     }
+}
+
+function hideExampleEditor() {
+    const exampleEditorContainer = gebi("exampleNewContainer");
+    let wasVisible = !exampleEditorContainer.classList.contains("hidden");
+    exampleEditorContainer.classList.add("hidden");
+    return wasVisible;
 }
 
 function resetEverything() {

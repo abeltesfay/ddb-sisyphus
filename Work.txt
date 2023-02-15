@@ -22,11 +22,9 @@ OOOOOOOOOOOOO
 [ ] Show which fields have changed state
 [ ] Add description to fields
 [ ] Show physical partitions / breakdown when a partition is getting hot
-[ ] Gencode dropdown duplicate bug
 [ ] Prompt to update examples on facet name changes
 [ ] Prompt to update on entitytype updates
 [ ] Prompt to update on field format updates
-[ ] Fix select reset on examples page
 [ ] Hotspot detector with keys
 [ ] Linked field templating (if this field has this, then that)
 [ ] Construct facets+fields from a real JSON object, in non-Dynamo-doc format
@@ -37,7 +35,11 @@ OOOOOOOOOOOOO
 //////////////
 February 15
 [x] Edit index name + update queries to reflect this
-[ ] Prevent index name duplicates on rename
+[x] Prevent index name duplicates on rename
+[x] Gencode dropdown duplicate bug
+[x] Fix select reset on examples page
+[x] Fix edit button clearing the sk field
+[x] Hide example editor instead of clearing everything on first escape
 
 February 14
 [x] Update indices on field rename
