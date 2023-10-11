@@ -36,6 +36,17 @@ function editFacetName() {
     }
     
     const oldFacetName = selectedFacet;
+    APP_STATE.examples
+        .filter(example => example.__facetName === oldFacetName)
+        .forEach(example => example.__facetName = name);
+
+    APP_STATE.indices
+        .filter(index => index.pk.split(".")[0] === oldFacetName || index.sk.split(".")[0] === oldFacetName)
+        .forEach(index => {
+            index.pk = `${name}.${index.pk.split(".")[1]}`;
+            index.sk = `${name}.${index.sk.split(".")[1]}`;
+        });
+
     let facet = getFacetByName(oldFacetName);
     facet.name = name;
     selectedFacet = name;

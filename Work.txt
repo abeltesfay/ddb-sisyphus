@@ -28,10 +28,34 @@ OOOOOOOOOOOOO
 [ ] Detect when deleting a Facet/Field breaks another facet field's format that's dependent on it
 [ ] Handle large text better.. hide? Ellipsis?
 [ ] Make examples page more understandable (show columns+generating flow)
+[ ] Remove unused variables from code genie fns
+[ ] Autosort ceg facets (contin)
+[ ] Hover icon to show different date format keys
+[ ] Hit escape + add example redraws correct fields in editor
+[ ] Detect when two different field names have different types
+  - Will cause issues with NoSQL Workbench export
+[ ] Toss better error when generating code if a query isn't fully defined
+[ ] Update keyCombiner to be smarter -- missing/empty attributes are filtered out
+[ ] Prevent conflicting types for same field name
 
 //////////////
 // Work Log //
 //////////////
+October 9
+[x] Fix queries PK not concatenating correctly
+  - Replaced 'replace' with 'replaceAll' and now fixed
+[x] Fix renamed field causing error popup
+  - Why is it happening? 'underlyingFields missing'
+  - Basically need to rename the queries and indexes too when we rename a facet
+  - Found it.. updated and everything lookin a lot better
+
+April 19
+[x] Fix NoSQLWorkbench File
+  - Ended up being a different field types.. should we guard against this?
+
+February 16
+[x] Rename facet renames the examples
+
 February 15
 [x] Edit index name + update queries to reflect this
 [x] Prevent index name duplicates on rename
@@ -48,9 +72,6 @@ February 15
   [x] Checkbox on field's composite key editor
   [x] Missing date field = #CURRENT value when generating
   [-] Queries.. nothing to do, they can jsut pass CURRENT as datetime val
-[ ] Autosort ceg facets (contin)
-[ ] Hover icon to show different date format keys
-[ ] Hit escape + add example redraws correct fields in editor
 
 February 14
 [x] Update indices on field rename

@@ -184,21 +184,21 @@ function getSkCompositeKeyFieldsCsvFromQuery(query) {
     const skParameters = fieldKeys.skFields.map(field => {
         // Wrap static string values in double quotes
         if (field.indexOf(CONSTS.STATIC_COMPOSITE_KEY.PREFIX) !== -1) {
-            return `"${field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")}"`;
+            return [`"${field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")}"`, field.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "")];
         }
 
-        return field; // Return parameter name
+        return [field, field]; // Return parameter name
     });
     
     let finalString = "";
     let skParametersFiltered = [];
 
     for (skParam of skParameters) {
-        finalString += `${skParam}${CONSTS.DELIM}`;
+        finalString += `${skParam[1]}${CONSTS.DELIM}`;
         const usableSearchPattern = finalString.slice(0, -1);
         if (usableSearchPattern.length > query.sk.length) { break; }
         
-        skParametersFiltered.push(skParam);
+        skParametersFiltered.push(skParam[0]);
     }
 
     return skParametersFiltered.join(", ");

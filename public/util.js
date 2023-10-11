@@ -346,8 +346,8 @@ function isValidCEGTemplate(template) {
 // Generator functions
 //
 function generateSEnumList(field) {
-    let possibleValues = field.format.enumValues;
-    return possibleValues[Math.floor(Math.random() * possibleValues.length)];
+    let possibleValues = field.format.enumValues ?? [];
+    return possibleValues.length < 0 ? "" : possibleValues[Math.floor(Math.random() * possibleValues.length)];
 }
 
 function generateSStatic(field) { return field.format.staticValue; }

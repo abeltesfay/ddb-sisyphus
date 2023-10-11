@@ -723,7 +723,7 @@ function redrawQueryEditIndexArea() {
         const underlyingField = getFacetFieldByNames(underlyingFacetFieldName.facetName, underlyingFacetFieldName.fieldName);
         
         if (underlyingField.keys) {
-            const fieldKeys = `${underlyingField.keys}`.replace(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replace(",", CONSTS.DELIM);
+            const fieldKeys = `${underlyingField.keys}`.replaceAll(CONSTS.STATIC_COMPOSITE_KEY.PREFIX, "").replaceAll(",", CONSTS.DELIM);
             const queryPkFull = `${index.pk} -> ${fieldKeys}`;
             queryPkEle.value = queryPkFull;
         } else {

@@ -450,6 +450,11 @@ function addCEGDerivedFacet(event, facetName = undefined, countMin = 1, countMax
     option.innerText = `${facetName} (x${countMin} - x${countMax})`;
 
     gebi("cegDerivedFacetsSelected").appendChild(option);
+    Array.from(gebi("cegStartingFacetsSelected").childNodes)
+        .sort((a,b) => a.innerText > b.innerText ? -1 : 1)
+        .forEach(option => {
+            gebi("cegDerivedFacetsSelected").appendChild(option);
+        });
     redrawPage();
 }
 
